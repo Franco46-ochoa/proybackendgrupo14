@@ -1,5 +1,7 @@
 require('dotenv').config({ path: require('path').resolve(__dirname, '../../.env') });
 
+const { execSync } = require('child_process');
+
 const TELEGRAM_TOKEN = process.env.TELEGRAM_BOT_TOKEN;
 const TELEGRAM_CHAT_ID = process.env.TELEGRAM_CHAT_ID;
 const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
@@ -7,15 +9,13 @@ const GITHUB_USER = 'Franco46-ochoa';
 
 const BACKEND_REPO = 'proybackendgrupo14';
 const FRONTEND_REPO = 'proyfrontendgrupo14';
-
 const INTEGRANTES = ['Franco', 'Brian', 'Pricila', 'Fabri', 'Leo'];
 
-// ─── 1. Obtener commits del día ──────────────────────────
+// ─── 1. GitHub API ──────────────────────────────────────
 async function getCommits(repo) {
   const since = new Date();
   since.setHours(0, 0, 0, 0);
   const url = `https://api.github.com/repos/${GITHUB_USER}/${repo}/commits?since=${since.toISOString()}&per_page=50`;
-
   try {
     const res = await fetch(url);
     const data = await res.json();
@@ -24,16 +24,13 @@ async function getCommits(repo) {
       autor: c.commit.author.name,
       mensaje: c.commit.message.split('\n')[0],
       fecha: c.commit.author.date,
+      sha: c.sha.substring(0, 7),
     }));
-  } catch {
-    return [];
-  }
+  } catch { return []; }
 }
 
-// ─── 2. Obtener PRs abiertos ─────────────────────────────
 async function getOpenPRs(repo) {
   const url = `https://api.github.com/repos/${GITHUB_USER}/${repo}/pulls?state=open&per_page=20`;
-
   try {
     const res = await fetch(url);
     const data = await res.json();
@@ -45,40 +42,67 @@ async function getOpenPRs(repo) {
       creado: pr.created_at,
       url: pr.html_url,
     }));
-  } catch {
-    return [];
+  } catch { return []; }
+}
+
+// ─── 2. Lint y Tests ───────────────────────────────────
+function runCommand(dir, cmd) {
+  try {
+    const out = execSync(cmd, { cwd: dir, timeout: 60000, encoding: 'utf8', stdio: 'pipe' });
+    return { ok: true, output: out.slice(-2000) };
+  } catch (e) {
+    return { ok: false, output: (e.stdout || '') + '\n' + (e.stderr || '') };
   }
 }
 
-// ─── 3. Generar resumen con Gemini ───────────────────────
-async function generarResumenGemini(commitsBack, commitsFront, prsBack, prsFront) {
+function checkRepo(dir, name) {
+  const result = { name, lint: null, test: null };
+  try {
+    const pkg = require(`${dir}/package.json`);
+    if (pkg.scripts?.lint) result.lint = runCommand(dir, 'npm run lint');
+    if (pkg.scripts?.test) result.test = runCommand(dir, 'npm test');
+  } catch { /* no package.json yet */ }
+  return result;
+}
+
+// ─── 3. Gemini ──────────────────────────────────────────
+async function generarResumenGemini(commits, prs, checks) {
   if (!GEMINI_API_KEY) return null;
 
-  const totalBack = commitsBack.length;
-  const totalFront = commitsFront.length;
-
+  const totalCommits = commits.back.length + commits.front.length;
   const commitsPorPersona = {};
-  for (const c of [...commitsBack, ...commitsFront]) {
+  for (const c of [...commits.back, ...commits.front]) {
     const nombre = c.autor || 'desconocido';
     commitsPorPersona[nombre] = (commitsPorPersona[nombre] || 0) + 1;
   }
-
   const quienNoCommiteo = INTEGRANTES.filter(n => !commitsPorPersona[n]);
+  const totalPRs = prs.back.length + prs.front.length;
 
-  const prompt = `Sos el Agente Reportero de SmartMargin AI. Generá un reporte diario breve y profesional con estos datos:
+  let infoLintTest = '';
+  for (const c of checks) {
+    if (c.lint) infoLintTest += `\n${c.name} lint: ${c.lint.ok ? 'OK' : 'ERROR: ' + c.lint.output.slice(0, 400)}`;
+    if (c.test) infoLintTest += `\n${c.name} test: ${c.test.ok ? 'OK' : 'ERROR: ' + c.test.output.slice(0, 400)}`;
+  }
 
-Commits en backend: ${totalBack}
-Commits en frontend: ${totalFront}
-PRs abiertos sin mergear: ${prsBack.length + prsFront.length}
+  const prompt = `Sos el Agente Reportero de SmartMargin AI. Generá un reporte diario en español con estos datos reales:
+
+Commits backend: ${totalCommits} | Commits frontend: ${commits.front.length}
 ${Object.entries(commitsPorPersona).map(([k, v]) => `- ${k}: ${v} commits`).join('\n')}
-${quienNoCommiteo.length > 0 ? 'Sin actividad hoy: ' + quienNoCommiteo.join(', ') : 'Todos tuvieron actividad hoy.'}
+${quienNoCommiteo.length > 0 ? '⚠ SIN ACTIVIDAD HOY: ' + quienNoCommiteo.join(', ') : 'Todos tuvieron actividad.'}
+PRs abiertos sin revisar: ${totalPRs}
+${infoLintTest}
 
-Formato:
-- Usá emojis (✅⚠️🔍📌🧠)
-- Máximo 150 palabras
-- Incluí una recomendación para mañana
-- No inventes datos, usá solo lo que te paso
-- Respondé en español`;
+Estructura del reporte (usá estos títulos exactos):
+1. "📊 ACTIVIDAD" — una frase por persona
+2. "⚠️ ALERTAS" — quién no commiteó y qué PRs están demorados
+3. "🧪 TESTS Y LINT" — si hay errores, decí quién probablemente los causó según los commits del día. Ej: "Pricila probablemente rompió el build con su último commit en product-list.component.ts"
+4. "🧠 RECOMENDACIÓN" — 1 consejo útil para mañana basado en lo que ves
+
+Reglas:
+- No inventes datos ni nombres de archivo que no aparezcan en los errores
+- Máximo 200 palabras
+- Usá emojis
+- Si no hay errores, felicitá al equipo`;
 
   try {
     const res = await fetch(
@@ -86,127 +110,92 @@ Formato:
       {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          contents: [{ parts: [{ text: prompt }] }],
-        }),
+        body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] }),
       }
     );
     const json = await res.json();
     return json.candidates?.[0]?.content?.parts?.[0]?.text || null;
-  } catch {
-    return null;
-  }
+  } catch { return null; }
 }
 
-// ─── 4. Enviar mensaje a Telegram ────────────────────────
+// ─── 4. Telegram ────────────────────────────────────────
 async function enviarTelegram(texto) {
   const url = `https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendMessage`;
-  const maxLen = 4000;
-  const mensajes = texto.length > maxLen
-    ? [texto.substring(0, maxLen - 3) + '...']
-    : [texto];
-
-  for (const msg of mensajes) {
+  const partes = texto.match(/[\s\S]{1,4000}/g) || [texto];
+  for (const p of partes) {
     try {
       await fetch(url, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          chat_id: TELEGRAM_CHAT_ID,
-          text: msg,
-          parse_mode: 'HTML',
-        }),
+        body: JSON.stringify({ chat_id: TELEGRAM_CHAT_ID, text: p, parse_mode: 'HTML' }),
       });
-    } catch (e) {
-      console.error('Error enviando a Telegram:', e.message);
-    }
+    } catch (e) { console.error('Telegram error:', e.message); }
   }
 }
 
-// ─── MAIN ────────────────────────────────────────────────
+// ─── MAIN ───────────────────────────────────────────────
 async function main() {
   console.log('🚀 Reportero SmartMargin AI iniciando...\n');
 
-  // 1. Obtener datos de GitHub
-  console.log('📡 Consultando GitHub API...');
+  // 1. GitHub
+  console.log('📡 GitHub API...');
   const [commitsBack, commitsFront, prsBack, prsFront] = await Promise.all([
-    getCommits(BACKEND_REPO),
-    getCommits(FRONTEND_REPO),
-    getOpenPRs(BACKEND_REPO),
-    getOpenPRs(FRONTEND_REPO),
+    getCommits(BACKEND_REPO), getCommits(FRONTEND_REPO),
+    getOpenPRs(BACKEND_REPO), getOpenPRs(FRONTEND_REPO),
   ]);
+  console.log(`   Backend:  ${commitsBack.length} commits, ${prsBack.length} PRs`);
+  console.log(`   Frontend: ${commitsFront.length} commits, ${prsFront.length} PRs`);
 
-  const totalCommits = commitsBack.length + commitsFront.length;
-  const totalPRs = prsBack.length + prsFront.length;
+  // 2. Lint + Tests
+  console.log('🧪 Lint y Tests...');
+  const checks = [
+    checkRepo(require('path').resolve(__dirname, '../../..', 'proybackendgrupo14'), 'Backend'),
+    checkRepo(require('path').resolve(__dirname, '../../..', 'proyfrontendgrupo14'), 'Frontend'),
+  ];
+  for (const c of checks) {
+    const li = c.lint ? (c.lint.ok ? '✅' : '❌') : '—';
+    const te = c.test ? (c.test.ok ? '✅' : '❌') : '—';
+    console.log(`   ${c.name}: lint ${li} | test ${te}`);
+  }
 
-  console.log(`   Backend:  ${commitsBack.length} commits, ${prsBack.length} PRs abiertos`);
-  console.log(`   Frontend: ${commitsFront.length} commits, ${prsFront.length} PRs abiertos`);
+  // 3. Gemini
+  const commits = { back: commitsBack, front: commitsFront };
+  const prs = { back: prsBack, front: prsFront };
+  console.log('🧠 Gemini...');
+  const resumenIA = await generarResumenGemini(commits, prs, checks);
+  console.log('   ' + (resumenIA ? 'resumen generado' : 'no disponible'));
 
-  // 2. Construir reporte base
-  const hoy = new Date().toLocaleDateString('es-AR', {
-    weekday: 'long', year: 'numeric', month: 'long', day: 'numeric',
-  });
+  // 4. Armar reporte
+  const hoy = new Date().toLocaleDateString('es-AR', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+  let reporte = `<b>🤖 REPORTE DIARIO — SmartMargin AI</b>\n<b>📅 ${hoy}</b>\n`;
 
-  let reporte = `<b>🤖 REPORTE DIARIO — SmartMargin AI</b>\n`;
-  reporte += `<b>📅 ${hoy}</b>\n\n`;
-  reporte += `<b>━━━━━━━━━━━━━━━━━━━━━━━━</b>\n`;
-  reporte += `<b>📊 ACTIVIDAD DEL EQUIPO</b>\n`;
-  reporte += `<b>━━━━━━━━━━━━━━━━━━━━━━━━</b>\n\n`;
-
-  if (totalCommits === 0) {
-    reporte += `⚠️ <b>Sin commits hoy</b> en ninguno de los dos repos.\n\n`;
+  if (resumenIA) {
+    reporte += `\n${resumenIA}`;
   } else {
-    const todos = [...commitsBack.map(c => ({ ...c, repo: 'backend' })), ...commitsFront.map(c => ({ ...c, repo: 'frontend' }))];
-    for (const integrante of INTEGRANTES) {
-      const suyos = todos.filter(c => c.autor && c.autor.toLowerCase().includes(integrante.toLowerCase()));
-      if (suyos.length > 0) {
-        reporte += `✅ <b>${integrante}</b> (${suyos.length} commits)\n`;
-        for (const c of suyos) {
-          reporte += `  • ${c.mensaje.substring(0, 60)} (<i>${c.repo}</i>)\n`;
-        }
-        reporte += '\n';
+    // Reporte básico sin IA
+    reporte += `\n━━━━ 📊 ACTIVIDAD\n`;
+    const todos = [...commitsBack.map(c => ({ ...c, repo: 'BE' })), ...commitsFront.map(c => ({ ...c, repo: 'FE' }))];
+    for (const i of INTEGRANTES) {
+      const suyos = todos.filter(c => c.autor?.toLowerCase().includes(i.toLowerCase()));
+      if (suyos.length) {
+        reporte += `\n✅ ${i} (${suyos.length}): ${suyos.map(c => c.mensaje.slice(0, 50)).join(', ')}`;
       } else {
-        reporte += `⚠️ <b>${integrante}</b> (0 commits hoy)\n`;
-        reporte += `  Sin actividad en las últimas 24hs\n\n`;
+        reporte += `\n⚠️ ${i} — sin actividad hoy`;
+      }
+    }
+    if (prsBack.length + prsFront.length > 0) {
+      reporte += `\n\n━━━━ 📌 PRs ABIERTOS\n`;
+      for (const pr of [...prsBack, ...prsFront]) {
+        const h = Math.round((Date.now() - new Date(pr.creado).getTime()) / 3600000);
+        reporte += `\n📌 ${pr.autor} — ${pr.titulo} (${h}h)`;
       }
     }
   }
 
-  reporte += `<b>━━━━━━━━━━━━━━━━━━━━━━━━</b>\n`;
-  reporte += `<b>🔍 PULL REQUESTS ABIERTOS (${totalPRs})</b>\n`;
-  reporte += `<b>━━━━━━━━━━━━━━━━━━━━━━━━</b>\n\n`;
-
-  if (totalPRs === 0) {
-    reporte += `✅ No hay PRs pendientes de revisión.\n\n`;
-  } else {
-    for (const pr of [...prsBack, ...prsFront]) {
-      const horas = Math.round((Date.now() - new Date(pr.creado).getTime()) / 3600000);
-      reporte += `📌 <b>${pr.rama}</b> — ${pr.autor}\n`;
-      reporte += `   Abierto hace ${horas}h: <a href="${pr.url}">${pr.titulo.substring(0, 80)}</a>\n\n`;
-    }
-  }
-
-  // 3. Intentar resumen con Gemini
-  console.log('🧠 Consultando Gemini...');
-  const resumenIA = await generarResumenGemini(commitsBack, commitsFront, prsBack, prsFront);
-
-  if (resumenIA) {
-    reporte += `<b>━━━━━━━━━━━━━━━━━━━━━━━━</b>\n`;
-    reporte += `<b>🧠 ANÁLISIS DEL AGENTE (Gemini)</b>\n`;
-    reporte += `<b>━━━━━━━━━━━━━━━━━━━━━━━━</b>\n\n`;
-    reporte += resumenIA;
-    console.log('   Gemini: resumen generado');
-  } else {
-    console.log('   Gemini: no disponible (sin API key o falló)');
-  }
-
-  // 4. Enviar a Telegram
-  console.log('📨 Enviando a Telegram...');
+  // 5. Telegram
+  console.log('📨 Telegram...');
   await enviarTelegram(reporte);
-  console.log('✅ Reporte enviado a Telegram!\n');
+  console.log('✅ Listo!\n');
 }
 
-main().catch(err => {
-  console.error('❌ Error:', err.message);
-  process.exit(1);
-});
+main().catch(err => { console.error('❌', err.message); process.exit(1); });

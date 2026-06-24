@@ -1,0 +1,12 @@
+{
+  "name": "smartmargin-reportero",
+  "version": "1.0.0",
+  "description": "Agente Reportero Telegram para SmartMargin AI",
+  "main": "src/agents/reportero.js",
+  "scripts": {
+    "reporte": "node src/agents/reportero.js"
+  },
+  "dependencies": {
+    "dotenv": "^16.4.0"
+  }
+}

@@ -4,9 +4,32 @@
   "description": "Agente Reportero Telegram para SmartMargin AI",
   "main": "src/agents/reportero.js",
   "scripts": {
-    "reporte": "node src/agents/reportero.js"
+    "dev": "nodemon server.js",
+    "start": "node server.js",
+    "lint": "echo 'no lint'",
+    "test": "echo 'no tests'"
   },
   "dependencies": {
-    "dotenv": "^16.4.0"
+    "bcryptjs": "^3.0.3",
+    "dotenv": "^16.6.1",
+    "express": "^5.2.1",
+    "jsonwebtoken": "^9.0.3",
+    "pg": "^8.22.0",
+    "sequelize": "^6.37.8"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Franco46-ochoa/proybackendgrupo14.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/Franco46-ochoa/proybackendgrupo14/issues"
+  },
+  "homepage": "https://github.com/Franco46-ochoa/proybackendgrupo14#readme",
+  "devDependencies": {
+    "sequelize-cli": "^6.6.5"
   }
 }

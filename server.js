@@ -12,6 +12,9 @@ app.use(express.urlencoded({ extended: true }));
 const authRoutes = require('./src/routes/auth.routes');
 app.use('/api/auth', authRoutes);
 
+const usuariosRoutes = require('./src/routes/usuarios.routes');
+app.use('/api/usuarios', usuariosRoutes);
+
 app.get('/', (req, res) => {
   res.json({ success: true, message: 'SmartMargin API v1.0' });
 });

@@ -1,3 +1,4 @@
+HEAD
 const { sequelize } = require("../config/database");
 const Usuario = require("./Usuario")(sequelize);
 const Zona = require("./Zona")(sequelize);
@@ -13,18 +14,48 @@ Zona.hasMany(Sucursal, {
 Sucursal.belongsTo(Zona, {
   foreignKey: "zonaId",
   as: "zona",
+
+const { sequelize } = require('../config/database');
+const Usuario = require('./Usuario')(sequelize);
+const Zona = require('./Zona')(sequelize);
+const Sucursal = require('./Sucursal')(sequelize);
+const Producto = require('./Producto')(sequelize);
+const Inventario = require('./Inventario')(sequelize);
+const Transaccion = require('./Transaccion')(sequelize);
+
+// ─── Zona → Sucursal (1:N) ───
+Zona.hasMany(Sucursal, {
+  foreignKey: 'zonaId',
+  as: 'sucursales',
 });
+Sucursal.belongsTo(Zona, {
+  foreignKey: 'zonaId',
+  as: 'zona',
+  (agrego modelos + auth jwt)
+});
+
 // ─── Zona → Usuario (1:N) ───
 Zona.hasMany(Usuario, {
+ HEAD
   foreignKey: "zonaId",
   as: "usuarios",
 });
 Usuario.belongsTo(Zona, {
   foreignKey: "zonaId",
   as: "zona",
+
+  foreignKey: 'zonaId',
+  as: 'usuarios',
 });
+Usuario.belongsTo(Zona, {
+  foreignKey: 'zonaId',
+  as: 'zona',
+ (agrego modelos + auth jwt)
+});
+
 // ─── Sucursal → Usuario (1:N) ───
 Sucursal.hasMany(Usuario, {
+HEAD
   foreignKey: "sucursalId",
   as: "usuarios",
 });
@@ -53,12 +84,79 @@ ReporteAgente.belongsTo(Usuario, {
   foreignKey: "generadoPor",
   as: "generador",
 });
+
+  foreignKey: 'sucursalId',
+  as: 'usuarios',
+});
+Usuario.belongsTo(Sucursal, {
+  foreignKey: 'sucursalId',
+  as: 'sucursal',
+});
+
+// ─── Producto → Inventario (1:N) ───
+Producto.hasMany(Inventario, {
+  foreignKey: 'productoId',
+  as: 'inventario',
+});
+Inventario.belongsTo(Producto, {
+  foreignKey: 'productoId',
+  as: 'producto',
+});
+
+// ─── Sucursal → Inventario (1:N) ───
+Sucursal.hasMany(Inventario, {
+  foreignKey: 'sucursalId',
+  as: 'inventario',
+});
+Inventario.belongsTo(Sucursal, {
+  foreignKey: 'sucursalId',
+  as: 'sucursal',
+});
+
+// ─── Producto → Transaccion (1:N) ───
+Producto.hasMany(Transaccion, {
+  foreignKey: 'productoId',
+  as: 'transacciones',
+});
+Transaccion.belongsTo(Producto, {
+  foreignKey: 'productoId',
+  as: 'producto',
+});
+
+// ─── Sucursal → Transaccion (1:N) ───
+Sucursal.hasMany(Transaccion, {
+  foreignKey: 'sucursalId',
+  as: 'transacciones',
+});
+Transaccion.belongsTo(Sucursal, {
+  foreignKey: 'sucursalId',
+  as: 'sucursal',
+});
+
+// ─── Usuario → Transaccion (1:N) ───
+Usuario.hasMany(Transaccion, {
+  foreignKey: 'usuarioId',
+  as: 'transacciones',
+});
+Transaccion.belongsTo(Usuario, {
+  foreignKey: 'usuarioId',
+  as: 'usuario',
+});
+
+ (agrego modelos + auth jwt)
 module.exports = {
   sequelize,
   Usuario,
   Zona,
   Sucursal,
+ HEAD
   Suscripcion,
   Auditoria,
   ReporteAgente,
 };
+
+  Producto,
+  Inventario,
+  Transaccion,
+};
+(agrego modelos + auth jwt)

@@ -27,6 +27,15 @@ app.use('/api/productos', productosRoutes);
 const inventarioRoutes = require('./src/routes/inventario.routes');
 app.use('/api/inventario', inventarioRoutes);
 
+const transaccionesRoutes = require('./src/routes/transacciones.routes');
+app.use('/api/transacciones', transaccionesRoutes);
+
+const gastosRoutes = require('./src/routes/gastos.routes');
+app.use('/api/gastos', gastosRoutes);
+
+const proveedoresRoutes = require('./src/routes/proveedores.routes');
+app.use('/api/proveedores', proveedoresRoutes);
+
 app.get('/', (req, res) => {
   res.json({ success: true, message: 'SmartMargin API v1.0' });
 });

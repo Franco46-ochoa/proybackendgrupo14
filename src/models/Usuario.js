@@ -34,6 +34,14 @@ module.exports = (sequelize) => {
         type: DataTypes.BOOLEAN,
         defaultValue: true,
       },
+      zonaId: {
+        type: DataTypes.INTEGER,
+        allowNull: true,
+      },
+      sucursalId: {
+        type: DataTypes.INTEGER,
+        allowNull: true,
+      },
     },
     {
       tableName: "usuarios",

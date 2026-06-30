@@ -10,10 +10,15 @@ const Inventario = require('./Inventario')(sequelize);
 const Transaccion = require('./Transaccion')(sequelize);
 const Gasto = require('./Gasto')(sequelize);
 const Proveedor = require('./Proveedor')(sequelize);
+const CodigoInvitacion = require('./CodigoInvitacion')(sequelize);
 
 // ─── Zona → Sucursal (1:N) ───
 Zona.hasMany(Sucursal, { foreignKey: 'zonaId', as: 'sucursales' });
 Sucursal.belongsTo(Zona, { foreignKey: 'zonaId', as: 'zona' });
+
+// ─── Usuario → Zona (1:N, dueño de la zona) ───
+Usuario.hasMany(Zona, { foreignKey: 'duenoId', as: 'zonasPropias' });
+Zona.belongsTo(Usuario, { foreignKey: 'duenoId', as: 'dueño' });
 
 // ─── Zona → Usuario (1:N) ───
 Zona.hasMany(Usuario, { foreignKey: 'zonaId', as: 'usuarios' });
@@ -71,6 +76,14 @@ Gasto.belongsTo(Proveedor, { foreignKey: 'proveedorId', as: 'proveedor' });
 Sucursal.hasMany(Gasto, { foreignKey: 'sucursalId', as: 'gastos' });
 Gasto.belongsTo(Sucursal, { foreignKey: 'sucursalId', as: 'sucursal' });
 
+// ─── Usuario → CodigoInvitacion (1:N) ───
+Usuario.hasMany(CodigoInvitacion, { foreignKey: 'duenoId', as: 'codigos' });
+CodigoInvitacion.belongsTo(Usuario, { foreignKey: 'duenoId', as: 'dueno' });
+
+// ─── Sucursal → CodigoInvitacion (1:N) ───
+Sucursal.hasMany(CodigoInvitacion, { foreignKey: 'sucursalId', as: 'codigos' });
+CodigoInvitacion.belongsTo(Sucursal, { foreignKey: 'sucursalId', as: 'sucursal' });
+
 module.exports = {
   sequelize,
   Usuario,
@@ -84,4 +97,5 @@ module.exports = {
   Transaccion,
   Gasto,
   Proveedor,
+  CodigoInvitacion,
 };

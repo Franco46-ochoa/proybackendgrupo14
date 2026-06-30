@@ -18,6 +18,7 @@ const transaccionesRoutes = require("./src/routes/transacciones.routes");
 const gastosRoutes = require("./src/routes/gastos.routes");
 const proveedoresRoutes = require("./src/routes/proveedores.routes");
 const reportesRoutes = require("./src/routes/reportes.routes");
+const codigosRoutes = require("./src/routes/codigos.routes");
 app.use("/api/auth", authRoutes);
 app.use("/api/usuarios", usuariosRoutes);
 app.use("/api/zonas", zonasRoutes);
@@ -28,6 +29,7 @@ app.use("/api/transacciones", transaccionesRoutes);
 app.use("/api/gastos", gastosRoutes);
 app.use("/api/proveedores", proveedoresRoutes);
 app.use("/api/reportes", reportesRoutes);
+app.use("/api/codigos", codigosRoutes);
 app.get("/", (req, res) => {
   res.json({ success: true, message: "SmartMargin API v1.0" });
 });

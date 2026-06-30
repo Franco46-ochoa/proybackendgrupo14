@@ -1,19 +1,66 @@
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
-const { Usuario } = require('../models');
+const { Usuario, CodigoInvitacion } = require('../models');
 
 const authController = {
   // POST /api/auth/register
   register: async (req, res) => {
     try {
-      const { nombre, email, password, rol, sector } = req.body;
+      const { nombre, email, password, rol, sector, codigoInvitacion } = req.body;
 
       const existente = await Usuario.findOne({ where: { email } });
       if (existente) {
         return res.status(400).json({
           success: false,
-          message: 'El email ya esta registrado',
+          message: 'El email ya está registrado',
         });
+      }
+
+      // Validar código de invitación si el rol no es dueño
+      let sucursalId = null;
+      let zonaId = null;
+
+      if (rol && rol !== 'dueno') {
+        if (!codigoInvitacion) {
+          return res.status(400).json({
+            success: false,
+            message: 'Código de invitación requerido para gerentes y empleados',
+          });
+        }
+
+        const codigo = await CodigoInvitacion.findOne({
+          where: { codigo: codigoInvitacion, activo: true },
+        });
+
+        if (!codigo) {
+          return res.status(400).json({
+            success: false,
+            message: 'Código de invitación inválido',
+          });
+        }
+
+        if (codigo.rol !== rol) {
+          return res.status(400).json({
+            success: false,
+            message: 'Este código no corresponde al rol seleccionado',
+          });
+        }
+
+        if (codigo.usosRealizados >= codigo.usosMaximos) {
+          return res.status(400).json({
+            success: false,
+            message: 'Este código ya alcanzó el límite de registros',
+          });
+        }
+
+        await codigo.update({ usosRealizados: codigo.usosRealizados + 1 });
+        sucursalId = codigo.sucursalId || null;
+
+        if (rol === 'gerente' && sucursalId) {
+          const { Sucursal } = require('../models');
+          const sucursal = await Sucursal.findByPk(sucursalId);
+          if (sucursal) zonaId = sucursal.zonaId;
+        }
       }
 
       const salt = await bcrypt.genSalt(10);
@@ -25,6 +72,8 @@ const authController = {
         password: hash,
         rol: rol || 'empleado',
         sector: sector || null,
+        sucursalId,
+        zonaId,
       });
 
       const token = jwt.sign(
@@ -40,6 +89,7 @@ const authController = {
           nombre: usuario.nombre,
           email: usuario.email,
           rol: usuario.rol,
+          sucursalId: usuario.sucursalId,
         },
         token,
         message: 'Usuario registrado exitosamente',

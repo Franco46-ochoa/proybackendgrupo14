@@ -8,7 +8,10 @@ const zonaController = {
 
       let zonas;
       if (usuario.rol === 'dueno') {
-        zonas = await Zona.findAll({ order: [['nombre', 'ASC']] });
+        zonas = await Zona.findAll({
+          where: { duenoId: usuario.id },
+          order: [['nombre', 'ASC']],
+        });
       } else {
         zonas = await Zona.findAll({
           where: { id: usuario.zonaId },
@@ -49,7 +52,10 @@ const zonaController = {
         });
       }
 
-      const zona = await Zona.create({ nombre: nombre.trim() });
+      const zona = await Zona.create({
+        nombre: nombre.trim(),
+        duenoId: req.usuario.id,
+      });
 
       res.status(201).json({
         success: true,

@@ -15,14 +15,24 @@ const productoController = {
         where.nombre = { [Op.iLike]: `%${busqueda}%` };
       }
 
-      const productos = await Producto.findAll({
+      const page = parseInt(req.query.page) || 1;
+      const limit = parseInt(req.query.limit) || 10;
+      const offset = (page - 1) * limit;
+
+      const { count: total, rows: data } = await Producto.findAndCountAll({
         where,
+        offset,
+        limit,
         order: [['nombre', 'ASC']],
       });
 
       res.json({
         success: true,
-        data: productos,
+        data,
+        total,
+        page,
+        limit,
+        totalPages: Math.ceil(total / limit),
       });
     } catch (error) {
       res.status(500).json({

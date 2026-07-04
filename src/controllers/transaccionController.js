@@ -16,19 +16,29 @@ const transaccionController = {
       if (sucursalId) where.sucursalId = parseInt(sucursalId, 10);
       if (tipo) where.tipo = tipo;
 
-      const transacciones = await Transaccion.findAll({
+      const page = parseInt(req.query.page) || 1;
+      const limit = parseInt(req.query.limit) || 10;
+      const offset = (page - 1) * limit;
+
+      const { count: total, rows: data } = await Transaccion.findAndCountAll({
         where,
         include: [
           { association: 'producto', attributes: ['id', 'nombre', 'codigo'] },
           { association: 'usuario', attributes: ['id', 'nombre'] },
           { association: 'sucursal', attributes: ['id', 'nombre'] },
         ],
+        offset,
+        limit,
         order: [['fecha', 'DESC']],
       });
 
       res.json({
         success: true,
-        data: transacciones,
+        data,
+        total,
+        page,
+        limit,
+        totalPages: Math.ceil(total / limit),
       });
     } catch (error) {
       res.status(500).json({

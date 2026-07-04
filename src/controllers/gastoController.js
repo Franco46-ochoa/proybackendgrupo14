@@ -5,13 +5,20 @@ const gastoController = {
   // GET /api/gastos
   listar: async (req, res) => {
     try {
-      const { sucursalId, proveedorId, tipo, fecha } = req.query;
+      const { sucursalId, proveedorId, tipo, fecha, fechaDesde, fechaHasta } = req.query;
       const where = {};
 
       if (sucursalId) where.sucursalId = parseInt(sucursalId, 10);
       if (proveedorId) where.proveedorId = parseInt(proveedorId, 10);
       if (tipo) where.tipo = tipo;
-      if (fecha) where.fecha = new Date(fecha);
+
+      if (fechaDesde || fechaHasta) {
+        where.fecha = {};
+        if (fechaDesde) where.fecha[Op.gte] = new Date(fechaDesde);
+        if (fechaHasta) where.fecha[Op.lte] = new Date(fechaHasta);
+      } else if (fecha) {
+        where.fecha = new Date(fecha);
+      }
 
       const gastos = await Gasto.findAll({
         where,

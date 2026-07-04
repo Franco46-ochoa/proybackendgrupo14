@@ -1,3 +1,4 @@
+const { Op } = require('sequelize');
 const bcrypt = require('bcryptjs');
 const { Usuario } = require('../models');
 
@@ -5,7 +6,20 @@ const usuarioController = {
   // GET /api/usuarios
   listar: async (req, res) => {
     try {
+      const { rol, activo, busqueda } = req.query;
+      const where = {};
+
+      if (rol) where.rol = rol;
+      if (activo !== undefined) where.activo = activo === 'true';
+      if (busqueda) {
+        where[Op.or] = [
+          { nombre: { [Op.iLike]: `%${busqueda}%` } },
+          { email: { [Op.iLike]: `%${busqueda}%` } },
+        ];
+      }
+
       const usuarios = await Usuario.findAll({
+        where,
         attributes: { exclude: ['password', 'googleId'] },
         include: [
           { association: 'zona', attributes: ['id', 'nombre'] },

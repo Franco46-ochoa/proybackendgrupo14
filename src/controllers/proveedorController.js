@@ -1,10 +1,23 @@
+const { Op } = require('sequelize');
 const { Proveedor, Gasto } = require('../models');
 
 const proveedorController = {
   // GET /api/proveedores
   listar: async (req, res) => {
     try {
+      const { busqueda } = req.query;
+      const where = {};
+
+      if (busqueda) {
+        where[Op.or] = [
+          { nombre: { [Op.iLike]: `%${busqueda}%` } },
+          { cuit: { [Op.iLike]: `%${busqueda}%` } },
+          { contacto: { [Op.iLike]: `%${busqueda}%` } },
+        ];
+      }
+
       const proveedores = await Proveedor.findAll({
+        where,
         order: [['nombre', 'ASC']],
       });
 

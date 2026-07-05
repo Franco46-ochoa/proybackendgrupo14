@@ -23,7 +23,7 @@ module.exports = (sequelize) => {
         unique: true,
       },
       rol: {
-        type: DataTypes.ENUM("dueno", "gerente", "empleado"),
+        type: DataTypes.ENUM("dueno","administrador", "gerente", "empleado"),
         defaultValue: "empleado",
       },
       sector: {
@@ -33,6 +33,10 @@ module.exports = (sequelize) => {
       activo: {
         type: DataTypes.BOOLEAN,
         defaultValue: true,
+      },
+      empresaId: {
+        type: DataTypes.INTEGER,
+        allowNull: true,
       },
       zonaId: {
         type: DataTypes.INTEGER,

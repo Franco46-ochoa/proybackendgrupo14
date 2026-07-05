@@ -22,7 +22,7 @@ const crearCodigoUnico = async (rol) => {
 };
 
 const sucursalController = {
-  // GET /api/sucursales - Dueno: todas, Gerente: su zona, Empleado: su sucursal
+  // GET /api/sucursales - Dueno/Admin: todas las suyas, Gerente: su zona, Empleado: su sucursal
   listar: async (req, res) => {
     try {
       const usuario = await Usuario.findByPk(req.usuario.id);
@@ -33,7 +33,16 @@ const sucursalController = {
           include: [{
             association: 'zona',
             attributes: ['id', 'nombre'],
-            where: { duenoId: usuario.id },
+            where: { empresaId: usuario.id },
+          }],
+          order: [['nombre', 'ASC']],
+        });
+      } else if (usuario.rol === 'administrador') {
+        sucursales = await Sucursal.findAll({
+          include: [{
+            association: 'zona',
+            attributes: ['id', 'nombre'],
+            where: { empresaId: usuario.empresaId },
           }],
           order: [['nombre', 'ASC']],
         });
@@ -98,7 +107,7 @@ const sucursalController = {
 
       // Validar cantidad de sucursales
       const sucursalesActuales = await Sucursal.count({
-        include: [{ model: Zona, as: 'zona', where: { duenoId: req.usuario.id } }],
+        include: [{ model: Zona, as: 'zona', where: { empresaId: req.usuario.id } }],
       });
 
       if (sucursalesActuales >= limite.sucursales) {
@@ -110,7 +119,7 @@ const sucursalController = {
 
       // Validar gerentes
       const totalGerentes = await CodigoInvitacion.sum('usosMaximos', {
-        where: { duenoId: req.usuario.id, rol: 'gerente', activo: true },
+        where: { empresaId: req.usuario.id, rol: 'gerente', activo: true },
       }) || 0;
 
       if (totalGerentes + gerentes > limite.gerentes) {
@@ -122,7 +131,7 @@ const sucursalController = {
 
       // Validar empleados
       const totalEmpleados = await CodigoInvitacion.sum('usosMaximos', {
-        where: { duenoId: req.usuario.id, rol: 'empleado', activo: true },
+        where: { empresaId: req.usuario.id, rol: 'empleado', activo: true },
       }) || 0;
 
       if (totalEmpleados + empleados > limite.empleados) {
@@ -147,12 +156,12 @@ const sucursalController = {
 
       const ger = await CodigoInvitacion.create({
         codigo: codigoGER, rol: 'gerente', usosMaximos: gerentes,
-        duenoId: req.usuario.id, sucursalId: sucursal.id,
+        empresaId: req.usuario.id, sucursalId: sucursal.id,
       });
 
       const emp = await CodigoInvitacion.create({
         codigo: codigoEMP, rol: 'empleado', usosMaximos: empleados,
-        duenoId: req.usuario.id, sucursalId: sucursal.id,
+        empresaId: req.usuario.id, sucursalId: sucursal.id,
       });
 
       res.status(201).json({

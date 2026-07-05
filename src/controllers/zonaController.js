@@ -1,7 +1,7 @@
 const { Zona, Usuario } = require('../models');
 
 const zonaController = {
-  // GET /api/zonas - Dueno: todas, Gerente: solo su zona
+  // GET /api/zonas - Dueno/Admin: todas las suyas, Gerente: solo su zona
   listar: async (req, res) => {
     try {
       const usuario = await Usuario.findByPk(req.usuario.id);
@@ -9,7 +9,12 @@ const zonaController = {
       let zonas;
       if (usuario.rol === 'dueno') {
         zonas = await Zona.findAll({
-          where: { duenoId: usuario.id },
+          where: { empresaId: usuario.id },
+          order: [['nombre', 'ASC']],
+        });
+      } else if (usuario.rol === 'administrador') {
+        zonas = await Zona.findAll({
+          where: { empresaId: usuario.empresaId },
           order: [['nombre', 'ASC']],
         });
       } else {
@@ -54,7 +59,7 @@ const zonaController = {
 
       const zona = await Zona.create({
         nombre: nombre.trim(),
-        duenoId: req.usuario.id,
+        empresaId: req.usuario.id,
       });
 
       res.status(201).json({

@@ -8,7 +8,7 @@ module.exports = (sequelize) => {
       unique: true,
     },
     rol: {
-      type: DataTypes.ENUM('gerente', 'empleado'),
+      type: DataTypes.ENUM('administrador', 'gerente', 'empleado'),
       allowNull: false,
     },
     usosMaximos: {

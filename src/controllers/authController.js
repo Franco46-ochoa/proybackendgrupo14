@@ -19,6 +19,7 @@ const authController = {
       // Validar código de invitación si el rol no es dueño
       let sucursalId = null;
       let zonaId = null;
+      let empresaId = null;
 
       if (rol && rol !== 'dueno') {
         if (!codigoInvitacion) {
@@ -56,6 +57,9 @@ const authController = {
         await codigo.update({ usosRealizados: codigo.usosRealizados + 1 });
         sucursalId = codigo.sucursalId || null;
 
+        // Asignar empresaId del código al usuario
+        empresaId = codigo.empresaId || null;
+
         if (rol === 'gerente' && sucursalId) {
           const { Sucursal } = require('../models');
           const sucursal = await Sucursal.findByPk(sucursalId);
@@ -74,6 +78,7 @@ const authController = {
         sector: sector || null,
         sucursalId,
         zonaId,
+        empresaId: empresaId || null,
       });
 
       const token = jwt.sign(
@@ -163,6 +168,7 @@ const authController = {
         include: [
           { association: 'zona', attributes: ['id', 'nombre'] },
           { association: 'sucursal', attributes: ['id', 'nombre'] },
+          { association: 'suscripcion', attributes: ['id', 'plan', 'estado', 'monto'] },
         ],
       });
 

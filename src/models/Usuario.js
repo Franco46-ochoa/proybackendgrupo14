@@ -23,8 +23,12 @@ module.exports = (sequelize) => {
         unique: true,
       },
       rol: {
-        type: DataTypes.ENUM("dueno","administrador", "gerente", "empleado"),
+        type: DataTypes.ENUM("dueno", "administrador", "gerente", "empleado"),
         defaultValue: "empleado",
+      },
+      departamento: {
+        type: DataTypes.ENUM("comercial", "operativo"),
+        allowNull: true,
       },
       sector: {
         type: DataTypes.ENUM("ventas", "finanzas", "stock"),

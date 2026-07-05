@@ -1,18 +1,21 @@
 const crypto = require("crypto");
 const { CodigoInvitacion, Suscripcion } = require("../models");
 
+// Helper para extraer el empresaId según quién realiza la petición
 const obtenerEmpresaId = (req) => {
   if (req.usuario.rol === "dueno") return req.usuario.id;
   if (req.usuario.rol === "administrador") return req.usuario.empresaId;
   return null;
 };
 
+// Configuración de límites máximos por tipo de suscripción
 const LIMITES = {
   basico: { gerentes: 3, empleados: 30 },
   pro: { gerentes: 10, empleados: 100 },
   enterprise: { gerentes: Infinity, empleados: Infinity },
 };
 
+// Generador de códigos aleatorios únicos con prefijos identificatorios
 const generarCodigoAleatorio = (rol) => {
   const hex = crypto.randomBytes(4).toString("hex").toUpperCase();
   const prefijo =
@@ -20,6 +23,7 @@ const generarCodigoAleatorio = (rol) => {
   return `${prefijo}-${hex}`;
 };
 
+// Listar todos los códigos pertenecientes a la empresa
 const listar = async (req, res) => {
   try {
     const empresaId = obtenerEmpresaId(req);
@@ -36,114 +40,84 @@ const listar = async (req, res) => {
         : "No hay códigos generados aún",
     });
   } catch (error) {
-    res
-      .status(500)
-      .json({
-        success: false,
-        message: "Error al listar códigos: " + error.message,
-      });
+    res.status(500).json({
+      success: false,
+      message: "Error al listar códigos: " + error.message,
+    });
   }
 };
 
+// Generar un nuevo código aplicando reglas de negocio y jerarquía V3
 const generar = async (req, res) => {
   try {
-    const { rol, usosMaximos, sucursalId } = req.body;
+    const { rol, usosMaximos, sucursalId, departamento } = req.body;
 
+    // 1. Validar que el rol solicitado sea uno de los tres permitidos
     if (!rol || !["administrador", "gerente", "empleado"].includes(rol)) {
-      return res
-        .status(400)
-        .json({
-          success: false,
-          message: "Rol inválido. Use: administrador, gerente o empleado",
-        });
-    }
-
-    const rolSolicitante = req.usuario.rol;
-    if (!["dueno", "administrador"].includes(rolSolicitante)) {
-      return res
-        .status(403)
-        .json({
-          success: false,
-          message: "No tenés permiso para generar códigos",
-        });
-    }
-    if (rolSolicitante === "dueno" && rol !== "administrador") {
-      return res
-        .status(400)
-        .json({
-          success: false,
-          message: "Solo podés generar código de Administrador",
-        });
-    }
-    if (rolSolicitante === "administrador" && rol === "administrador") {
-      return res
-        .status(400)
-        .json({
-          success: false,
-          message: "No podés generar código de Administrador",
-        });
-    }
-
-    if (rolSolicitante === "dueno" && rol === "administrador") {
-      const adminExistente = await CodigoInvitacion.findOne({
-        where: {
-          empresaId: obtenerEmpresaId(req),
-          rol: "administrador",
-          activo: true,
-        },
-      });
-      if (adminExistente) {
-        return res
-          .status(400)
-          .json({
-            success: false,
-            message: "Ya existe un código de Administrador activo",
-          });
-      }
-    }
-
-    if (!usosMaximos || usosMaximos < 1) {
-      return res
-        .status(400)
-        .json({ success: false, message: "usosMaximos debe ser mayor a 0" });
-    }
-
-    const suscripcion = await Suscripcion.findOne({
-      where: { usuarioId: obtenerEmpresaId(req), estado: "activo" },
-    });
-
-    if (!suscripcion) {
       return res.status(400).json({
         success: false,
         message:
-          "No tenés una suscripción activa. Activá tu plan antes de generar códigos.",
+          "El rol solicitado no es válido. Debe ser 'administrador', 'gerente' o 'empleado'.",
       });
     }
 
-    const limite = LIMITES[suscripcion.plan];
-    if (!limite) {
-      return res
-        .status(400)
-        .json({ success: false, message: "Plan de suscripción no reconocido" });
+    // 2. Control estricto de Jerarquía de Personal (Usa tu variable original)
+    const rolSolicitante = req.usuario.rol;
+
+    // REGLA A: El Dueño SOLO puede generar códigos para Administrador
+    if (rolSolicitante === "dueno" && rol !== "administrador") {
+      return res.status(403).json({
+        success: false,
+        message:
+          "Acceso denegado: El Dueño únicamente puede generar códigos para el rol 'administrador'.",
+      });
     }
 
-    if (rol !== "administrador") {
+    // REGLA B: El Administrador SOLO puede generar códigos para Gerente o Empleado
+    if (rolSolicitante === "administrador" && rol === "administrador") {
+      return res.status(403).json({
+        success: false,
+        message:
+          "Acceso denegado: Un administrador no puede crear códigos para otro administrador. Solo el Dueño tiene ese permiso.",
+      });
+    }
+
+    // 3. Validación de departamento exclusiva para el rol Empleado
+    if (
+      rol === "empleado" &&
+      !["comercial", "operativo"].includes(departamento)
+    ) {
+      return res.status(400).json({
+        success: false,
+        message:
+          "Para el rol 'empleado' es obligatorio especificar el departamento ('comercial' o 'operativo').",
+      });
+    }
+
+    const empresaId = obtenerEmpresaId(req);
+
+    // 4. Validación de topes máximos según el Plan de la Suscripción
+    const suscripcion = await Suscripcion.findOne({ where: { id: empresaId } });
+    const plan = suscripcion ? suscripcion.plan : "basico";
+    const limitesPlan = LIMITES[plan] || LIMITES.basico;
+
+    if (rol === "gerente" || rol === "empleado") {
       const clave = rol === "gerente" ? "gerentes" : "empleados";
-      const maximoPlan = limite[clave];
+      const maximoPlan = limitesPlan[clave];
 
-      const totalActual =
-        (await CodigoInvitacion.sum("usosMaximos", {
-          where: { empresaId: obtenerEmpresaId(req), rol, activo: true },
-        })) || 0;
+      const actuales = await CodigoInvitacion.count({
+        where: { empresaId, rol },
+      });
 
-      if (totalActual + usosMaximos > maximoPlan) {
+      if (actuales >= maximoPlan) {
         return res.status(400).json({
           success: false,
-          message: `Excede el límite de tu plan (máx ${maximoPlan} ${clave}). Actualizá a un plan superior.`,
+          message: `Has alcanzado el límite de tu plan (máx ${maximoPlan} ${clave}). Actualizá a un plan superior.`,
         });
       }
     }
 
+    // 5. Bucle de reintentos para asegurar colisión cero en los hashes
     let codigo;
     let intentos = 0;
     while (intentos < 10) {
@@ -153,29 +127,31 @@ const generar = async (req, res) => {
       intentos++;
     }
 
+    // 6. Persistencia del registro inyectando el departamento correspondiente
     const nuevo = await CodigoInvitacion.create({
       codigo,
       rol,
-      usosMaximos,
-      empresaId: obtenerEmpresaId(req),
+      usosMaximos: usosMaximos || 1,
+      empresaId,
       sucursalId: sucursalId || null,
+      // Solo guardamos departamento si es empleado, sino queda estructurado en null
+      departamento: rol === "empleado" ? departamento : null,
     });
 
     res.status(201).json({
       success: true,
       data: nuevo,
-      message: `Código ${codigo} generado exitosamente`,
+      message: `Código ${codigo} generado exitosamente para el rol ${rol}.`,
     });
   } catch (error) {
-    res
-      .status(500)
-      .json({
-        success: false,
-        message: "Error al generar código: " + error.message,
-      });
+    res.status(500).json({
+      success: false,
+      message: "Error al generar código: " + error.message,
+    });
   }
 };
 
+// Revocar la validez de un código de manera lógica
 const revocar = async (req, res) => {
   try {
     const codigo = await CodigoInvitacion.findOne({
@@ -193,16 +169,18 @@ const revocar = async (req, res) => {
     res.json({
       success: true,
       data: codigo,
-      message: `Código ${codigo.codigo} revocado`,
+      message: "Código revocado exitosamente",
     });
   } catch (error) {
-    res
-      .status(500)
-      .json({
-        success: false,
-        message: "Error al revocar código: " + error.message,
-      });
+    res.status(500).json({
+      success: false,
+      message: "Error al revocar código: " + error.message,
+    });
   }
 };
 
-module.exports = { listar, generar, revocar };
+module.exports = {
+  listar,
+  generar,
+  revocar,
+};

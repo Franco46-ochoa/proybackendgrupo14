@@ -1,32 +1,40 @@
-const { DataTypes } = require('sequelize');
+const { DataTypes } = require("sequelize");
 
 module.exports = (sequelize) => {
-  const CodigoInvitacion = sequelize.define('CodigoInvitacion', {
-    codigo: {
-      type: DataTypes.STRING(20),
-      allowNull: false,
-      unique: true,
+  const CodigoInvitacion = sequelize.define(
+    "CodigoInvitacion",
+    {
+      codigo: {
+        type: DataTypes.STRING(20),
+        allowNull: false,
+        unique: true,
+      },
+      rol: {
+        type: DataTypes.ENUM("administrador", "gerente", "empleado"),
+        allowNull: false,
+      },
+      departamento: {
+        type: DataTypes.ENUM("comercial", "operativo"),
+        allowNull: true,
+      },
+      usosMaximos: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+      },
+      usosRealizados: {
+        type: DataTypes.INTEGER,
+        defaultValue: 0,
+      },
+      activo: {
+        type: DataTypes.BOOLEAN,
+        defaultValue: true,
+      },
     },
-    rol: {
-      type: DataTypes.ENUM('administrador', 'gerente', 'empleado'),
-      allowNull: false,
+    {
+      tableName: "codigos_invitacion",
+      timestamps: true,
     },
-    usosMaximos: {
-      type: DataTypes.INTEGER,
-      allowNull: false,
-    },
-    usosRealizados: {
-      type: DataTypes.INTEGER,
-      defaultValue: 0,
-    },
-    activo: {
-      type: DataTypes.BOOLEAN,
-      defaultValue: true,
-    },
-  }, {
-    tableName: 'codigos_invitacion',
-    timestamps: true,
-  });
+  );
 
   return CodigoInvitacion;
 };

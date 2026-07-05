@@ -1,0 +1,1449 @@
+{
+  "info": {
+    "name": "SmartMargin AI API",
+    "description": "API REST completa para SmartMargin AI - Sistema de gestión de stock, ventas y gastos",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{token}}",
+        "type": "string"
+      }
+    ]
+  },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:3000"
+    },
+    {
+      "key": "token",
+      "value": ""
+    },
+    {
+      "key": "csrf_token",
+      "value": ""
+    }
+  ],
+  "item": [
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "Register",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Test User\",\n  \"email\": \"test@test.com\",\n  \"password\": \"password123\",\n  \"rol\": \"empleado\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/auth/register",
+              "host": ["{{base_url}}"],
+              "path": ["api", "auth", "register"]
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 201 or 400', function () {",
+                  "    pm.expect(pm.response.code).to.be.oneOf([201, 400]);",
+                  "});",
+                  "",
+                  "pm.test('Response time is less than 2s', function () {",
+                  "    pm.expect(pm.response.responseTime).to.be.below(2000);",
+                  "});",
+                  "",
+                  "pm.test('Response has success field', function () {",
+                  "    const json = pm.response.json();",
+                  "    pm.expect(json).to.have.property('success');",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Login",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"dueno@smartmargin.com\",\n  \"password\": \"password123\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/auth/login",
+              "host": ["{{base_url}}"],
+              "path": ["api", "auth", "login"]
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Login exitoso', function () {",
+                  "    pm.expect(pm.response.code).to.equal(200);",
+                  "    const json = pm.response.json();",
+                  "    pm.expect(json.success).to.be.true;",
+                  "    pm.expect(json).to.have.property('token');",
+                  "});",
+                  "",
+                  "pm.test('Auto-set token', function () {",
+                  "    const json = pm.response.json();",
+                  "    if (json.token) {",
+                  "        pm.collectionVariables.set('token', json.token);",
+                  "    }",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Profile",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/auth/profile",
+              "host": ["{{base_url}}"],
+              "path": ["api", "auth", "profile"]
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Profile loaded', function () {",
+                  "    pm.expect(pm.response.code).to.equal(200);",
+                  "    const json = pm.response.json();",
+                  "    pm.expect(json.success).to.be.true;",
+                  "    pm.expect(json.data).to.have.property('email');",
+                  "});"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "CSRF Token",
+      "item": [
+        {
+          "name": "Get CSRF Token",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/csrf-token",
+              "host": ["{{base_url}}"],
+              "path": ["api", "csrf-token"]
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('CSRF token obtained', function () {",
+                  "    pm.expect(pm.response.code).to.equal(200);",
+                  "    const json = pm.response.json();",
+                  "    pm.expect(json).to.have.property('csrfToken');",
+                  "});"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Usuarios",
+      "item": [
+        {
+          "name": "Listar Usuarios",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/usuarios?page=1&limit=10",
+              "host": ["{{base_url}}"],
+              "path": ["api", "usuarios"],
+              "query": [
+                { "key": "page", "value": "1" },
+                { "key": "limit", "value": "10" }
+              ]
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Usuarios listados', function () {",
+                  "    pm.expect(pm.response.code).to.equal(200);",
+                  "    const json = pm.response.json();",
+                  "    pm.expect(json.success).to.be.true;",
+                  "    pm.expect(json).to.have.property('data');",
+                  "    pm.expect(json).to.have.property('total');",
+                  "    pm.expect(json).to.have.property('totalPages');",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Crear Usuario",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Nuevo Empleado\",\n  \"email\": \"empleado2@smartmargin.com\",\n  \"password\": \"password123\",\n  \"rol\": \"empleado\",\n  \"sector\": \"ventas\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/usuarios",
+              "host": ["{{base_url}}"],
+              "path": ["api", "usuarios"]
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Usuario creado', function () {",
+                  "    pm.expect(pm.response.code).to.equal(201);",
+                  "    const json = pm.response.json();",
+                  "    pm.expect(json.success).to.be.true;",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Actualizar Usuario",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Empleado Actualizado\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/usuarios/4",
+              "host": ["{{base_url}}"],
+              "path": ["api", "usuarios", "4"]
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Usuario actualizado', function () {",
+                  "    pm.expect(pm.response.code).to.equal(200);",
+                  "    const json = pm.response.json();",
+                  "    pm.expect(json.success).to.be.true;",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Desactivar Usuario",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/usuarios/4",
+              "host": ["{{base_url}}"],
+              "path": ["api", "usuarios", "4"]
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Usuario desactivado', function () {",
+                  "    pm.expect(pm.response.code).to.equal(200);",
+                  "    const json = pm.response.json();",
+                  "    pm.expect(json.success).to.be.true;",
+                  "});"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Zonas",
+      "item": [
+        {
+          "name": "Listar Zonas",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/zonas?page=1&limit=10",
+              "host": ["{{base_url}}"],
+              "path": ["api", "zonas"],
+              "query": [
+                { "key": "page", "value": "1" },
+                { "key": "limit", "value": "10" }
+              ]
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Zonas listadas', function () {",
+                  "    pm.expect(pm.response.code).to.equal(200);",
+                  "    const json = pm.response.json();",
+                  "    pm.expect(json.success).to.be.true;",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Crear Zona",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Zona Este\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/zonas",
+              "host": ["{{base_url}}"],
+              "path": ["api", "zonas"]
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Zona creada', function () {",
+                  "    pm.expect(pm.response.code).to.equal(201);",
+                  "    const json = pm.response.json();",
+                  "    pm.expect(json.success).to.be.true;",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Actualizar Zona",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Zona Este Actualizada\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/zonas/1",
+              "host": ["{{base_url}}"],
+              "path": ["api", "zonas", "1"]
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Zona actualizada', function () {",
+                  "    pm.expect(pm.response.code).to.equal(200);",
+                  "    const json = pm.response.json();",
+                  "    pm.expect(json.success).to.be.true;",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Eliminar Zona",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/zonas/4",
+              "host": ["{{base_url}}"],
+              "path": ["api", "zonas", "4"]
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Zona eliminada', function () {",
+                  "    pm.expect(pm.response.code).to.equal(200);",
+                  "    const json = pm.response.json();",
+                  "    pm.expect(json.success).to.be.true;",
+                  "});"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Sucursales",
+      "item": [
+        {
+          "name": "Listar Sucursales",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/sucursales?page=1&limit=10",
+              "host": ["{{base_url}}"],
+              "path": ["api", "sucursales"],
+              "query": [
+                { "key": "page", "value": "1" },
+                { "key": "limit", "value": "10" }
+              ]
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Sucursales listadas', function () {",
+                  "    pm.expect(pm.response.code).to.equal(200);",
+                  "    const json = pm.response.json();",
+                  "    pm.expect(json.success).to.be.true;",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Crear Sucursal",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"SmartMargin Oeste\",\n  \"direccion\": \"Av. Libertador 1234\",\n  \"lat\": -24.185,\n  \"lng\": -65.32,\n  \"telefono\": \"388-4678901\",\n  \"zonaId\": 1\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/sucursales",
+              "host": ["{{base_url}}"],
+              "path": ["api", "sucursales"]
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Sucursal creada', function () {",
+                  "    pm.expect(pm.response.code).to.equal(201);",
+                  "    const json = pm.response.json();",
+                  "    pm.expect(json.success).to.be.true;",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Actualizar Sucursal",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"SmartMargin Norte Actualizada\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/sucursales/1",
+              "host": ["{{base_url}}"],
+              "path": ["api", "sucursales", "1"]
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Sucursal actualizada', function () {",
+                  "    pm.expect(pm.response.code).to.equal(200);",
+                  "    const json = pm.response.json();",
+                  "    pm.expect(json.success).to.be.true;",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Eliminar Sucursal",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/sucursales/6",
+              "host": ["{{base_url}}"],
+              "path": ["api", "sucursales", "6"]
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Sucursal eliminada', function () {",
+                  "    pm.expect(pm.response.code).to.equal(200);",
+                  "    const json = pm.response.json();",
+                  "    pm.expect(json.success).to.be.true;",
+                  "});"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Productos",
+      "item": [
+        {
+          "name": "Listar Productos",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/productos?page=1&limit=10",
+              "host": ["{{base_url}}"],
+              "path": ["api", "productos"],
+              "query": [
+                { "key": "page", "value": "1" },
+                { "key": "limit", "value": "10" }
+              ]
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Productos listados', function () {",
+                  "    pm.expect(pm.response.code).to.equal(200);",
+                  "    const json = pm.response.json();",
+                  "    pm.expect(json.success).to.be.true;",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Listar por Categoria",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/productos?categoria=Electr%C3%B3nica&page=1&limit=10",
+              "host": ["{{base_url}}"],
+              "path": ["api", "productos"],
+              "query": [
+                { "key": "categoria", "value": "Electrónica" },
+                { "key": "page", "value": "1" },
+                { "key": "limit", "value": "10" }
+              ]
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Productos filtrados', function () {",
+                  "    pm.expect(pm.response.code).to.equal(200);",
+                  "    const json = pm.response.json();",
+                  "    pm.expect(json.success).to.be.true;",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Crear Producto",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Monitor 24 pulgadas\",\n  \"codigo\": \"PRD-MON-001\",\n  \"categoria\": \"Electrónica\",\n  \"descripcion\": \"Monitor LCD Full HD\",\n  \"precioCompra\": 250.00,\n  \"unidadMedida\": \"unidad\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/productos",
+              "host": ["{{base_url}}"],
+              "path": ["api", "productos"]
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Producto creado', function () {",
+                  "    pm.expect(pm.response.code).to.equal(201);",
+                  "    const json = pm.response.json();",
+                  "    pm.expect(json.success).to.be.true;",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Actualizar Producto",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"precioCompra\": 275.00\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/productos/21",
+              "host": ["{{base_url}}"],
+              "path": ["api", "productos", "21"]
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Producto actualizado', function () {",
+                  "    pm.expect(pm.response.code).to.equal(200);",
+                  "    const json = pm.response.json();",
+                  "    pm.expect(json.success).to.be.true;",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Eliminar Producto",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/productos/21",
+              "host": ["{{base_url}}"],
+              "path": ["api", "productos", "21"]
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Producto eliminado', function () {",
+                  "    pm.expect(pm.response.code).to.equal(200);",
+                  "    const json = pm.response.json();",
+                  "    pm.expect(json.success).to.be.true;",
+                  "});"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Inventario",
+      "item": [
+        {
+          "name": "Listar Inventario",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/inventario?page=1&limit=10",
+              "host": ["{{base_url}}"],
+              "path": ["api", "inventario"],
+              "query": [
+                { "key": "page", "value": "1" },
+                { "key": "limit", "value": "10" }
+              ]
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Inventario listado', function () {",
+                  "    pm.expect(pm.response.code).to.equal(200);",
+                  "    const json = pm.response.json();",
+                  "    pm.expect(json.success).to.be.true;",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Filtrar Stock Crítico",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/inventario?stockCritico=true&page=1&limit=10",
+              "host": ["{{base_url}}"],
+              "path": ["api", "inventario"],
+              "query": [
+                { "key": "stockCritico", "value": "true" },
+                { "key": "page", "value": "1" },
+                { "key": "limit", "value": "10" }
+              ]
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Stock crítico filtrado', function () {",
+                  "    pm.expect(pm.response.code).to.equal(200);",
+                  "    const json = pm.response.json();",
+                  "    pm.expect(json.success).to.be.true;",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Crear Inventario",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"productoId\": 21,\n  \"sucursalId\": 1,\n  \"stockActual\": 50,\n  \"stockMinimo\": 10,\n  \"stockMaximo\": 200,\n  \"precioVenta\": 350.00\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/inventario",
+              "host": ["{{base_url}}"],
+              "path": ["api", "inventario"]
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Inventario creado', function () {",
+                  "    pm.expect(pm.response.code).to.equal(201);",
+                  "    const json = pm.response.json();",
+                  "    pm.expect(json.success).to.be.true;",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Actualizar Inventario",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"stockActual\": 45,\n  \"precioVenta\": 360.00\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/inventario/101",
+              "host": ["{{base_url}}"],
+              "path": ["api", "inventario", "101"]
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Inventario actualizado', function () {",
+                  "    pm.expect(pm.response.code).to.equal(200);",
+                  "    const json = pm.response.json();",
+                  "    pm.expect(json.success).to.be.true;",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Eliminar Inventario",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/inventario/101",
+              "host": ["{{base_url}}"],
+              "path": ["api", "inventario", "101"]
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Inventario eliminado', function () {",
+                  "    pm.expect(pm.response.code).to.equal(200);",
+                  "    const json = pm.response.json();",
+                  "    pm.expect(json.success).to.be.true;",
+                  "});"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Transacciones",
+      "item": [
+        {
+          "name": "Listar Transacciones",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/transacciones?page=1&limit=10",
+              "host": ["{{base_url}}"],
+              "path": ["api", "transacciones"],
+              "query": [
+                { "key": "page", "value": "1" },
+                { "key": "limit", "value": "10" }
+              ]
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Transacciones listadas', function () {",
+                  "    pm.expect(pm.response.code).to.equal(200);",
+                  "    const json = pm.response.json();",
+                  "    pm.expect(json.success).to.be.true;",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Filtrar por Fecha",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/transacciones?fechaDesde=2024-01-01&fechaHasta=2026-12-31&page=1&limit=10",
+              "host": ["{{base_url}}"],
+              "path": ["api", "transacciones"],
+              "query": [
+                { "key": "fechaDesde", "value": "2024-01-01" },
+                { "key": "fechaHasta", "value": "2026-12-31" },
+                { "key": "page", "value": "1" },
+                { "key": "limit", "value": "10" }
+              ]
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Transacciones filtradas', function () {",
+                  "    pm.expect(pm.response.code).to.equal(200);",
+                  "    const json = pm.response.json();",
+                  "    pm.expect(json.success).to.be.true;",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Crear Transacción (Venta)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"tipo\": \"venta\",\n  \"cantidad\": 5,\n  \"precioUnitario\": 350.00,\n  \"productoId\": 1,\n  \"sucursalId\": 1,\n  \"fecha\": \"2026-07-05T10:00:00.000Z\",\n  \"observaciones\": \"Venta de prueba\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/transacciones",
+              "host": ["{{base_url}}"],
+              "path": ["api", "transacciones"]
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Transacción creada', function () {",
+                  "    pm.expect(pm.response.code).to.equal(201);",
+                  "    const json = pm.response.json();",
+                  "    pm.expect(json.success).to.be.true;",
+                  "    pm.expect(json.data).to.have.property('total');",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Crear Transacción (Compra)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"tipo\": \"compra\",\n  \"cantidad\": 20,\n  \"precioUnitario\": 250.00,\n  \"productoId\": 1,\n  \"sucursalId\": 1,\n  \"fecha\": \"2026-07-05T11:00:00.000Z\",\n  \"observaciones\": \"Compra de prueba\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/transacciones",
+              "host": ["{{base_url}}"],
+              "path": ["api", "transacciones"]
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Compra creada', function () {",
+                  "    pm.expect(pm.response.code).to.equal(201);",
+                  "    const json = pm.response.json();",
+                  "    pm.expect(json.success).to.be.true;",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Actualizar Transacción",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"cantidad\": 10,\n  \"observaciones\": \"Actualizada\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/transacciones/51",
+              "host": ["{{base_url}}"],
+              "path": ["api", "transacciones", "51"]
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Transacción actualizada', function () {",
+                  "    pm.expect(pm.response.code).to.equal(200);",
+                  "    const json = pm.response.json();",
+                  "    pm.expect(json.success).to.be.true;",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Eliminar Transacción",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/transacciones/51",
+              "host": ["{{base_url}}"],
+              "path": ["api", "transacciones", "51"]
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Transacción eliminada', function () {",
+                  "    pm.expect(pm.response.code).to.equal(200);",
+                  "    const json = pm.response.json();",
+                  "    pm.expect(json.success).to.be.true;",
+                  "});"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Gastos",
+      "item": [
+        {
+          "name": "Listar Gastos",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/gastos?page=1&limit=10",
+              "host": ["{{base_url}}"],
+              "path": ["api", "gastos"],
+              "query": [
+                { "key": "page", "value": "1" },
+                { "key": "limit", "value": "10" }
+              ]
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Gastos listados', function () {",
+                  "    pm.expect(pm.response.code).to.equal(200);",
+                  "    const json = pm.response.json();",
+                  "    pm.expect(json.success).to.be.true;",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Filtrar por Sucursal y Proveedor",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/gastos?sucursalId=1&proveedorId=1&page=1&limit=10",
+              "host": ["{{base_url}}"],
+              "path": ["api", "gastos"],
+              "query": [
+                { "key": "sucursalId", "value": "1" },
+                { "key": "proveedorId", "value": "1" },
+                { "key": "page", "value": "1" },
+                { "key": "limit", "value": "10" }
+              ]
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Gastos filtrados', function () {",
+                  "    pm.expect(pm.response.code).to.equal(200);",
+                  "    const json = pm.response.json();",
+                  "    pm.expect(json.success).to.be.true;",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Filtrar por Rango de Fechas",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/gastos?fechaDesde=2024-01-01&fechaHasta=2026-12-31&page=1&limit=10",
+              "host": ["{{base_url}}"],
+              "path": ["api", "gastos"],
+              "query": [
+                { "key": "fechaDesde", "value": "2024-01-01" },
+                { "key": "fechaHasta", "value": "2026-12-31" },
+                { "key": "page", "value": "1" },
+                { "key": "limit", "value": "10" }
+              ]
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Gastos por fecha', function () {",
+                  "    pm.expect(pm.response.code).to.equal(200);",
+                  "    const json = pm.response.json();",
+                  "    pm.expect(json.success).to.be.true;",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Crear Gasto",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"tipo\": \"Servicios\",\n  \"monto\": 15000.00,\n  \"descripcion\": \"Factura de luz julio\",\n  \"fecha\": \"2026-07-05T10:00:00.000Z\",\n  \"proveedorId\": 1,\n  \"sucursalId\": 1\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/gastos",
+              "host": ["{{base_url}}"],
+              "path": ["api", "gastos"]
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Gasto creado', function () {",
+                  "    pm.expect(pm.response.code).to.equal(201);",
+                  "    const json = pm.response.json();",
+                  "    pm.expect(json.success).to.be.true;",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Actualizar Gasto",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"monto\": 18000.00,\n  \"descripcion\": \"Factura de luz actualizada\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/gastos/21",
+              "host": ["{{base_url}}"],
+              "path": ["api", "gastos", "21"]
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Gasto actualizado', function () {",
+                  "    pm.expect(pm.response.code).to.equal(200);",
+                  "    const json = pm.response.json();",
+                  "    pm.expect(json.success).to.be.true;",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Eliminar Gasto",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/gastos/21",
+              "host": ["{{base_url}}"],
+              "path": ["api", "gastos", "21"]
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Gasto eliminado', function () {",
+                  "    pm.expect(pm.response.code).to.equal(200);",
+                  "    const json = pm.response.json();",
+                  "    pm.expect(json.success).to.be.true;",
+                  "});"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Proveedores",
+      "item": [
+        {
+          "name": "Listar Proveedores",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/proveedores?page=1&limit=10",
+              "host": ["{{base_url}}"],
+              "path": ["api", "proveedores"],
+              "query": [
+                { "key": "page", "value": "1" },
+                { "key": "limit", "value": "10" }
+              ]
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Proveedores listados', function () {",
+                  "    pm.expect(pm.response.code).to.equal(200);",
+                  "    const json = pm.response.json();",
+                  "    pm.expect(json.success).to.be.true;",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Buscar por Nombre",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/proveedores?busqueda=Luz&page=1&limit=10",
+              "host": ["{{base_url}}"],
+              "path": ["api", "proveedores"],
+              "query": [
+                { "key": "busqueda", "value": "Luz" },
+                { "key": "page", "value": "1" },
+                { "key": "limit", "value": "10" }
+              ]
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Proveedores buscados', function () {",
+                  "    pm.expect(pm.response.code).to.equal(200);",
+                  "    const json = pm.response.json();",
+                  "    pm.expect(json.success).to.be.true;",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Crear Proveedor",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Proveedor Test\",\n  \"cuit\": \"30-71234567-9\",\n  \"contacto\": \"Juan Perez\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/proveedores",
+              "host": ["{{base_url}}"],
+              "path": ["api", "proveedores"]
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Proveedor creado', function () {",
+                  "    pm.expect(pm.response.code).to.equal(201);",
+                  "    const json = pm.response.json();",
+                  "    pm.expect(json.success).to.be.true;",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Actualizar Proveedor",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"contacto\": \"Maria Garcia\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/proveedores/9",
+              "host": ["{{base_url}}"],
+              "path": ["api", "proveedores", "9"]
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Proveedor actualizado', function () {",
+                  "    pm.expect(pm.response.code).to.equal(200);",
+                  "    const json = pm.response.json();",
+                  "    pm.expect(json.success).to.be.true;",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Eliminar Proveedor",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/proveedores/9",
+              "host": ["{{base_url}}"],
+              "path": ["api", "proveedores", "9"]
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Proveedor eliminado', function () {",
+                  "    pm.expect(pm.response.code).to.equal(200);",
+                  "    const json = pm.response.json();",
+                  "    pm.expect(json.success).to.be.true;",
+                  "});"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

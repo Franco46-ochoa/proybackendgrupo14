@@ -6,29 +6,44 @@ const sucursalController = {
     try {
       const usuario = await Usuario.findByPk(req.usuario.id);
 
-      let sucursales;
+      const page = parseInt(req.query.page) || 1;
+      const limit = parseInt(req.query.limit) || 10;
+      const offset = (page - 1) * limit;
+
+      let result;
       if (usuario.rol === 'dueno') {
-        sucursales = await Sucursal.findAll({
+        result = await Sucursal.findAndCountAll({
           include: [{ association: 'zona', attributes: ['id', 'nombre'] }],
+          offset,
+          limit,
           order: [['nombre', 'ASC']],
         });
       } else if (usuario.rol === 'gerente') {
-        sucursales = await Sucursal.findAll({
+        result = await Sucursal.findAndCountAll({
           where: { zonaId: usuario.zonaId },
           include: [{ association: 'zona', attributes: ['id', 'nombre'] }],
+          offset,
+          limit,
           order: [['nombre', 'ASC']],
         });
       } else {
-        sucursales = await Sucursal.findAll({
+        result = await Sucursal.findAndCountAll({
           where: { id: usuario.sucursalId },
           include: [{ association: 'zona', attributes: ['id', 'nombre'] }],
+          offset,
+          limit,
         });
       }
 
+      const { count: total, rows: data } = result;
+
       res.json({
         success: true,
-        data: sucursales,
-        message: 'Sucursales listadas exitosamente',
+        data,
+        total,
+        page,
+        limit,
+        totalPages: Math.ceil(total / limit),
       });
     } catch (error) {
       res.status(500).json({

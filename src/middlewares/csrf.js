@@ -1,16 +1,42 @@
-const csrf = require('csurf');
+const crypto = require('crypto');
 
-const csrfProtection = csrf({ cookie: true });
-
-// Rutas exentas de CSRF (publicas o que no usan body)
-const CSRF_EXEMPT = [
-  '/api/auth/register',
-  '/api/auth/login',
-];
+const CSRF_EXEMPT = ['/api/auth/register', '/api/auth/login'];
 
 const csrfMiddleware = (req, res, next) => {
-  if (CSRF_EXEMPT.includes(req.path)) return next();
-  csrfProtection(req, res, next);
+  const fullPath = req.originalUrl || req.url;
+  if (CSRF_EXEMPT.some(exempt => fullPath.startsWith(exempt))) {
+    return next();
+  }
+
+  if (req.method === 'GET') {
+    let token = req.cookies?.['XSRF-TOKEN'];
+    if (!token) {
+      token = crypto.randomBytes(32).toString('hex');
+    }
+    res.cookie('XSRF-TOKEN', token, {
+      httpOnly: false,
+      sameSite: 'strict',
+      secure: false,
+      path: '/',
+    });
+    req.csrfToken = token;
+    return next();
+  }
+
+  if (['POST', 'PUT', 'DELETE', 'PATCH'].includes(req.method)) {
+    const headerToken = req.headers['x-xsrf-token'];
+    const cookieToken = req.cookies?.['XSRF-TOKEN'];
+
+    if (!headerToken || !cookieToken || headerToken !== cookieToken) {
+      return res.status(403).json({
+        success: false,
+        message: 'CSRF token invalido o no proporcionado',
+      });
+    }
+  }
+
+  next();
+};
 };
 
 module.exports = csrfMiddleware;

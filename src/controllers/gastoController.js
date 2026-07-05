@@ -20,18 +20,28 @@ const gastoController = {
         where.fecha = new Date(fecha);
       }
 
-      const gastos = await Gasto.findAll({
+      const page = parseInt(req.query.page) || 1;
+      const limit = parseInt(req.query.limit) || 10;
+      const offset = (page - 1) * limit;
+
+      const { count: total, rows: data } = await Gasto.findAndCountAll({
         where,
         include: [
           { association: 'proveedor', attributes: ['id', 'nombre', 'cuit'] },
           { association: 'sucursal', attributes: ['id', 'nombre'] },
         ],
+        offset,
+        limit,
         order: [['fecha', 'DESC']],
       });
 
       res.json({
         success: true,
-        data: gastos,
+        data,
+        total,
+        page,
+        limit,
+        totalPages: Math.ceil(total / limit),
       });
     } catch (error) {
       res.status(500).json({

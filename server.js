@@ -1,35 +1,22 @@
 require('dotenv').config();
 const express = require('express');
 const helmet = require('helmet');
+const cookieParser = require('cookie-parser');
 const { connectDB } = require('./src/config/database');
 const csrfMiddleware = require('./src/middlewares/csrf');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// ─── Seguridad ────────────────────────────────────────────
 app.use(helmet());
-
-// ─── CORS para Angular (localhost:4200) ────────────────────
-app.use((req, res, next) => {
-  res.header('Access-Control-Allow-Origin', 'http://localhost:4200');
-  res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization, X-CSRF-Token');
-  res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, PATCH, OPTIONS');
-  res.header('Access-Control-Allow-Credentials', 'true');
-  if (req.method === 'OPTIONS') return res.sendStatus(200);
-  next();
-});
-
-// ─── Body parsers (antes de csurf) ────────────────────────
+app.use(cookieParser());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// ─── CSRF Protection ──────────────────────────────────────
-app.use(csrfMiddleware);
+app.use('/api', csrfMiddleware);
 
-// ─── Token CSRF endpoint ──────────────────────────────────
 app.get('/api/csrf-token', (req, res) => {
-  res.json({ csrfToken: req.csrfToken() });
+  res.json({ csrfToken: req.csrfToken || req.cookies?.['XSRF-TOKEN'] || null });
 });
 
 // Rutas

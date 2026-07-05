@@ -6,20 +6,31 @@ const zonaController = {
     try {
       const usuario = await Usuario.findByPk(req.usuario.id);
 
-      let zonas;
+      const page = parseInt(req.query.page) || 1;
+      const limit = parseInt(req.query.limit) || 10;
+      const offset = (page - 1) * limit;
+
+      let result;
       if (usuario.rol === 'dueno') {
-        zonas = await Zona.findAll({ order: [['nombre', 'ASC']] });
+        result = await Zona.findAndCountAll({ offset, limit, order: [['nombre', 'ASC']] });
       } else {
-        zonas = await Zona.findAll({
+        result = await Zona.findAndCountAll({
           where: { id: usuario.zonaId },
+          offset,
+          limit,
           order: [['nombre', 'ASC']],
         });
       }
 
+      const { count: total, rows: data } = result;
+
       res.json({
         success: true,
-        data: zonas,
-        message: 'Zonas listadas exitosamente',
+        data,
+        total,
+        page,
+        limit,
+        totalPages: Math.ceil(total / limit),
       });
     } catch (error) {
       res.status(500).json({

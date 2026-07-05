@@ -30,18 +30,28 @@ const inventarioController = {
         );
       }
 
-      const inventario = await Inventario.findAll({
+      const page = parseInt(req.query.page) || 1;
+      const limit = parseInt(req.query.limit) || 10;
+      const offset = (page - 1) * limit;
+
+      const { count: total, rows: data } = await Inventario.findAndCountAll({
         where,
         include: [
           { association: 'producto', attributes: ['id', 'nombre', 'codigo', 'precioCompra'] },
           { association: 'sucursal', attributes: ['id', 'nombre'] },
         ],
+        offset,
+        limit,
         order: [['id', 'ASC']],
       });
 
       res.json({
         success: true,
-        data: inventario,
+        data,
+        total,
+        page,
+        limit,
+        totalPages: Math.ceil(total / limit),
       });
     } catch (error) {
       res.status(500).json({

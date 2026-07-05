@@ -1,12 +1,23 @@
 require('dotenv').config();
 const express = require('express');
+const helmet = require('helmet');
+const cookieParser = require('cookie-parser');
 const { connectDB } = require('./src/config/database');
+const csrfMiddleware = require('./src/middlewares/csrf');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+app.use(helmet());
+app.use(cookieParser());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+app.use('/api', csrfMiddleware);
+
+app.get('/api/csrf-token', (req, res) => {
+  res.json({ csrfToken: req.csrfToken || req.cookies?.['XSRF-TOKEN'] || null });
+});
 
 // Rutas
 const authRoutes = require('./src/routes/auth.routes');

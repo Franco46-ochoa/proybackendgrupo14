@@ -25,7 +25,9 @@ app.use(express.urlencoded({ extended: true }));
 if (swaggerFile) {
   app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerFile));
 } else {
-  console.log("⚠️  Aviso: Ejecuta 'npm run swagger' para inicializar el archivo swagger_output.json");
+  console.log(
+    "⚠️  Aviso: Ejecuta 'npm run swagger' para inicializar el archivo swagger_output.json",
+  );
 }
 
 // Rutas
@@ -40,6 +42,7 @@ const gastosRoutes = require("./src/routes/gastos.routes");
 const proveedoresRoutes = require("./src/routes/proveedores.routes");
 const reportesRoutes = require("./src/routes/reportes.routes");
 const codigosRoutes = require("./src/routes/codigos.routes");
+const pagoRoutes = require("./src/routes/pago.routes");
 
 app.use("/api/auth", authRoutes);
 app.use("/api/usuarios", usuariosRoutes);
@@ -52,6 +55,7 @@ app.use("/api/gastos", gastosRoutes);
 app.use("/api/proveedores", proveedoresRoutes);
 app.use("/api/reportes", reportesRoutes);
 app.use("/api/codigos", codigosRoutes);
+app.use("/api/pagos", pagoRoutes);
 
 app.get("/", (req, res) => {
   res.json({ success: true, message: "SmartMargin API v1.0" });
@@ -62,7 +66,9 @@ const start = async () => {
   app.listen(PORT, () => {
     console.log(`Servidor en puerto ${PORT}`);
     if (swaggerFile) {
-      console.log(`Documentacion Swagger UI activa en: http://localhost:${PORT}/api-docs`);
+      console.log(
+        `Documentacion Swagger UI activa en: http://localhost:${PORT}/api-docs`,
+      );
     }
   });
 };

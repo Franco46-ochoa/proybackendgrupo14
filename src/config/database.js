@@ -42,9 +42,11 @@ const connectDB = async () => {
     await sequelize.authenticate();
     console.log("Conectado a PostgreSQL");
   } catch (error) {
-    console.error("Error de conexion:", error.message);
+    console.error("Error de conexion - name:", error.name);
+    console.error("Error de conexion - message:", error.message);
+    console.error("Error de conexion - original:", error.original ? error.original.message : "sin original");
+    console.error("Error de conexion - stack:", error.stack);
     process.exit(1);
   }
 };
-
 module.exports = { sequelize, connectDB };

@@ -4,10 +4,11 @@ const inventarioController = require('../controllers/inventarioController');
 const authJWT = require('../middlewares/authJWT');
 const verifyRole = require('../middlewares/verifyRole');
 const validators = require('../validators');
+const auditLog = require('../middlewares/auditLog');
 
 router.get('/', authJWT, verifyRole('dueno', 'gerente', 'empleado'), inventarioController.listar);
-router.post('/', authJWT, verifyRole('dueno', 'gerente', 'empleado'), validators.inventarioCrear, inventarioController.crear);
-router.put('/:id', authJWT, verifyRole('dueno', 'gerente', 'empleado'), validators.inventarioActualizar, inventarioController.actualizar);
-router.delete('/:id', authJWT, verifyRole('dueno', 'gerente'), validators.inventarioEliminar, inventarioController.eliminar);
+router.post('/', authJWT, verifyRole('dueno', 'gerente', 'empleado'), validators.inventarioCrear, auditLog('inventario'), inventarioController.crear);
+router.put('/:id', authJWT, verifyRole('dueno', 'gerente', 'empleado'), validators.inventarioActualizar, auditLog('inventario'), inventarioController.actualizar);
+router.delete('/:id', authJWT, verifyRole('dueno', 'gerente'), validators.inventarioEliminar, auditLog('inventario'), inventarioController.eliminar);
 
 module.exports = router;

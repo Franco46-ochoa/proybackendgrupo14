@@ -43,6 +43,7 @@ const generar = async (req, res) => {
         message: "zonaId es obligatorio para reportes de zona",
       });
     }
+    
     const resultado = await orquestador({
       tipo,
       sucursalId,
@@ -50,12 +51,18 @@ const generar = async (req, res) => {
       usuarioId: req.usuario.id,
     });
 
+    // NORMALIZAR LA ESTRUCTURA PARA LA PERSISTENCIA
+    // Si es 'sector', ya es un objeto de objetos. Si es 'zona' o 'central', lo envolvemos en un objeto indexado.
+    const reportesAProcesar = tipo === "sector" 
+      ? resultado 
+      : { [tipo]: resultado };
+
     // Persistir reportes en BD
     const reportesGuardados = [];
-    for (const [key, value] of Object.entries(resultado)) {
+    for (const [key, value] of Object.entries(reportesAProcesar)) {
       const reporte = await ReporteAgente.create({
         tipoAgente: tipo,
-        sector: key !== 'undefined' ? key : null,
+        sector: tipo === "sector" ? key : null, // Solo guarda sector si aplica
         contenidoJSON: value.contenidoJSON,
         resumenNLP: value.resumenNLP,
         sucursalId: sucursalId || null,
@@ -71,13 +78,10 @@ const generar = async (req, res) => {
       message: "Reporte generado y guardado exitosamente",
     });
   } catch (error) {
-    res
-      .status(500)
-      .json({
-        success: false,
-        message: "Error al generar reporte: " + error.message,
-      });
+    res.status(500).json({
+      success: false,
+      message: "Error al generar reporte: " + error.message,
+    });
   }
 };
-
 module.exports = { listar, generar };

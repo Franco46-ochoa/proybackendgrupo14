@@ -49,10 +49,26 @@ const generar = async (req, res) => {
       zonaId,
       usuarioId: req.usuario.id,
     });
+
+    // Persistir reportes en BD
+    const reportesGuardados = [];
+    for (const [key, value] of Object.entries(resultado)) {
+      const reporte = await ReporteAgente.create({
+        tipoAgente: tipo,
+        sector: key !== 'undefined' ? key : null,
+        contenidoJSON: value.contenidoJSON,
+        resumenNLP: value.resumenNLP,
+        sucursalId: sucursalId || null,
+        zonaId: zonaId || null,
+        generadoPor: req.usuario.id,
+      });
+      reportesGuardados.push(reporte);
+    }
+
     res.json({
       success: true,
       data: resultado,
-      message: "Reporte generado exitosamente",
+      message: "Reporte generado y guardado exitosamente",
     });
   } catch (error) {
     res

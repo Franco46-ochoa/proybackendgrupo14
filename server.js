@@ -3,6 +3,16 @@ const express = require("express");
 const cors = require("cors");
 const { connectDB } = require("./src/config/database");
 
+// Sentry - Monitoreo de errores en producción
+const Sentry = require("@sentry/node");
+if (process.env.SENTRY_DSN) {
+  Sentry.init({
+    dsn: process.env.SENTRY_DSN,
+    environment: process.env.NODE_ENV || 'development',
+    tracesSampleRate: 1.0,
+  });
+}
+
 // Modulos para documentacion Swagger
 const swaggerUi = require("swagger-ui-express");
 let swaggerFile;
@@ -20,6 +30,11 @@ const PORT = process.env.PORT || 3000;
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+// Sentry request handler (debe ir después de express.json y antes de las rutas)
+if (process.env.SENTRY_DSN) {
+  app.use(Sentry.Handlers.requestHandler());
+}
 
 // Configuracion de ruta para visualizacion de Swagger UI
 if (swaggerFile) {
@@ -43,6 +58,7 @@ const proveedoresRoutes = require("./src/routes/proveedores.routes");
 const reportesRoutes = require("./src/routes/reportes.routes");
 const codigosRoutes = require("./src/routes/codigos.routes");
 const pagoRoutes = require("./src/routes/pago.routes");
+const dolarRoutes = require("./src/routes/dolar.routes");
 
 app.use("/api/auth", authRoutes);
 app.use("/api/usuarios", usuariosRoutes);
@@ -56,10 +72,16 @@ app.use("/api/proveedores", proveedoresRoutes);
 app.use("/api/reportes", reportesRoutes);
 app.use("/api/codigos", codigosRoutes);
 app.use("/api/pagos", pagoRoutes);
+app.use("/api/dolar", dolarRoutes);
 
 app.get("/", (req, res) => {
   res.json({ success: true, message: "SmartMargin API v1.0" });
 });
+
+// Sentry error handler (debe ir después de todas las rutas)
+if (process.env.SENTRY_DSN) {
+  app.use(Sentry.Handlers.errorHandler());
+}
 
 const start = async () => {
   await connectDB();

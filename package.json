@@ -13,11 +13,13 @@
     "swagger": "node swagger.js"
   },
   "dependencies": {
+    "@sentry/node": "^10.63.0",
     "bcryptjs": "^3.0.3",
     "cors": "^2.8.6",
     "docx": "^9.7.1",
     "dotenv": "^16.6.1",
     "express": "^5.2.1",
+    "google-auth-library": "^10.9.0",
     "jsonwebtoken": "^9.0.3",
     "mercadopago": "^3.2.0",
     "pdf-parse": "^1.1.1",

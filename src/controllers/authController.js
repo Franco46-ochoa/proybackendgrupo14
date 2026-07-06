@@ -1,6 +1,7 @@
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const { Usuario, CodigoInvitacion } = require("../models");
+const { verificarTokenGoogle, encontrarOCrearUsuario } = require("../services/googleOAuth.service");
 
 const authController = {
   // POST /api/auth/register
@@ -181,6 +182,56 @@ const authController = {
       res.status(500).json({
         success: false,
         message: "Error al obtener perfil: " + error.message,
+      });
+    }
+  },
+
+  // POST /api/auth/google
+  googleLogin: async (req, res) => {
+    try {
+      const { token } = req.body;
+
+      if (!token) {
+        return res.status(400).json({
+          success: false,
+          message: "Token de Google requerido",
+        });
+      }
+
+      const googleData = await verificarTokenGoogle(token);
+      const usuario = await encontrarOCrearUsuario(googleData);
+
+      const payloadEmpresaId =
+        usuario.rol === "dueno" ? usuario.id : usuario.empresaId;
+
+      const jwtToken = jwt.sign(
+        {
+          id: usuario.id,
+          rol: usuario.rol,
+          empresaId: payloadEmpresaId,
+          departamento: usuario.departamento,
+        },
+        process.env.JWT_SECRET,
+        { expiresIn: "24h" }
+      );
+
+      res.json({
+        success: true,
+        data: {
+          id: usuario.id,
+          nombre: usuario.nombre,
+          email: usuario.email,
+          rol: usuario.rol,
+          departamento: usuario.departamento,
+          empresaId: payloadEmpresaId,
+        },
+        token: jwtToken,
+        message: "Login con Google exitoso",
+      });
+    } catch (error) {
+      res.status(401).json({
+        success: false,
+        message: "Error al autenticar con Google: " + error.message,
       });
     }
   },

@@ -3,28 +3,115 @@ const agenteVentas = require('./agenteVentas');
 const agenteFinanzas = require('./agenteFinanzas');
 const agenteZona = require('./agenteZona');
 const agenteCentral = require('./agenteCentral');
+const { Inventario, Producto, Transaccion, Gasto, Proveedor, Sucursal, Zona } = require('../models');
+
 const orquestador = async ({ tipo, sucursalId, zonaId, usuarioId }) => {
   let resultado;
   switch (tipo) {
     case 'sector': {
-      const datosStock = [];    // Sprint 2: consultar BD
-      const datosVentas = [];   // Sprint 2: consultar BD
-      const datosFinanzas = []; // Sprint 2: consultar BD
+      // Consultar datos reales de la BD
+      const inventario = await Inventario.findAll({
+        where: { sucursalId },
+        include: [{ association: 'producto', attributes: ['nombre', 'codigo', 'precioCompra'] }]
+      });
+      
+      const datosStock = inventario.map(inv => ({
+        producto: inv.producto?.nombre || 'N/A',
+        stockActual: inv.stockActual,
+        stockMinimo: inv.stockMinimo,
+        precioCompra: inv.producto?.precioCompra || 0,
+        precioVenta: inv.precioVenta,
+      }));
+
+      const transacciones = await Transaccion.findAll({
+        where: { sucursalId, tipo: 'venta' },
+        include: [{ association: 'producto', attributes: ['nombre'] }]
+      });
+      
+      const datosVentas = transacciones.map(t => ({
+        producto: t.producto?.nombre || 'N/A',
+        cantidad: t.cantidad,
+        total: parseFloat(t.total),
+        fecha: t.fecha,
+      }));
+
+      const gastos = await Gasto.findAll({
+        where: { sucursalId },
+        include: [{ association: 'proveedor', attributes: ['nombre'] }]
+      });
+      
+      const datosFinanzas = gastos.map(g => ({
+        tipo: g.tipo,
+        monto: parseFloat(g.monto),
+        proveedor: g.proveedor?.nombre || 'N/A',
+        fecha: g.fecha,
+      }));
+
       resultado = {
-        stock: agenteStock.ejecutar(datosStock),
-        ventas: agenteVentas.ejecutar(datosVentas),
-        finanzas: agenteFinanzas.ejecutar(datosFinanzas),
+        stock: await agenteStock.ejecutar(datosStock),
+        ventas: await agenteVentas.ejecutar(datosVentas),
+        finanzas: await agenteFinanzas.ejecutar(datosFinanzas),
       };
       break;
     }
     case 'zona': {
-      const datosZona = []; // Sprint 2: consolidar sucursales de la zona
-      resultado = agenteZona.ejecutar(datosZona);
+      // Consolidar sucursales de la zona
+      const sucursales = await Sucursal.findAll({ where: { zonaId } });
+      const datosZona = await Promise.all(sucursales.map(async s => {
+        const ventas = await Transaccion.sum('total', { 
+          where: { sucursalId: s.id, tipo: 'venta' } 
+        }) || 0;
+        const gastos = await Gasto.sum('monto', { 
+          where: { sucursalId: s.id } 
+        }) || 0;
+        const stockCritico = await Inventario.count({
+          where: { sucursalId: s.id },
+          attributes: ['stockActual', 'stockMinimo'],
+          having: { stockActual: { $lt: { $col: 'stockMinimo' } } }
+        });
+        
+        return { 
+          sucursal: s.nombre, 
+          ventas: parseFloat(ventas), 
+          gastos: parseFloat(gastos),
+          stockCritico 
+        };
+      }));
+      
+      resultado = await agenteZona.ejecutar(datosZona);
       break;
     }
     case 'central': {
-      const datosCentral = []; // Sprint 2: consolidar zonas
-      resultado = agenteCentral.ejecutar(datosCentral);
+      // Consolidar todas las zonas
+      const zonas = await Zona.findAll();
+      const datosCentral = await Promise.all(zonas.map(async z => {
+        const sucursales = await Sucursal.findAll({ where: { zonaId: z.id } });
+        let ventas = 0, gastos = 0, stockCritico = 0;
+        
+        for (const s of sucursales) {
+          ventas += await Transaccion.sum('total', { 
+            where: { sucursalId: s.id, tipo: 'venta' } 
+          }) || 0;
+          gastos += await Gasto.sum('monto', { 
+            where: { sucursalId: s.id } 
+          }) || 0;
+          stockCritico += await Inventario.count({
+            where: { sucursalId: s.id },
+            attributes: ['stockActual', 'stockMinimo'],
+            having: { stockActual: { $lt: { $col: 'stockMinimo' } } }
+          });
+        }
+        
+        return { 
+          zona: z.nombre, 
+          ventas: parseFloat(ventas), 
+          gastos: parseFloat(gastos),
+          sucursales: sucursales.length,
+          stockCritico 
+        };
+      }));
+      
+      resultado = await agenteCentral.ejecutar(datosCentral);
       break;
     }
     default:

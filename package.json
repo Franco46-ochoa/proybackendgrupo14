@@ -7,7 +7,7 @@
     "dev": "nodemon server.js",
     "start": "npx sequelize-cli db:migrate && node server.js",
     "lint": "echo 'no lint'",
-    "test": "echo 'no tests'",
+    "test": "node --test tests/*.test.js",
     "migrate": "npx sequelize-cli db:migrate",
     "seed": "npx sequelize-cli db:seed:all",
     "swagger": "node swagger.js"

@@ -7,6 +7,10 @@ module.exports = (sequelize) => {
         type: DataTypes.STRING(100),
         allowNull: false,
       },
+      apellido: {
+        type: DataTypes.STRING(100),
+        allowNull: false,
+      },
       email: {
         type: DataTypes.STRING(150),
         allowNull: false,

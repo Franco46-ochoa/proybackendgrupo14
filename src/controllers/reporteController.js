@@ -49,6 +49,7 @@ const generar = async (req, res) => {
       sucursalId,
       zonaId,
       usuarioId: req.usuario.id,
+      empresaId: req.usuario.empresaId,
     });
 
     // NORMALIZAR LA ESTRUCTURA PARA LA PERSISTENCIA

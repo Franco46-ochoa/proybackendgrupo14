@@ -29,7 +29,7 @@ const usuarioController = {
   // POST /api/usuarios
   crear: async (req, res) => {
     try {
-      const { nombre, email, password, rol, sector, zonaId, sucursalId } = req.body;
+      const { nombre, apellido, email, password, rol, sector, zonaId, sucursalId } = req.body;
 
       // Validar email único
       const existente = await Usuario.findOne({ where: { email } });
@@ -80,6 +80,7 @@ const usuarioController = {
 
       const usuario = await Usuario.create({
         nombre,
+        apellido,
         email,
         password: hash,
         rol: rolFinal,
@@ -93,6 +94,7 @@ const usuarioController = {
         data: {
           id: usuario.id,
           nombre: usuario.nombre,
+          apellido: usuario.apellido,
           email: usuario.email,
           rol: usuario.rol,
           sector: usuario.sector,
@@ -113,7 +115,7 @@ const usuarioController = {
   actualizar: async (req, res) => {
     try {
       const { id } = req.params;
-      const { nombre, email, rol, sector, zonaId, sucursalId } = req.body;
+      const { nombre, apellido, email, rol, sector, zonaId, sucursalId } = req.body;
 
       const usuario = await Usuario.findByPk(id);
       if (!usuario) {
@@ -164,6 +166,7 @@ const usuarioController = {
 
       await usuario.update({
         nombre: nombre || usuario.nombre,
+        apellido: apellido !== undefined ? apellido : usuario.apellido,
         email: email || usuario.email,
         rol: rolFinal,
         sector: sector !== undefined ? sector : usuario.sector,
@@ -176,6 +179,7 @@ const usuarioController = {
         data: {
           id: usuario.id,
           nombre: usuario.nombre,
+          apellido: usuario.apellido,
           email: usuario.email,
           rol: usuario.rol,
           sector: usuario.sector,

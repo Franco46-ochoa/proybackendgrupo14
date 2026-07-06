@@ -5,8 +5,11 @@ const productoController = {
   // GET /api/productos
   listar: async (req, res) => {
     try {
-      const { categoria, busqueda } = req.query;
+      const { categoria, busqueda, page = 1, limit = 20 } = req.query;
       const where = {};
+
+      const pageNum = Math.max(1, parseInt(page, 10));
+      const limitNum = Math.min(100, Math.max(1, parseInt(limit, 10)));
 
       if (categoria) {
         where.categoria = categoria;
@@ -15,14 +18,20 @@ const productoController = {
         where.nombre = { [Op.iLike]: `%${busqueda}%` };
       }
 
-      const productos = await Producto.findAll({
+      const { count, rows: productos } = await Producto.findAndCountAll({
         where,
         order: [['nombre', 'ASC']],
+        limit: limitNum,
+        offset: (pageNum - 1) * limitNum,
       });
 
       res.json({
         success: true,
         data: productos,
+        total: count,
+        page: pageNum,
+        limit: limitNum,
+        totalPages: Math.ceil(count / limitNum),
       });
     } catch (error) {
       res.status(500).json({

@@ -8,6 +8,10 @@ module.exports = (sequelize) => {
         allowNull: false,
         unique: true,
       },
+      empresaId: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+      },
     },
     {
       tableName: "zonas",

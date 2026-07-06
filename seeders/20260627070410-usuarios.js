@@ -5,7 +5,8 @@ module.exports = {
     const hash = await bcrypt.hash("password123", 10);
     await queryInterface.bulkInsert("usuarios", [
       {
-        nombre: "Franco (Dueño)",
+        nombre: "Franco",
+        apellido: "Dueño",
         email: "dueno@smartmargin.com",
         password: hash,
         rol: "dueno",
@@ -18,7 +19,8 @@ module.exports = {
         updatedAt: new Date(),
       },
       {
-        nombre: "Admin SmartMargin",
+        nombre: "Admin",
+        apellido: "SmartMargin",
         email: "admin@smartmargin.com",
         password: hash,
         rol: "administrador",
@@ -31,7 +33,8 @@ module.exports = {
         updatedAt: new Date(),
       },
       {
-        nombre: "Gerente Norte",
+        nombre: "Gerente",
+        apellido: "Norte",
         email: "gerente@smartmargin.com",
         password: hash,
         rol: "gerente",
@@ -44,7 +47,8 @@ module.exports = {
         updatedAt: new Date(),
       },
       {
-        nombre: "Empleado Ventas",
+        nombre: "Empleado",
+        apellido: "Ventas",
         email: "empleado@smartmargin.com",
         password: hash,
         rol: "empleado",

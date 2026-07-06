@@ -13,6 +13,18 @@ module.exports = (sequelize) => {
         type: DataTypes.ENUM("administrador", "gerente", "empleado"),
         allowNull: false,
       },
+      empresaId: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+      },
+      sucursalId: {
+        type: DataTypes.INTEGER,
+        allowNull: true,
+      },
+      zonaId: {
+        type: DataTypes.INTEGER,
+        allowNull: true,
+      },
       departamento: {
         type: DataTypes.ENUM("comercial", "operativo"),
         allowNull: true,

@@ -1,3 +1,5 @@
+require('dotenv').config({ path: require('path').resolve(__dirname, '../.env') });
+
 const { test } = require('node:test');
 const assert = require('node:assert');
 

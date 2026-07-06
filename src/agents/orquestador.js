@@ -6,14 +6,26 @@ const agenteZona = require('./agenteZona');
 const agenteCentral = require('./agenteCentral');
 const { Inventario, Producto, Transaccion, Gasto, Proveedor, Sucursal, Zona } = require('../models');
 
-const orquestador = async ({ tipo, sucursalId, zonaId, usuarioId }) => {
+const orquestador = async ({ tipo, sucursalId, zonaId, usuarioId, empresaId }) => {
+  if (!empresaId) {
+    throw new Error('empresaId es requerido para generar reportes.');
+  }
+
   let resultado;
   switch (tipo) {
     case 'sector': {
-      // Consultar datos reales de la BD
+      const sucursal = await Sucursal.findOne({
+        where: { id: sucursalId },
+        include: [{ association: 'zona', where: { empresaId } }],
+      });
+
+      if (!sucursal) {
+        throw new Error('Sucursal no encontrada o no pertenece a tu empresa.');
+      }
+
       const inventario = await Inventario.findAll({
         where: { sucursalId },
-        include: [{ association: 'producto', attributes: ['nombre', 'codigo', 'precioCompra'] }]
+        include: [{ association: 'producto', attributes: ['nombre', 'codigo', 'precioCompra'] }],
       });
       
       const datosStock = inventario.map(inv => ({
@@ -56,7 +68,11 @@ const orquestador = async ({ tipo, sucursalId, zonaId, usuarioId }) => {
       break;
     }
     case 'zona': {
-      // Consolidar sucursales de la zona
+      const zona = await Zona.findOne({ where: { id: zonaId, empresaId } });
+      if (!zona) {
+        throw new Error('Zona no encontrada o no pertenece a tu empresa.');
+      }
+
       const sucursales = await Sucursal.findAll({ where: { zonaId } });
       const datosZona = await Promise.all(sucursales.map(async s => {
         const ventas = await Transaccion.sum('total', { 
@@ -83,8 +99,7 @@ const orquestador = async ({ tipo, sucursalId, zonaId, usuarioId }) => {
       break;
     }
     case 'central': {
-      // Consolidar todas las zonas
-      const zonas = await Zona.findAll();
+      const zonas = await Zona.findAll({ where: { empresaId } });
       const datosCentral = await Promise.all(zonas.map(async z => {
         const sucursales = await Sucursal.findAll({ where: { zonaId: z.id } });
         let ventas = 0, gastos = 0, stockCritico = 0;

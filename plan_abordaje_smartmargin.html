@@ -1,0 +1,1522 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Plan de Abordaje — SmartMargin AI</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+
+  :root {
+    --primary: #1A3A5C;
+    --secondary: #F59E0B;
+    --info: #0D9488;
+    --danger: #EF4444;
+    --success: #10B981;
+    --dark: #1E293B;
+    --light: #F8FAFC;
+    --text: #1E293B;
+    --text-secondary: #64748B;
+    --white: #FFFFFF;
+    --border: #E2E8F0;
+    --shadow: 0 1px 3px rgba(0,0,0,0.08);
+    --shadow-md: 0 4px 12px rgba(0,0,0,0.10);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    font-size: 10.5pt;
+    line-height: 1.55;
+    color: var(--text);
+    background: #FFF;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  /* ──── PORTADA ──── */
+  .portada {
+    page-break-after: always;
+    height: 297mm;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    background: linear-gradient(160deg, #0F2B47 0%, #1A3A5C 40%, #153250 100%);
+    color: #FFFFFF;
+    padding: 60px;
+    position: relative;
+    overflow: hidden;
+  }
+  .portada::before {
+    content: '';
+    position: absolute;
+    top: -80px; right: -80px;
+    width: 400px; height: 400px;
+    border: 2px solid rgba(255,255,255,0.08);
+    border-radius: 9999px;
+  }
+  .portada::after {
+    content: '';
+    position: absolute;
+    bottom: -60px; left: -60px;
+    width: 300px; height: 300px;
+    border: 2px solid rgba(255,255,255,0.06);
+    border-radius: 9999px;
+  }
+  .portada .logo-area {
+    margin-bottom: 48px;
+    position: relative;
+    z-index: 1;
+  }
+  .portada .logo-icon {
+    width: 72px; height: 72px;
+    background: var(--info);
+    border-radius: 18px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 32px;
+    font-weight: 800;
+    margin-bottom: 16px;
+  }
+  .portada h1 {
+    font-size: 30pt;
+    font-weight: 800;
+    letter-spacing: -0.5px;
+    position: relative;
+    z-index: 1;
+    line-height: 1.15;
+  }
+  .portada h1 span { color: var(--info); }
+  .portada .subtitle {
+    font-size: 13pt;
+    font-weight: 400;
+    color: rgba(255,255,255,0.7);
+    margin-top: 12px;
+    position: relative;
+    z-index: 1;
+  }
+  .portada .meta {
+    margin-top: 56px;
+    font-size: 10pt;
+    color: rgba(255,255,255,0.55);
+    position: relative;
+    z-index: 1;
+    line-height: 2;
+  }
+  .portada .meta strong { color: rgba(255,255,255,0.85); }
+
+  /* ──── CONTENIDO ──── */
+  .contenido { padding: 0; }
+
+  .page { padding: 32px 40px; page-break-after: always; }
+  .page:last-child { page-break-after: auto; }
+
+  h2 {
+    font-size: 16pt;
+    font-weight: 700;
+    color: var(--primary);
+    margin-bottom: 6px;
+    padding-bottom: 8px;
+    border-bottom: 3px solid var(--info);
+  }
+  h3 {
+    font-size: 12.5pt;
+    font-weight: 600;
+    color: var(--primary);
+    margin-top: 24px;
+    margin-bottom: 8px;
+  }
+  h4 {
+    font-size: 11pt;
+    font-weight: 600;
+    color: var(--dark);
+    margin-top: 16px;
+    margin-bottom: 4px;
+  }
+  p { margin-bottom: 8px; color: var(--text); }
+
+  .section-number {
+    display: inline-block;
+    background: var(--info);
+    color: #FFF;
+    width: 32px; height: 32px;
+    border-radius: 8px;
+    text-align: center;
+    line-height: 32px;
+    font-size: 14pt;
+    font-weight: 700;
+    margin-right: 8px;
+    vertical-align: middle;
+  }
+
+  /* ──── TABLAS ──── */
+  table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    margin: 14px 0;
+    font-size: 9.5pt;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    overflow: hidden;
+  }
+  table thead th {
+    background: #F1F5F9;
+    color: var(--dark);
+    font-weight: 600;
+    text-align: left;
+    padding: 8px 12px;
+    border-bottom: 2px solid var(--border);
+    font-size: 9pt;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+  }
+  table tbody td {
+    padding: 7px 12px;
+    border-bottom: 1px solid #F1F5F9;
+    color: var(--text);
+  }
+  table tbody tr:last-child td { border-bottom: none; }
+  table tbody tr:nth-child(even) { background: #FAFBFC; }
+  .align-center { text-align: center; }
+
+  /* ──── BADGES ──── */
+  .badge {
+    display: inline-block;
+    padding: 2px 10px;
+    border-radius: 20px;
+    font-size: 8.5pt;
+    font-weight: 600;
+  }
+  .badge-rojo   { background: #FEE2E2; color: #991B1B; }
+  .badge-verde  { background: #D1FAE5; color: #065F46; }
+  .badge-ambar  { background: #FEF3C7; color: #92400E; }
+  .badge-azul   { background: #DBEAFE; color: #1E40AF; }
+  .badge-teal   { background: #CCFBF1; color: #0F766E; }
+  .badge-gris   { background: #F1F5F9; color: #475569; }
+
+  /* ──── CARDS ──── */
+  .card {
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 16px;
+    margin: 12px 0;
+    box-shadow: var(--shadow);
+  }
+  .card-title {
+    font-size: 11pt;
+    font-weight: 600;
+    color: var(--primary);
+    margin-bottom: 8px;
+  }
+
+  /* ──── GRID ──── */
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin: 10px 0; }
+  .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; margin: 10px 0; }
+  .grid-5 { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; margin: 10px 0; }
+
+  /* ──── PALETA DE COLORES ──── */
+  .color-swatch {
+    display: inline-block;
+    width: 24px; height: 24px;
+    border-radius: 6px;
+    vertical-align: middle;
+    margin-right: 6px;
+    border: 1px solid rgba(0,0,0,0.1);
+  }
+  .swatch-primary   { background: #1A3A5C; }
+  .swatch-info      { background: #0D9488; }
+  .swatch-secondary { background: #F59E0B; }
+  .swatch-danger    { background: #EF4444; }
+  .swatch-success   { background: #10B981; }
+  .swatch-light     { background: #F8FAFC; }
+  .swatch-white     { background: #FFFFFF; }
+  .swatch-text      { background: #1E293B; }
+  .swatch-textsec   { background: #64748B; }
+
+  /* ──── DIAGRAMS ──── */
+  .diagram-box {
+    background: #F8FAFC;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 18px 20px;
+    margin: 12px 0;
+    font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+    font-size: 9pt;
+    line-height: 1.65;
+    white-space: pre;
+    overflow-x: auto;
+    color: #334155;
+  }
+
+  .arq-box {
+    background: #F0F9FF;
+    border: 1.5px solid var(--info);
+    border-radius: 10px;
+    padding: 16px 20px;
+    margin: 10px 0;
+    font-family: 'Consolas', 'Monaco', monospace;
+    font-size: 9pt;
+    line-height: 1.6;
+    white-space: pre;
+    overflow-x: auto;
+  }
+
+  /* ──── LISTS ──── */
+  ul, ol { margin: 6px 0 10px 24px; }
+  li { margin-bottom: 3px; }
+
+  /* ──── PAGE BREAKS ──── */
+  .pb { page-break-before: always; }
+
+  /* ──── CHECKLIST ──── */
+  .checklist { list-style: none; margin-left: 0; }
+  .checklist li { padding: 3px 0; }
+  .checklist li::before { content: '☐ '; color: var(--info); font-weight: bold; margin-right: 6px; }
+
+  /* ──── FOOTER ──── */
+  .footer {
+    margin-top: 30px;
+    padding-top: 12px;
+    border-top: 1px solid var(--border);
+    font-size: 8.5pt;
+    color: var(--text-secondary);
+    text-align: center;
+  }
+
+  /* ──── RESPONSIVE PRINT ──── */
+  @media print {
+    body { font-size: 9.5pt; }
+    .page { padding: 24px 32px; }
+    .portada { height: 297mm; }
+  }
+
+  /* ──── SPRINT SECTION ──── */
+  .sprint-header {
+    background: var(--primary);
+    color: #FFF;
+    padding: 14px 20px;
+    border-radius: 10px;
+    margin: 20px 0 14px 0;
+  }
+  .sprint-header h3 { color: #FFF; margin: 0; font-size: 14pt; }
+  .sprint-header p { color: rgba(255,255,255,0.8); margin: 4px 0 0 0; }
+
+  .persona-card {
+    background: var(--white);
+    border-left: 4px solid var(--info);
+    border-radius: 6px;
+    padding: 12px 16px;
+    margin: 10px 0;
+    box-shadow: var(--shadow);
+  }
+  .persona-card .nombre { font-weight: 700; font-size: 12pt; color: var(--primary); }
+  .persona-card .rol { font-size: 9pt; color: var(--text-secondary); margin-top: 2px; }
+
+  .tarea-row {
+    display: flex;
+    gap: 12px;
+    padding: 6px 0;
+    border-bottom: 1px solid #F1F5F9;
+    align-items: baseline;
+  }
+  .tarea-row .dia { 
+    background: var(--primary); color: #FFF; 
+    min-width: 44px; text-align: center; border-radius: 5px;
+    padding: 2px 8px; font-weight: 600; font-size: 9pt;
+  }
+  .tarea-row .desc { flex: 1; font-size: 9.5pt; }
+
+  .code-inline {
+    background: #F1F5F9;
+    padding: 1px 6px;
+    border-radius: 4px;
+    font-family: 'Consolas', 'Monaco', monospace;
+    font-size: 9pt;
+    color: #1E293B;
+  }
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════════ -->
+<!-- PORTADA                                     -->
+<!-- ═══════════════════════════════════════════ -->
+<div class="portada">
+  <div class="logo-area">
+    <div class="logo-icon">SM</div>
+  </div>
+  <h1><span>SmartMargin</span> AI</h1>
+  <p class="subtitle">Plataforma SaaS de Auditoría Inteligente,<br>Control de Rentabilidad y Optimización de Stock Multi-sucursal</p>
+  <div class="meta">
+    <strong>Trabajo Final Integrador</strong><br>
+    Programación y Servicios Web — UNJU<br>
+    <strong>14 Días · 2 Sprints · 5 Integrantes</strong><br>
+    Junio 2026
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════ -->
+<!-- CONTENIDO                                   -->
+<!-- ═══════════════════════════════════════════ -->
+<div class="contenido">
+
+<!-- ──── ACCIONES PRE-ARRANQUE ──── -->
+<div class="page">
+  <h2><span class="section-number">0</span> Acciones Pre-Arranque (HOY)</h2>
+  <p><strong>Estas 5 acciones deben completarse antes del Día 1. Sin esto, el sprint arranca bloqueado.</strong></p>
+
+  <table>
+    <thead><tr><th style="width:55px">#</th><th>Acción</th><th>Responsable</th><th>Verificación</th></tr></thead>
+    <tbody>
+      <tr><td class="align-center"><span class="badge badge-rojo">1</span></td><td><strong>Crear cuenta MercadoPago Sandbox</strong>. Obtener Access Token de prueba. Guardar en .env como MP_ACCESS_TOKEN.</td><td class="align-center">Franco</td><td><span class="code-inline">curl https://api.mercadopago.com/users/me</span> devuelve 200</td></tr>
+      <tr><td class="align-center"><span class="badge badge-rojo">2</span></td><td><strong>Google Cloud Console</strong>. Crear proyecto, habilitar OAuth 2.0 y Gemini API. Obtener GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET, GEMINI_API_KEY.</td><td class="align-center">Franco</td><td>3 keys guardadas en .env</td></tr>
+      <tr><td class="align-center"><span class="badge badge-rojo">3</span></td><td><strong>Crear 2 repos en GitHub</strong>: <span class="code-inline">proyfrontendgrupoXX</span> y <span class="code-inline">proybackendgrupoXX</span> (reemplazar XX por número de grupo real). Agregar a los 5 como colaboradores. Crear rama develop en cada uno.</td><td class="align-center">Franco</td><td>2 repos accesibles por todos</td></tr>
+      <tr><td class="align-center"><span class="badge badge-rojo">4</span></td><td><strong>Definir número de grupo real</strong>. Reemplazar todas las apariciones de "XX" en este documento, nombres de carpetas y repos.</td><td class="align-center">Franco</td><td>Número real en todos lados</td></tr>
+      <tr><td class="align-center"><span class="badge badge-rojo">5</span></td><td><strong>Crear .env.example</strong> con todas las claves vacías. Compartir .env real con valores por canal privado (WhatsApp/Discord). <strong>NUNCA subir .env al repo.</strong></td><td class="align-center">Franco</td><td>.env.example en el repo, .env real en DM</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- ──── ÍNDICE ──── -->
+<div class="page">
+  <h2><span class="section-number">0</span> Índice</h2>
+  <table>
+    <thead><tr><th style="width:40px">#</th><th>Sección</th><th style="width:60px">Pág.</th></tr></thead>
+    <tbody>
+      <tr><td class="align-center">0</td><td>Acciones Pre-Arranque (HOY)</td><td class="align-center">3</td></tr>
+      <tr><td class="align-center">1</td><td>Equipo y Roles</td><td class="align-center">4</td></tr>
+      <tr><td class="align-center">2</td><td>Repositorio Git y Ramas</td><td class="align-center">4</td></tr>
+      <tr><td class="align-center">3</td><td>Paleta de Colores y Diseño</td><td class="align-center">5</td></tr>
+      <tr><td class="align-center">4</td><td>Modelo de Datos (DER + Sequelize)</td><td class="align-center">6</td></tr>
+      <tr><td class="align-center">5</td><td>Arquitectura de Carpetas</td><td class="align-center">8</td></tr>
+      <tr><td class="align-center">6</td><td>API REST — Endpoints</td><td class="align-center">9</td></tr>
+      <tr><td class="align-center">7</td><td>Croquis de Pantallas</td><td class="align-center">10</td></tr>
+      <tr><td class="align-center">8</td><td>Comunicación de Agentes IA</td><td class="align-center">13</td></tr>
+      <tr><td class="align-center">9</td><td>Sprint 1 — Días 1 a 7 (MVP 50%)</td><td class="align-center">14</td></tr>
+      <tr><td class="align-center">10</td><td>Sprint 2 — Días 8 a 14 (Entrega Final)</td><td class="align-center">18</td></tr>
+      <tr><td class="align-center">11</td><td>Cronograma Visual</td><td class="align-center">22</td></tr>
+      <tr><td class="align-center">12</td><td>Tecnologías por Capa</td><td class="align-center">23</td></tr>
+      <tr><td class="align-center">13</td><td>Checklist Pre-Entrega</td><td class="align-center">23</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- ═══════════════════════════════════════════ -->
+<!-- 1. EQUIPO Y ROLES                           -->
+<!-- ═══════════════════════════════════════════ -->
+<div class="page pb">
+  <h2><span class="section-number">1</span> Equipo y Roles</h2>
+
+  <table>
+    <thead><tr><th>Integrante</th><th>Stack</th><th>Responsabilidad Principal</th></tr></thead>
+    <tbody>
+      <tr>
+        <td><strong>Franco</strong></td>
+        <td><span class="badge badge-azul">Backend</span> <span class="badge badge-teal">Agentes IA</span></td>
+        <td>Modelos Sequelize, Auth (JWT/Bcrypt), APIs Externas (MercadoPago, Google OAuth, Dólar), Orquestación de Agentes IA (Node.js + Gemini SDK), Comunicación entre servicios, Auditoría</td>
+      </tr>
+      <tr>
+        <td><strong>Brian</strong></td>
+        <td><span class="badge badge-azul">Backend</span></td>
+        <td>CRUDs completos (6 módulos), Middlewares de seguridad (XSS, CSRF), Seeders de datos, Validaciones con express-validator</td>
+      </tr>
+      <tr>
+        <td><strong>Pricila</strong></td>
+        <td><span class="badge badge-ambar">Frontend</span></td>
+        <td>Core (shell, routing, guards, interceptors), Auth (login/registro), Shared Components, Google OAuth callback, Suscripción (MercadoPago)</td>
+      </tr>
+      <tr>
+        <td><strong>Fabri</strong></td>
+        <td><span class="badge badge-ambar">Frontend</span></td>
+        <td>Dashboard Dueño + Gerente, Mapa Leaflet, Gráficos Chart.js (4 tipos), Exportación PDF/Excel</td>
+      </tr>
+      <tr>
+        <td><strong>Leo</strong></td>
+        <td><span class="badge badge-ambar">Frontend</span></td>
+        <td>Dashboard Empleado, CRUDs (Sucursales, Productos, Inventario, Transacciones, Gastos), DataTable avanzada, Vista Auditoría</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="card">
+    <div class="card-title">Regla de trabajo</div>
+    <p>Cada integrante trabaja en su rama. Al finalizar el día, merge a <span class="code-inline">develop</span>. Franco revisa los pull requests antes de mergear. Los viernes (día 7 y día 14) se hace merge de <span class="code-inline">develop</span> → <span class="code-inline">main</span>.</p>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════ -->
+<!-- 2. REPOSITORIO GIT Y RAMAS                  -->
+<!-- ═══════════════════════════════════════════ -->
+<div class="page">
+  <h2><span class="section-number">2</span> Repositorios Git y Ramas</h2>
+  <p><strong>⚠ Requisito de cátedra: 2 repos independientes. No se entrega un monorepo.</strong></p>
+
+  <div class="grid-2" style="margin-bottom:10px;">
+    <div class="card">
+      <div class="card-title">Repo Backend</div>
+      <p><span class="code-inline">github.com/tu-usuario/proybackendgrupoXX</span></p>
+    </div>
+    <div class="card">
+      <div class="card-title">Repo Frontend</div>
+      <p><span class="code-inline">github.com/tu-usuario/proyfrontendgrupoXX</span></p>
+    </div>
+  </div>
+
+  <div class="arq-box">
+proybackendgrupoXX/
+├── main                        → Producción
+├── develop                     → Integración diaria
+├── feature/auth-jwt            → Brian: registro, login, JWT, bcrypt
+├── feature/crud-base           → Brian: CRUDs (usuarios, zonas, sucursales, etc.)
+├── feature/middlewares         → Brian: XSS, CSRF, express-validator
+├── feature/agentes-ia          → Franco: agentes Gemini + reportes
+├── feature/apis-externas       → Franco: MercadoPago, GoogleOAuth, DólarAPI
+└── feature/auditoria           → Franco: logs de acciones + tabla auditoría
+
+proyfrontendgrupoXX/
+├── main                        → Producción
+├── develop                     → Integración diaria
+├── feature/core-shell          → Pricila: navbar, sidebar, guards, interceptors
+├── feature/auth-oauth          → Pricila: login, registro, Google callback
+├── feature/dashboards          → Fabri: dashboards Dueño + Gerente + gráficos
+├── feature/cruds-front         → Leo: CRUDs sucursales, productos, transacciones, gastos
+├── feature/datatable-export    → Leo: DataTable avanzada, PDF, Excel
+└── feature/auditoria-front     → Leo: vista de auditoría
+  </div>
+
+  <div class="card">
+    <div class="card-title">Reglas de ramas</div>
+    <ul>
+      <li><strong>Nunca pushear directo a <span class="code-inline">main</span> o <span class="code-inline">develop</span></strong>. Solo mediante PR.</li>
+      <li>Ejecutar <span class="code-inline">npm run lint</span> y <span class="code-inline">npm run build</span> antes de cada push.</li>
+      <li>Nombre de commit en español imperativo: <span class="code-inline">"agregar endpoint POST /api/auth/login"</span>.</li>
+      <li>Al mergear a main: tag semántico (<span class="code-inline">v1.0.0-sprint1</span>, <span class="code-inline">v2.0.0-final</span>).</li>
+      <li><strong>Pricila revisa PRs de frontend. Franco revisa PRs de backend.</strong> Nadie es cuello de botella único.</li>
+      <li><strong>30 min diarios de code review cruzado rotativo</strong> (los 5 en videollamada). Cada uno explica lo que hizo y cómo. Esto prepara la defensa individual.</li>
+    </ul>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════ -->
+<!-- 3. PALETA DE COLORES Y DISEÑO               -->
+<!-- ═══════════════════════════════════════════ -->
+<div class="page pb">
+  <h2><span class="section-number">3</span> Paleta de Colores y Diseño</h2>
+
+  <h3>3.1. Colores Principales (Tono Financiero Profesional)</h3>
+  <table>
+    <thead><tr><th>Rol</th><th>Color</th><th>Hex</th><th>Uso</th></tr></thead>
+    <tbody>
+      <tr><td><strong>Primario</strong></td><td><span class="color-swatch swatch-primary"></span></td><td><span class="code-inline">#1A3A5C</span></td><td>Navbar, sidebar, títulos</td></tr>
+      <tr><td><strong>Secundario</strong></td><td><span class="color-swatch swatch-secondary"></span></td><td><span class="code-inline">#F59E0B</span></td><td>Acento, KPIs, hover</td></tr>
+      <tr><td><strong>Info / Teal</strong></td><td><span class="color-swatch swatch-info"></span></td><td><span class="code-inline">#0D9488</span></td><td>Botones secundarios, links, exportar</td></tr>
+      <tr><td><strong>Peligro</strong></td><td><span class="color-swatch swatch-danger"></span></td><td><span class="code-inline">#EF4444</span></td><td>Quiebre stock, anomalías, eliminar</td></tr>
+      <tr><td><strong>Éxito</strong></td><td><span class="color-swatch swatch-success"></span></td><td><span class="code-inline">#10B981</span></td><td>Confirmaciones, stock ok</td></tr>
+      <tr><td><strong>Fondo</strong></td><td><span class="color-swatch swatch-light"></span></td><td><span class="code-inline">#F8FAFC</span></td><td>Fondo de páginas</td></tr>
+      <tr><td><strong>Tarjetas</strong></td><td><span class="color-swatch swatch-white"></span></td><td><span class="code-inline">#FFFFFF</span></td><td>Cards, formularios</td></tr>
+      <tr><td><strong>Texto</strong></td><td><span class="color-swatch swatch-text"></span></td><td><span class="code-inline">#1E293B</span></td><td>Texto principal</td></tr>
+      <tr><td><strong>Texto Sec.</strong></td><td><span class="color-swatch swatch-textsec"></span></td><td><span class="code-inline">#64748B</span></td><td>Labels, descripciones</td></tr>
+    </tbody>
+  </table>
+
+  <h3>3.2. Overrides Bootstrap 5</h3>
+  <div class="diagram-box">
+$primary:   #1A3A5C;
+$secondary: #F59E0B;
+$success:   #10B981;
+$danger:    #EF4444;
+$info:      #0D9488;
+$dark:      #1E293B;
+$light:     #F8FAFC;
+  </div>
+
+  <h3>3.3. Tipografía</h3>
+  <table>
+    <thead><tr><th>Elemento</th><th>Font</th><th>Weight</th></tr></thead>
+    <tbody>
+      <tr><td>Títulos</td><td>Inter</td><td>600 / 700</td></tr>
+      <tr><td>Cuerpo</td><td>Inter</td><td>400</td></tr>
+      <tr><td>Código / Moneda</td><td>Inter</td><td>500</td></tr>
+    </tbody>
+  </table>
+
+  <h3>3.4. Reglas Anti-Colisión para Frontend</h3>
+  <ul>
+    <li><strong>Pricila</strong> define <span class="code-inline">styles.scss</span> global y <span class="code-inline">_variables.scss</span>.</li>
+    <li><strong>Fabri y Leo</strong> usan las variables; no crean estilos globales sin consultar.</li>
+    <li>Cada componente tiene su <span class="code-inline">.scss</span> en la misma carpeta.</li>
+    <li>Verificar que no rompan el estilo de otro módulo antes de pushear.</li>
+  </ul>
+
+  <h3>3.5. Componentes visuales</h3>
+  <table>
+    <thead><tr><th>Elemento</th><th>Especificación</th></tr></thead>
+    <tbody>
+      <tr><td>Botón primario</td><td><span class="code-inline">bg-primary text-white</span> — Crear, Guardar</td></tr>
+      <tr><td>Botón secundario</td><td><span class="code-inline">bg-info text-white</span> — Exportar, Filtrar</td></tr>
+      <tr><td>Botón outline</td><td><span class="code-inline">btn-outline-primary</span> — Cancelar, Volver</td></tr>
+      <tr><td>Iconos</td><td>Bootstrap Icons (<span class="code-inline">npm i bootstrap-icons</span>)</td></tr>
+      <tr><td>Cards</td><td><span class="code-inline">border: none; border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.08)</span></td></tr>
+      <tr><td>Tablas</td><td>Header <span class="code-inline">#F1F5F9</span>, hover row <span class="code-inline">#F8FAFC</span></td></tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- ═══════════════════════════════════════════ -->
+<!-- 4. MODELO DE DATOS                          -->
+<!-- ═══════════════════════════════════════════ -->
+<div class="page pb">
+  <h2><span class="section-number">4</span> Modelo de Datos (DER + Sequelize)</h2>
+
+  <h3>4.1. Diagrama Entidad-Relación</h3>
+
+  <div class="diagram-box">
+┌──────────────┐         ┌──────────────┐
+│ PROVEEDORES  │         │  USUARIOS     │──────────┐
+│ id           │         │  id           │          │ 1:1
+│ nombre       │         │  nombre       │          │
+│ cuit         │         │  email (UQ)   │     ┌────┴───────────┐
+│ contacto     │         │  password     │     │ SUSCRIPCIONES   │
+└───┬──────────┘         │  googleId     │     │ id              │
+    │ 1:N                │  rol ENUM     │     │ plan            │
+    ▼                    │  sucursalId FK│     │ estado          │
+┌──────────────┐         │  zonaId FK    │     │ monto           │
+│ GASTOS       │         │  activo       │     │ mercadoPagoId   │
+│ id           │         └─┬───┬───┬────┘     │ fechaPago       │
+│ tipo         │           │   │   │          │ usuarioId FK    │
+│ monto        │    1:N ┌──┘   │   └──┐ 1:N  └────────────────┘
+│ descripcion  │  ┌─────┘ 1:N │ 1:N  └─────────────┐
+│ fecha        │  │           │                     │
+│ anomalia     │  │      ┌────┴──────┐    ┌─────────┴─────────┐
+│ proveedorId  │  │      │ ZONAS     │    │ AUDITORIA         │
+│ sucursalId ──┤  │      │ id        │    │ id                │
+└──────────────┘  │      │ nombre    │    │ accion            │
+                  │      └──┬────┬───┘    │ entidad           │
+                  │         │    │        │ entidadId         │
+┌──────────────┐  │      ┌──┴────┴──────┐ │ datosAnteriores   │
+│ INVENTARIO   │  │      │ SUCURSALES   │ │ datosNuevos       │
+│ id           │  │      │ id           │ │ usuarioId FK      │
+│ productoId ──┤  │      │ nombre       │ │ timestamp         │
+│ sucursalId ──┤  │      │ direccion    │ └───────────────────┘
+│ stockActual  │  │      │ lat, lng     │
+│ stockMinimo  │  │      │ telefono     │
+│ precioVenta  │  │      │ zonaId FK    │
+└─────┬────────┘  │      └──┬────┬──────┘
+      │ N:1       │         │    │
+      ▼           │         │    └──────────┐ 1:N
+┌──────────────┐  │         │ 1:N           │
+│ PRODUCTOS    │  │         │               │
+│ id           │◄─┘         │      ┌────────┴─────────┐
+│ nombre       │            │      │ TRANSACCIONES    │
+│ codigo (UQ)  │            │      │ id               │
+│ categoria    │            │      │ tipo (V/C)       │
+│ precioCompra │            │      │ cantidad         │
+│ unidadMedida │            │      │ precioUnitario   │
+└──────┬───────┘            │      │ total            │
+       │ 1:N                │      │ fecha            │
+       │                    │      │ productoId FK    │
+       │                    │      │ sucursalId FK    │
+       │                    │      │ usuarioId FK     │
+       │                    │      └──────────────────┘
+       │                    │
+       │     ┌──────────────┴──────────────────────────────┐
+       │     │ REPORTES_AGENTES                             │
+       │     │ id, tipoAgente(sector/zona/central)          │
+       └─────┤ sector(ventas/finanzas/stock, nullable)      │
+             │ contenidoJSON (JSONB)                        │
+             │ resumenNLP (TEXT)                            │
+             │ sucursalId FK (nullable)                     │
+             │ zonaId FK (nullable)                         │
+             │ generadoPor FK → USUARIOS                    │
+             │ fechaGeneracion                              │
+             └──────────────────────────────────────────────┘
+  </div>
+
+  <h3>4.2. Resumen de Cardinalidades</h3>
+  <table>
+    <thead><tr><th>Relación</th><th style="width:50px">Card.</th><th>Regla de Negocio</th></tr></thead>
+    <tbody>
+      <tr><td>Usuario → Suscripción</td><td class="align-center">1:1</td><td>Solo Dueños tienen suscripción activa</td></tr>
+      <tr><td>Usuario → Auditoría</td><td class="align-center">1:N</td><td>Cada acción del usuario queda registrada</td></tr>
+      <tr><td>Usuario → Sucursal</td><td class="align-center">N:1</td><td>Empleado pertenece a 1 sucursal</td></tr>
+      <tr><td>Usuario → Zona</td><td class="align-center">N:1</td><td>Gerente gestiona 1 zona</td></tr>
+      <tr><td>Zona → Sucursal</td><td class="align-center">1:N</td><td>Una zona (ej. "Norte") agrupa N sucursales</td></tr>
+      <tr><td>Sucursal → Transacción</td><td class="align-center">1:N</td><td>Historial de ventas/compras</td></tr>
+      <tr><td>Sucursal → Inventario</td><td class="align-center">1:N</td><td>Stock propio de cada sucursal</td></tr>
+      <tr><td>Sucursal → Gasto</td><td class="align-center">1:N</td><td>Gastos operativos</td></tr>
+      <tr><td>Sucursal → ReporteAgente</td><td class="align-center">1:N</td><td>Reportes de sector asociados</td></tr>
+      <tr><td>Zona → ReporteAgente</td><td class="align-center">1:N</td><td>Reportes zonales consolidados</td></tr>
+      <tr><td>Producto → Inventario</td><td class="align-center">1:N</td><td>Un producto aparece en N sucursales</td></tr>
+      <tr><td>Producto → Transacción</td><td class="align-center">1:N</td><td>Trazabilidad de ventas por producto</td></tr>
+      <tr><td>Proveedor → Gasto</td><td class="align-center">1:N</td><td>Compras a proveedores</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- ═══════════════════════════════════════════ -->
+<!-- 4.3. CAMPOS CLAVE Y VALIDACIONES            -->
+<!-- ═══════════════════════════════════════════ -->
+<div class="page pb">
+  <h3>4.3. Campos Clave y Validaciones Sequelize</h3>
+
+  <table>
+    <thead><tr><th>Entidad</th><th>Campo</th><th>Tipo / Validación</th></tr></thead>
+    <tbody>
+      <tr><td rowspan="7"><strong>USUARIOS</strong></td><td><span class="code-inline">nombre</span></td><td><span class="code-inline">STRING(100)</span>, no nulo</td></tr>
+      <tr><td><span class="code-inline">email</span></td><td><span class="code-inline">STRING(150)</span>, único, <span class="code-inline">isEmail</span></td></tr>
+      <tr><td><span class="code-inline">password</span></td><td><span class="code-inline">STRING(255)</span>, no nulo, bcrypt hash</td></tr>
+      <tr><td><span class="code-inline">googleId</span></td><td><span class="code-inline">STRING</span>, único, nullable (Google OAuth)</td></tr>
+      <tr><td><span class="code-inline">rol</span></td><td><span class="code-inline">ENUM('dueno','gerente','empleado')</span></td></tr>
+      <tr><td><span class="code-inline">sector</span></td><td><span class="code-inline">ENUM('ventas','finanzas','stock')</span>, nullable (solo para rol empleado, null en Dueño/Gerente)</td></tr>
+      <tr><td><span class="code-inline">sucursalId</span></td><td><span class="code-inline">INTEGER</span>, FK, nullable (null para Dueño)</td></tr>
+      <tr><td><span class="code-inline">activo</span></td><td><span class="code-inline">BOOLEAN</span>, default true</td></tr>
+
+      <tr><td rowspan="5"><strong>SUSCRIPCIONES</strong></td><td><span class="code-inline">plan</span></td><td><span class="code-inline">ENUM('basico','pro','enterprise')</span></td></tr>
+      <tr><td><span class="code-inline">estado</span></td><td><span class="code-inline">ENUM('activo','pendiente','cancelado')</span>, default 'pendiente'</td></tr>
+      <tr><td><span class="code-inline">monto</span></td><td><span class="code-inline">DECIMAL(10,2)</span>, no nulo</td></tr>
+      <tr><td><span class="code-inline">mercadoPagoId</span></td><td><span class="code-inline">STRING</span>, único</td></tr>
+      <tr><td><span class="code-inline">usuarioId</span></td><td><span class="code-inline">INTEGER</span>, FK único (garantiza 1:1)</td></tr>
+
+      <tr><td rowspan="6"><strong>AUDITORIA</strong></td><td><span class="code-inline">accion</span></td><td><span class="code-inline">ENUM('CREATE','UPDATE','DELETE','LOGIN','EXPORT')</span></td></tr>
+      <tr><td><span class="code-inline">entidad</span></td><td><span class="code-inline">STRING(50)</span>, no nulo (ej: 'Productos')</td></tr>
+      <tr><td><span class="code-inline">entidadId</span></td><td><span class="code-inline">INTEGER</span>, nullable</td></tr>
+      <tr><td><span class="code-inline">datosAnteriores</span></td><td><span class="code-inline">JSONB</span>, nullable</td></tr>
+      <tr><td><span class="code-inline">datosNuevos</span></td><td><span class="code-inline">JSONB</span>, nullable</td></tr>
+      <tr><td><span class="code-inline">usuarioId</span></td><td><span class="code-inline">INTEGER</span>, FK, timestamp default NOW</td></tr>
+
+      <tr><td rowspan="4"><strong>INVENTARIO</strong></td><td><span class="code-inline">stockActual</span></td><td><span class="code-inline">INTEGER</span>, default 0</td></tr>
+      <tr><td><span class="code-inline">stockMinimo</span></td><td><span class="code-inline">INTEGER</span>, default 10</td></tr>
+      <tr><td><span class="code-inline">precioVenta</span></td><td><span class="code-inline">DECIMAL(10,2)</span>, no nulo</td></tr>
+      <tr><td colspan="2"><strong>FK compuesta única:</strong> <span class="code-inline">[productoId, sucursalId]</span></td></tr>
+
+      <tr><td rowspan="4"><strong>REPORTES_AGENTES</strong></td><td><span class="code-inline">tipoAgente</span></td><td><span class="code-inline">ENUM('sector','zona','central')</span></td></tr>
+      <tr><td><span class="code-inline">sector</span></td><td><span class="code-inline">ENUM('ventas','finanzas','stock')</span>, nullable (null si central)</td></tr>
+      <tr><td><span class="code-inline">contenidoJSON</span></td><td><span class="code-inline">JSONB</span> — datos estructurados para gráficos</td></tr>
+      <tr><td><span class="code-inline">resumenNLP</span></td><td><span class="code-inline">TEXT</span> — generado por IA (Gemini)</td></tr>
+    </tbody>
+  </table>
+
+  <h3>4.4. Matriz de Acceso por Rol</h3>
+  <table>
+    <thead><tr><th>Endpoint / Vista</th><th style="width:60px">Dueño</th><th style="width:60px">Gerente Zona</th><th style="width:60px">Empleado</th></tr></thead>
+    <tbody>
+      <tr><td>Dashboard global + Reporte Central NLP</td><td class="align-center"><span class="badge badge-verde">✓</span></td><td class="align-center"><span class="badge badge-rojo">✗</span></td><td class="align-center"><span class="badge badge-rojo">✗</span></td></tr>
+      <tr><td>Dashboard zonal + Mapa + Gráficos</td><td class="align-center"><span class="badge badge-verde">✓</span></td><td class="align-center"><span class="badge badge-verde">✓</span></td><td class="align-center"><span class="badge badge-rojo">✗</span></td></tr>
+      <tr><td>CRUD Usuarios</td><td class="align-center"><span class="badge badge-verde">✓</span></td><td class="align-center"><span class="badge badge-rojo">✗</span></td><td class="align-center"><span class="badge badge-rojo">✗</span></td></tr>
+      <tr><td>CRUD Sucursales / Zonas</td><td class="align-center"><span class="badge badge-verde">✓</span></td><td class="align-center"><span class="badge badge-rojo">✗</span></td><td class="align-center"><span class="badge badge-rojo">✗</span></td></tr>
+      <tr><td>CRUD Productos</td><td class="align-center"><span class="badge badge-verde">✓</span></td><td class="align-center"><span class="badge badge-verde">✓</span></td><td class="align-center"><span class="badge badge-verde">✓</span></td></tr>
+      <tr><td>CRUD Transacciones</td><td class="align-center"><span class="badge badge-verde">✓</span></td><td class="align-center"><span class="badge badge-verde">✓</span></td><td class="align-center"><span class="badge badge-verde">✓</span></td></tr>
+      <tr><td>CRUD Gastos</td><td class="align-center"><span class="badge badge-verde">✓</span></td><td class="align-center"><span class="badge badge-verde">✓</span></td><td class="align-center"><span class="badge badge-verde">✓</span></td></tr>
+      <tr><td>Ver Reportes Agentes</td><td class="align-center"><span class="badge badge-verde">✓</span></td><td class="align-center"><span class="badge badge-verde">✓</span></td><td class="align-center"><span class="badge badge-verde">✓</span></td></tr>
+      <tr><td>Ver Auditoría</td><td class="align-center"><span class="badge badge-verde">✓</span></td><td class="align-center"><span class="badge badge-verde">✓</span></td><td class="align-center"><span class="badge badge-rojo">✗</span></td></tr>
+      <tr><td>Suscripción (MercadoPago)</td><td class="align-center"><span class="badge badge-verde">✓</span></td><td class="align-center"><span class="badge badge-rojo">✗</span></td><td class="align-center"><span class="badge badge-rojo">✗</span></td></tr>
+      <tr><td>Exportar PDF / Excel</td><td class="align-center"><span class="badge badge-verde">✓</span></td><td class="align-center"><span class="badge badge-verde">✓</span></td><td class="align-center"><span class="badge badge-rojo">✗</span></td></tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- ═══════════════════════════════════════════ -->
+<!-- 5. ARQUITECTURA DE CARPETAS                 -->
+<!-- ═══════════════════════════════════════════ -->
+<div class="page pb">
+  <h2><span class="section-number">5</span> Arquitectura de Carpetas</h2>
+
+  <div class="arq-box">
+raiz/
+├── proyfrontendgrupoXX/             ← Angular 19+ / Bootstrap 5
+│   ├── src/app/
+│   │   ├── core/
+│   │   │   ├── guards/auth.guard.ts
+│   │   │   ├── guards/role.guard.ts
+│   │   │   ├── interceptors/jwt.interceptor.ts
+│   │   │   └── services/api.service.ts
+│   │   │   └── services/auth.service.ts
+│   │   │   └── services/export.service.ts
+│   │   ├── shared/
+│   │   │   ├── components/navbar/
+│   │   │   ├── components/sidebar/
+│   │   │   ├── components/datatable/
+│   │   │   ├── components/chart-card/
+│   │   │   ├── components/kpi-card/
+│   │   │   └── pipes/currency.pipe.ts
+│   │   ├── auth/
+│   │   │   ├── login/
+│   │   │   ├── register/
+│   │   │   └── google-callback/
+│   │   ├── dashboard/
+│   │   │   ├── dashboard-dueno/
+│   │   │   ├── dashboard-gerente/
+│   │   │   └── dashboard-empleado/
+│   │   ├── sucursales/
+│   │   │   ├── sucursal-list/
+│   │   │   ├── sucursal-form/
+│   │   │   └── sucursal-mapa/
+│   │   ├── inventario/
+│   │   │   ├── producto-list/
+│   │   │   ├── producto-form/
+│   │   │   └── stock-sucursal/
+│   │   ├── transacciones/
+│   │   │   ├── transaccion-list/
+│   │   │   └── transaccion-form/
+│   │   ├── gastos/
+│   │   │   ├── gasto-list/
+│   │   │   └── gasto-form/
+│   │   ├── reportes/               ← Reportes agentes + export
+│   │   ├── suscripcion/            ← Checkout MercadoPago
+│   │   └── auditoria/              ← Logs de acciones
+│   └── environments/
+│
+├── proybackendgrupoXX/              ← Node.js / Express / Sequelize
+│   ├── src/
+│   │   ├── config/
+│   │   │   ├── database.js
+│   │   │   ├── auth.config.js
+│   │   │   └── mercadoPago.config.js
+│   │   ├── models/                 ← 11 modelos Sequelize
+│   │   ├── controllers/            ← 11 controladores
+│   │   ├── routes/                 ← 11 archivos de rutas
+│   │   ├── middlewares/
+│   │   │   ├── authJWT.js
+│   │   │   ├── verifyRole.js
+│   │   │   ├── auditLog.js
+│   │   │   └── security.js         ← helmet + csurf
+│   │   ├── services/
+│   │   │   ├── mercadoPago.service.js
+│   │   │   ├── googleOAuth.service.js
+│   │   │   ├── dolarAPI.service.js
+│   │   │   └── gemini.service.js
+│   │   ├── agents/
+│   │   │   ├── orquestador.js
+│   │   │   ├── agenteStock.js
+│   │   │   ├── agenteVentas.js
+│   │   │   ├── agenteFinanzas.js
+│   │   │   ├── agenteZona.js
+│   │   │   └── agenteCentral.js
+│   │   └── utils/
+│   │       ├── pdfGenerator.js
+│   │       └── excelGenerator.js
+│   ├── migrations/
+│   ├── seeders/
+│   └── server.js
+│
+└── docs/
+    ├── DER_SmartMargin.png
+    ├── Postman_collection.json
+    └── plan_abordaje_smartmargin.pdf
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════ -->
+<!-- 6. API REST — ENDPOINTS                     -->
+<!-- ═══════════════════════════════════════════ -->
+<div class="page pb">
+  <h2><span class="section-number">6</span> API REST — Endpoints</h2>
+
+  <p><strong>Formato de respuesta estándar:</strong></p>
+  <div class="diagram-box">
+// Éxito
+{ "success": true, "data": { ... }, "message": "Operación exitosa" }
+
+// Paginado
+{ "success": true, "data": [...], "total": 234, "page": 1, "limit": 10 }
+
+// Error
+{ "success": false, "message": "Error: producto no encontrado" }
+  </div>
+
+  <table>
+    <thead><tr><th>Método</th><th>Ruta</th><th style="width:60px">Rol</th><th>Descripción</th></tr></thead>
+    <tbody>
+      <tr><td><span class="badge badge-verde">POST</span></td><td><span class="code-inline">/api/auth/register</span></td><td class="align-center">Público</td><td>Registro con email/password</td></tr>
+      <tr><td><span class="badge badge-verde">POST</span></td><td><span class="code-inline">/api/auth/login</span></td><td class="align-center">Público</td><td>Login → devuelve JWT</td></tr>
+      <tr><td><span class="badge badge-verde">POST</span></td><td><span class="code-inline">/api/auth/google</span></td><td class="align-center">Público</td><td>Login/Registro con Google OAuth</td></tr>
+      <tr><td><span class="badge badge-azul">GET</span></td><td><span class="code-inline">/api/auth/profile</span></td><td class="align-center">Todos</td><td>Datos del usuario autenticado</td></tr>
+      <tr><td><span class="badge badge-azul">GET</span></td><td><span class="code-inline">/api/usuarios</span></td><td class="align-center">Dueño</td><td>Listar todos los usuarios</td></tr>
+      <tr><td><span class="badge badge-verde">POST</span></td><td><span class="code-inline">/api/usuarios</span></td><td class="align-center">Dueño</td><td>Crear usuario (empleado/gerente)</td></tr>
+      <tr><td><span class="badge badge-ambar">PUT</span></td><td><span class="code-inline">/api/usuarios/:id</span></td><td class="align-center">Dueño</td><td>Editar usuario</td></tr>
+      <tr><td><span class="badge badge-rojo">DELETE</span></td><td><span class="code-inline">/api/usuarios/:id</span></td><td class="align-center">Dueño</td><td>Desactivar usuario (baja lógica)</td></tr>
+      <tr><td><span class="badge badge-azul">GET</span></td><td><span class="code-inline">/api/zonas</span></td><td class="align-center">Dueño/Gerente</td><td>Listar zonas</td></tr>
+      <tr><td><span class="badge badge-verde">POST</span></td><td><span class="code-inline">/api/zonas</span></td><td class="align-center">Dueño</td><td>Crear zona</td></tr>
+      <tr><td><span class="badge badge-ambar">PUT</span></td><td><span class="code-inline">/api/zonas/:id</span></td><td class="align-center">Dueño</td><td>Editar zona</td></tr>
+      <tr><td><span class="badge badge-rojo">DELETE</span></td><td><span class="code-inline">/api/zonas/:id</span></td><td class="align-center">Dueño</td><td>Eliminar zona</td></tr>
+      <tr><td><span class="badge badge-azul">GET</span></td><td><span class="code-inline">/api/sucursales</span></td><td class="align-center">Todos</td><td>Listar sucursales (filtro por zona/rol)</td></tr>
+      <tr><td><span class="badge badge-verde">POST</span></td><td><span class="code-inline">/api/sucursales</span></td><td class="align-center">Dueño</td><td>Crear sucursal (con lat/lng)</td></tr>
+      <tr><td><span class="badge badge-ambar">PUT</span></td><td><span class="code-inline">/api/sucursales/:id</span></td><td class="align-center">Dueño</td><td>Editar sucursal</td></tr>
+      <tr><td><span class="badge badge-rojo">DELETE</span></td><td><span class="code-inline">/api/sucursales/:id</span></td><td class="align-center">Dueño</td><td>Eliminar sucursal</td></tr>
+      <tr><td><span class="badge badge-azul">GET</span></td><td><span class="code-inline">/api/productos</span></td><td class="align-center">Todos</td><td>Listar productos</td></tr>
+      <tr><td><span class="badge badge-verde">POST</span></td><td><span class="code-inline">/api/productos</span></td><td class="align-center">Todos</td><td>Crear producto</td></tr>
+      <tr><td><span class="badge badge-ambar">PUT</span></td><td><span class="code-inline">/api/productos/:id</span></td><td class="align-center">Todos</td><td>Editar producto</td></tr>
+      <tr><td><span class="badge badge-rojo">DELETE</span></td><td><span class="code-inline">/api/productos/:id</span></td><td class="align-center">Dueño/Gerente</td><td>Eliminar producto</td></tr>
+      <tr><td><span class="badge badge-azul">GET</span></td><td><span class="code-inline">/api/inventario</span></td><td class="align-center">Todos</td><td>Stock por sucursal (?stockCritico=true)</td></tr>
+      <tr><td><span class="badge badge-ambar">PUT</span></td><td><span class="code-inline">/api/inventario/:id</span></td><td class="align-center">Todos</td><td>Actualizar stock / precio</td></tr>
+      <tr><td><span class="badge badge-azul">GET</span></td><td><span class="code-inline">/api/transacciones</span></td><td class="align-center">Todos</td><td>Listar con filtros (fecha, sucursal, tipo)</td></tr>
+      <tr><td><span class="badge badge-verde">POST</span></td><td><span class="code-inline">/api/transacciones</span></td><td class="align-center">Todos</td><td>Registrar venta/compra</td></tr>
+      <tr><td><span class="badge badge-ambar">PUT</span></td><td><span class="code-inline">/api/transacciones/:id</span></td><td class="align-center">Todos</td><td>Editar transacción</td></tr>
+      <tr><td><span class="badge badge-rojo">DELETE</span></td><td><span class="code-inline">/api/transacciones/:id</span></td><td class="align-center">Dueño/Gerente</td><td>Anular transacción</td></tr>
+      <tr><td><span class="badge badge-azul">GET</span></td><td><span class="code-inline">/api/gastos</span></td><td class="align-center">Todos</td><td>Listar gastos (con flag anomalia)</td></tr>
+      <tr><td><span class="badge badge-verde">POST</span></td><td><span class="code-inline">/api/gastos</span></td><td class="align-center">Todos</td><td>Registrar gasto</td></tr>
+      <tr><td><span class="badge badge-ambar">PUT</span></td><td><span class="code-inline">/api/gastos/:id</span></td><td class="align-center">Todos</td><td>Editar gasto</td></tr>
+      <tr><td><span class="badge badge-rojo">DELETE</span></td><td><span class="code-inline">/api/gastos/:id</span></td><td class="align-center">Dueño/Gerente</td><td>Eliminar gasto</td></tr>
+      <tr><td><span class="badge badge-azul">GET</span></td><td><span class="code-inline">/api/proveedores</span></td><td class="align-center">Todos</td><td>Listar proveedores</td></tr>
+      <tr><td><span class="badge badge-azul">GET</span></td><td><span class="code-inline">/api/reportes</span></td><td class="align-center">Todos</td><td>Reportes según rol (sector/zona/central)</td></tr>
+      <tr><td><span class="badge badge-verde">POST</span></td><td><span class="code-inline">/api/reportes/generar</span></td><td class="align-center">Dueño/Gerente</td><td>Disparar generación de reporte IA</td></tr>
+      <tr><td><span class="badge badge-azul">GET</span></td><td><span class="code-inline">/api/dolar</span></td><td class="align-center">Todos</td><td>Cotización dólar en tiempo real</td></tr>
+      <tr><td><span class="badge badge-verde">POST</span></td><td><span class="code-inline">/api/suscripcion/crear</span></td><td class="align-center">Dueño</td><td>Crear preferencia MercadoPago</td></tr>
+      <tr><td><span class="badge badge-verde">POST</span></td><td><span class="code-inline">/api/suscripcion/webhook</span></td><td class="align-center">Sistema</td><td>Webhook MP — <strong>validar firma x-signature</strong> antes de procesar pago</td></tr>
+      <tr><td><span class="badge badge-azul">GET</span></td><td><span class="code-inline">/api/suscripcion/estado</span></td><td class="align-center">Dueño</td><td>Estado actual de la suscripción</td></tr>
+      <tr><td><span class="badge badge-azul">GET</span></td><td><span class="code-inline">/api/auditoria</span></td><td class="align-center">Dueño/Gerente</td><td>Logs de auditoría (filtros: usuario, fecha, entidad)</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- ═══════════════════════════════════════════ -->
+<!-- 7. CROQUIS DE PANTALLAS                     -->
+<!-- ═══════════════════════════════════════════ -->
+<div class="page pb">
+  <h2><span class="section-number">7</span> Croquis de Pantallas</h2>
+
+  <h3>7.1. Layout Base — Shell (Pricila)</h3>
+  <div class="diagram-box">
+┌─────────────────────────────────────────────────────────────┐
+│ NAVBAR (fixed-top, bg-primary #1A3A5C, height: 60px)        │
+│ [☰] SmartMargin AI              [🔔 Notif.] [👤 Perfil ▼]   │
+└──────┬──────────────────────────────────────────────────────┘
+       │
+┌──────┴──────────┬───────────────────────────────────────────┐
+│ SIDEBAR         │  CONTENIDO (router-outlet)                │
+│ (w: 250px)      │                                           │
+│                 │  ┌─────────────────────────────────────┐  │
+│ 📊 Dashboard    │  │                                     │  │
+│ ──────────      │  │   Contenido de la vista activa      │  │
+│ 🏢 Sucursales   │  │                                     │  │
+│ 📦 Productos    │  │                                     │  │
+│ 📋 Inventario   │  │                                     │  │
+│ 💰 Transacciones│  │                                     │  │
+│ 💸 Gastos       │  │                                     │  │
+│ 🚚 Proveedores  │  │                                     │  │
+│ ──────────      │  │                                     │  │
+│ 🤖 Reportes IA  │  │                                     │  │
+│ 📝 Auditoría    │  │                                     │  │
+│ 💳 Suscripción  │  │                                     │  │
+│                 │  │                                     │  │
+└─────────────────┘  └─────────────────────────────────────┘  │
+  </div>
+  <p><strong>Sidebar adaptativo por rol:</strong> Dueño ve todo, Gerente sin Suscripción ni Auditoría global, Empleado solo su módulo (Transacciones o Inventario o Gastos).</p>
+</div>
+
+<!-- ══════════════ 7.2 - 7.7 ══════════════ -->
+<div class="page pb">
+  <h3>7.2. Dashboard Dueño (Fabri)</h3>
+  <div class="diagram-box">
+┌──────────────────────────────────────────────────────────────┐
+│ Dashboard General                     Período: [Último Mes ▼] │
+├──────────────────────────────────────────────────────────────┤
+│ ┌──────────┐ ┌──────────┐ ┌──────────┐ ┌──────────────────┐ │
+│ │Ingresos  │ │Gastos    │ │Margen    │ │Stock Crítico     │ │
+│ │$4.200.000│ │$1.800.000│ │   57%    │ │  3 productos ⚠  │ │
+│ │  ↑12%    │ │  ↑5%     │ │  ↑3%     │ │                  │ │
+│ └──────────┘ └──────────┘ └──────────┘ └──────────────────┘ │
+│                                                               │
+│ ┌─────────────────────────┐ ┌──────────────────────────────┐ │
+│ │ Rentabilidad x Sucursal │ │ Evolución Ingresos (línea)   │ │
+│ │ [Chart.js BARRAS]       │ │ [Chart.js LÍNEA]             │ │
+│ │                         │ │                              │ │
+│ └─────────────────────────┘ └──────────────────────────────┘ │
+│                                                               │
+│ ┌─────────────────────────────────────────────────────────┐  │
+│ │ 🤖 REPORTE DEL AGENTE CENTRAL (NLP)                     │  │
+│ │ "Se detectó sobreprecio en Sucursal Norte (+22%).       │  │
+│ │  Recomendación: ajustar precio de compra con Proveedor  │  │
+│ │  X. Stock crítico: Leche (3u), Harina (8u) en Zona Sur."│  │
+│ └─────────────────────────────────────────────────────────┘  │
+└──────────────────────────────────────────────────────────────┘
+  </div>
+
+  <h3>7.3. Dashboard Gerente de Zona (Fabri)</h3>
+  <div class="diagram-box">
+┌──────────────────────────────────────────────────────────────┐
+│ Dashboard Zona Norte                   Período: [Último Mes ▼]│
+├──────────────────────────────────────────────────────────────┤
+│ ┌──────────────────────┐  ┌────────────────────────────────┐ │
+│ │ MAPA LEAFLET         │  │ Comparativa Sucursales         │ │
+│ │                      │  │ [Chart.js RADAR]               │ │
+│ │  📍 Sucursal A      │  │  Ventas ── Gastos ── Margen   │ │
+│ │  📍 Sucursal B      │  │                                 │ │
+│ │  📍 Sucursal C      │  │                                 │ │
+│ └──────────────────────┘  └────────────────────────────────┘ │
+│                                                               │
+│ ┌─────────────────────────────────────────────────────────┐  │
+│ │ Gastos por Categoría [Chart.js TORTA]                   │  │
+│ └─────────────────────────────────────────────────────────┘  │
+│                                                               │
+│ ┌─────────────────────────────────────────────────────────┐  │
+│ │ 🤖 REPORTE AGENTE ZONA (NLP)                            │  │
+│ │ "La Zona Norte incrementó ingresos 8%. Alerta: Suc B    │  │
+│ │  presenta gastos duplicados en rubro Alquiler."         │  │
+│ └─────────────────────────────────────────────────────────┘  │
+└──────────────────────────────────────────────────────────────┘
+  </div>
+
+  <h3>7.4. Panel Empleado — CRUD Transacciones (Leo)</h3>
+  <div class="diagram-box">
+┌──────────────────────────────────────────────────────────────┐
+│ Transacciones                                                 │
+├──────────────────────────────────────────────────────────────┤
+│ [+ Nueva Venta]  [+ Nueva Compra]  [📥 Excel]  [📥 PDF]      │
+│                                                               │
+│ Buscar: [____________]  Tipo: [Todas ▼]  Fecha: [desde-hasta]│
+│ Sucursal: [Todas ▼]                                          │
+├──────────────────────────────────────────────────────────────┤
+│ ID | Fecha     | Tipo  | Producto  | Cant | Total | Acciones │
+│ ───┼───────────┼───────┼───────────┼──────┼───────┼─────────│
+│ 45 | 10/06/26 | Venta | Leche     │  5   │ $1750 │  ✏️  🗑️  │
+│ 44 | 10/06/26 | Compra| Harina    │  20  │ $1000 │  ✏️  🗑️  │
+│ 43 | 09/06/26 | Venta | Pan       │  10  │ $1500 │  ✏️  🗑️  │
+├──────────────────────────────────────────────────────────────┤
+│  << < 1  2  3 ... 10 > >>                 Mostrando 1-10/234 │
+└──────────────────────────────────────────────────────────────┘
+  </div>
+</div>
+
+<!-- ══════════════ 7.5 - 7.7 ══════════════ -->
+<div class="page pb">
+  <h3>7.5. Reportes de Agentes IA (Leo)</h3>
+  <div class="diagram-box">
+┌──────────────────────────────────────────────────────────────┐
+│ Reportes de Agentes IA                                       │
+├──────────────────────────────────────────────────────────────┤
+│ Agente: [Todos ▼]  Sector: [Todos ▼]  Fecha: [Últ. Semana ▼]│
+├──────────────────────────────────────────────────────────────┤
+│ ┌──────────────────────────────────────────────────────────┐ │
+│ │ 🤖 Agente Stock — Sucursal Norte — 11/06/26             │ │
+│ │ "Se predice quiebre de stock para Leche en 3 días.      │ │
+│ │  Stock actual: 12u. Demanda diaria: 5u.                 │ │
+│ │  Recomendación: Comprar 20u al Proveedor La Serenísima."│ │
+│ │                                   [Ver datos completos]  │ │
+│ └──────────────────────────────────────────────────────────┘ │
+│ ┌──────────────────────────────────────────────────────────┐ │
+│ │ 🤖 Agente Finanzas — Sucursal Centro — 10/06/26         │ │
+│ │ "Anomalía detectada: Gasto duplicado en Alquiler         │ │
+│ │  ($150.000 repetido el 05/06 y 06/06). Revisar."        │ │
+│ │                                   [Ver datos completos]  │ │
+│ └──────────────────────────────────────────────────────────┘ │
+└──────────────────────────────────────────────────────────────┘
+  </div>
+
+  <h3>7.6. Auditoría de Acciones (Leo)</h3>
+  <div class="diagram-box">
+┌──────────────────────────────────────────────────────────────┐
+│ Auditoría de Acciones                                        │
+├──────────────────────────────────────────────────────────────┤
+│ Usuario: [Todos ▼]  Acción: [Todas ▼]  Entidad: [Todas ▼]   │
+│ Fecha: [desde] [hasta]                                       │
+├──────────────────────────────────────────────────────────────┤
+│ ID | Fecha/Hora      | Usuario | Acción  | Entidad   | ID Reg│
+│ ───┼─────────────────┼─────────┼─────────┼───────────┼───────│
+│ 89 | 12/06 14:32:15  | Franco  | UPDATE  | Productos | 5     │
+│ 88 | 12/06 14:30:01  | Brian   | CREATE  | Gastos    | 12    │
+│ 87 | 12/06 13:15:42  | Pricila | LOGIN   | —         | —     │
+│ 86 | 12/06 12:00:00  | Franco  | DELETE  | Transacc. | 45    │
+├──────────────────────────────────────────────────────────────┤
+│ << < 1 2 3 ... > >>                                          │
+└──────────────────────────────────────────────────────────────┘
+  </div>
+
+  <h3>7.7. Suscripción (Pricila)</h3>
+  <div class="diagram-box">
+┌──────────────────────────────────────────────────────────────┐
+│ Mi Suscripción                                               │
+├──────────────────────────────────────────────────────────────┤
+│                                                               │
+│  Plan actual: PRO                        Estado: ACTIVO ✅    │
+│  ┌─────────────────────────────────────┐                     │
+│  │  $ 2.500 / mes                      │                     │
+│  │  ✓ 10 sucursales                    │                     │
+│  │  ✓ Reportes IA ilimitados           │                     │
+│  │  ✓ Soporte prioritario              │                     │
+│  │  ✓ Exportación PDF/Excel            │                     │
+│  └─────────────────────────────────────┘                     │
+│                                                               │
+│  Próximo pago: 12/07/2026                                    │
+│                                                               │
+│  [Cambiar Plan]  [Cancelar Suscripción]                       │
+│                                                               │
+│ ───────────────────────────────────────────────               │
+│  Planes disponibles:                                         │
+│  ┌──────────┐  ┌──────────┐  ┌──────────┐                  │
+│  │ Básico   │  │ PRO      │  │Enterprise│                  │
+│  │ $1.000   │  │ $2.500 ◄ │  │ $5.000   │                  │
+│  │ 3 suc.   │  │ 10 suc.  │  │ Ilimitado│                  │
+│  │ [Elegir] │  │ [Actual] │  │ [Elegir] │                  │
+│  └──────────┘  └──────────┘  └──────────┘                  │
+└──────────────────────────────────────────────────────────────┘
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════ -->
+<!-- 8. COMUNICACIÓN DE AGENTES IA               -->
+<!-- ═══════════════════════════════════════════ -->
+<div class="page pb">
+  <h2><span class="section-number">8</span> Comunicación de Agentes IA (Franco)</h2>
+
+  <div class="arq-box">
+                   ┌────────────────────────┐
+                   │  Gemini API (Node.js SDK) │
+                   │  (Google AI Studio)     │
+                   └───────────┬────────────┘
+                               │ prompt + datos
+                               ▼
+┌──────────────────────────────────────────────────────────────┐
+│                 ORQUESTADOR (orquestador.js)                 │
+│                                                              │
+│  1. Recibe solicitud (tipo: sector / zona / central)        │
+│  2. Consulta datos necesarios a la BD                        │
+│  3. Ejecuta agente(s) correspondiente(s)                     │
+│  4. Almacena resultado en Reportes_Agentes                   │
+│  5. Devuelve resumenNLP al frontend                          │
+└───┬──────────┬──────────┬──────────┬──────────┬─────────────┘
+    │          │          │          │          │
+    ▼          ▼          ▼          ▼          ▼
+┌──────┐  ┌──────┐  ┌──────┐  ┌──────┐  ┌──────────┐
+│Agente│  │Agente│  │Agente│  │Agente│  │Agente    │
+│Stock │  │Ventas│  │Finanz│  │Zona  │  │Central   │
+├──────┤  ├──────┤  ├──────┤  ├──────┤  ├──────────┤
+│Input │  │Input │  │Input │  │Input │  │Input     │
+│• Inv.│  │•Trans│  │•Gast │  │•Repo-│  │• Reportes│
+│• Prod│  │•Preci│  │•Prov │  │ rtes │  │  de Zona │
+│      │  │ os   │  │      │  │  Sec-│  │• KPIs    │
+│      │  │      │  │      │  │  tor │  │  globales│
+├──────┤  ├──────┤  ├──────┤  ├──────┤  ├──────────┤
+│Output│  │Output│  │Output│  │Output│  │Output    │
+│•Quieb│  │•Preci│  │•Anoma│  │•Conso│  │• Reporte │
+│re    │  │os    │  │lías  │  │lidado│  │  Ejecut. │
+│stock │  │dinám.│  │•Ahor-│  │  NLP │  │  NLP     │
+│•Recom│  │•Tende│  │ro    │  │•Alert│  │• Recomen-│
+│pra   │  │ncias │  │poten-│  │as    │  │  dación  │
+│      │  │      │  │cial  │  │      │  │  estrat. │
+└──────┘  └──────┘  └──────┘  └──────┘  └──────────┘
+  </div>
+
+  <div class="grid-2">
+    <div class="card">
+      <div class="card-title">Pipeline Sprint 1 (Mock)</div>
+      <p>
+        <span class="code-inline">POST /api/reportes/generar</span><br>
+        → Orquestador<br>
+        → Lee datos de BD<br>
+        → Agente mock devuelve JSON predefinido<br>
+        → Guarda en Reportes_Agentes<br>
+        → Responde al frontend
+      </p>
+    </div>
+    <div class="card">
+      <div class="card-title">Pipeline Sprint 2 (Real)</div>
+      <p>
+        <span class="code-inline">POST /api/reportes/generar</span><br>
+        → Orquestador<br>
+        → Lee datos de BD<br>
+        → Construye prompt para Gemini<br>
+        → Envía a Gemini API<br>
+        → Recibe respuesta NLP<br>
+        → Guarda en Reportes_Agentes<br>
+        → Responde al frontend
+      </p>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════ -->
+<!-- 9. SPRINT 1 (DÍAS 1-7)                      -->
+<!-- ═══════════════════════════════════════════ -->
+<div class="page pb">
+  <div class="sprint-header">
+    <h3>Sprint 1 — Días 1 a 7</h3>
+    <p>Hito del 50% — MVP Funcional: Login JWT, CRUDs base, Dashboards con mock data, esqueleto de las 6 vistas</p>
+  </div>
+
+  <!-- FRANCO -->
+  <div class="persona-card">
+    <div class="nombre">Franco — Backend + Agentes IA</div>
+    <div class="rol">Modelos · Auth · APIs Externas · Orquestación · Auditoría</div>
+  </div>
+  <table>
+    <thead><tr><th style="width:55px">Día</th><th>Tarea</th><th>Resultado Esperado</th></tr></thead>
+    <tbody>
+      <tr><td class="align-center"><span class="badge badge-azul">1</span></td><td>Inicializar repo, crear ramas, configurar server.js + Express + Sequelize + PostgreSQL + estructura de carpetas backend. Crear scripts package.json (dev, start, migrate, seed).</td><td><span class="code-inline">npm run dev</span> → "Servidor en puerto 3000"</td></tr>
+      <tr><td class="align-center"><span class="badge badge-azul">2</span></td><td>Modelos Usuarios + Zonas + Sucursales con asociaciones 1:N y migraciones.</td><td>3 modelos sincronizados en PostgreSQL</td></tr>
+      <tr><td class="align-center"><span class="badge badge-azul">3</span></td><td>Modelos Suscripciones + Auditoria + Reportes_Agentes con asociaciones. Brian paralelamente hace Productos + Inventario + Transacciones.</td><td>6 modelos total entre ambos (Franco: 6, Brian: 3)</td></tr>
+      <tr><td class="align-center"><span class="badge badge-azul">4</span></td><td>Migraciones completas de los 11 modelos + Seeders (Brian ejecuta los que ya preparó).</td><td>11 modelos en BD, BD poblada con 50+ registros</td></tr>
+      <tr><td class="align-center"><span class="badge badge-azul">5</span></td><td>Carpeta /agents/ → estructura de agentes mock (agenteStock.js, agenteVentas.js, agenteFinanzas.js, agenteZona.js, agenteCentral.js). Cada uno devuelve JSON coherente. <strong>Todo en Node.js, sin Python.</strong></td><td>5 agentes mock funcionales</td></tr>
+      <tr><td class="align-center"><span class="badge badge-azul">6</span></td><td>Controlador + Rutas de Reportes (GET /api/reportes, POST /api/reportes/generar).</td><td>Postman: generar y listar reportes mock</td></tr>
+      <tr><td class="align-center"><span class="badge badge-azul">7</span></td><td>Carpeta /services/ → esqueleto de mercadoPago.service.js, googleOAuth.service.js, dolarAPI.service.js (solo estructura).</td><td>Archivos listos para Sprint 2</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- BRIAN -->
+<div class="page pb">
+  <div class="persona-card">
+    <div class="nombre">Brian — Backend CRUDs + Auth</div>
+    <div class="rol">Registro/Login · CRUDs (6 módulos) · Middlewares · Seeders</div>
+  </div>
+  <table>
+    <thead><tr><th style="width:55px">Día</th><th>Tarea</th><th>Resultado Esperado</th></tr></thead>
+    <tbody>
+      <tr><td class="align-center"><span class="badge badge-azul">1</span></td><td>Configurar entorno local (PostgreSQL, .env), crear seeders (datos dummy en JSON). Leer estructura definida por Franco. <strong>Adelantar seeders sin esperar a que los modelos estén listos.</strong></td><td>Entorno listo + seeders predefinidos</td></tr>
+      <tr><td class="align-center"><span class="badge badge-azul">2</span></td><td><strong>Modelos Productos + Inventario + Transacciones</strong> (en paralelo a Franco que hace Users/Zonas/Sucursales). POST /api/auth/register + POST /api/auth/login (JWT + Bcrypt).</td><td>3 modelos + auth funcional</td></tr>
+      <tr><td class="align-center"><span class="badge badge-azul">3</span></td><td>GET /api/auth/profile + Middleware authJWT.js + verifyRole.js.</td><td>Rutas protegidas con verificación de rol</td></tr>
+      <tr><td class="align-center"><span class="badge badge-azul">4</span></td><td>CRUD Usuarios: GET/POST/PUT/DELETE /api/usuarios (solo Dueño).</td><td>ABM usuarios con control de acceso</td></tr>
+      <tr><td class="align-center"><span class="badge badge-azul">5</span></td><td>CRUD Zonas + CRUD Sucursales: GET/POST/PUT/DELETE. <strong>Modelos Gastos + Proveedores.</strong> Sucursales incluyen lat/lng para mapa Leaflet.</td><td>ABM zonas y sucursales + 2 modelos nuevos</td></tr>
+      <tr><td class="align-center"><span class="badge badge-azul">6</span></td><td>CRUD Productos + CRUD Inventario: GET/POST/PUT/DELETE + endpoint GET /api/inventario?stockCritico=true.</td><td>ABM con filtro de stock crítico</td></tr>
+      <tr><td class="align-center"><span class="badge badge-azul">7</span></td><td>CRUD Transacciones + CRUD Gastos + CRUD Proveedores. Transacciones calculan total = cantidad × precioUnitario automáticamente.</td><td>ABM de los 3 módulos restantes</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- PRICILA -->
+<div class="page pb">
+  <div class="persona-card">
+    <div class="nombre">Pricila — Frontend Core + Auth</div>
+    <div class="rol">Shell · Routing · Guards · Login/Registro · Shared Components · Suscripción</div>
+  </div>
+  <table>
+    <thead><tr><th style="width:55px">Día</th><th>Tarea</th><th>Resultado Esperado</th></tr></thead>
+    <tbody>
+      <tr><td class="align-center"><span class="badge badge-azul">1</span></td><td>ng new proyfrontendgrupoXX + Bootstrap 5 + Bootstrap Icons + Google Fonts (Inter). styles.scss global con variables de color + _variables.scss.</td><td>Proyecto Angular corriendo con paleta aplicada</td></tr>
+      <tr><td class="align-center"><span class="badge badge-azul">2</span></td><td>Componentes compartidos: NavbarComponent, SidebarComponent, LayoutComponent (usa router-outlet).</td><td>Shell navegable con sidebar colapsable</td></tr>
+      <tr><td class="align-center"><span class="badge badge-azul">3</span></td><td>Routing module con lazy loading. Guards: authGuard (redirige a login), roleGuard (bloquea rutas por rol).</td><td>Rutas protegidas, redirección correcta</td></tr>
+      <tr><td class="align-center"><span class="badge badge-azul">4</span></td><td>AuthService + JwtInterceptor (agrega token). ApiService base (GET/POST/PUT/DELETE genérico).</td><td>Servicios inyectables reutilizables</td></tr>
+      <tr><td class="align-center"><span class="badge badge-azul">5</span></td><td>Pantalla Login (email + password) + Registro (nombre + email + password + rol).</td><td>Login y registro funcionales con backend</td></tr>
+      <tr><td class="align-center"><span class="badge badge-azul">6</span></td><td>Componente compartido DataTableComponent (recibe columnas, datos, emite eventos de paginación/búsqueda/ordenamiento).</td><td>DataTable genérico reutilizable</td></tr>
+      <tr><td class="align-center"><span class="badge badge-azul">7</span></td><td>Pantalla Suscripción (esqueleto estático con 3 tarjetas de planes: Básico, PRO, Enterprise).</td><td>Vista de suscripción maquetada</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- FABRI -->
+<div class="page pb">
+  <div class="persona-card">
+    <div class="nombre">Fabri — Frontend Dashboards + Gráficos</div>
+    <div class="rol">Dashboard Dueño · Dashboard Gerente · Mapa Leaflet · Chart.js · Export PDF/Excel</div>
+  </div>
+  <table>
+    <thead><tr><th style="width:55px">Día</th><th>Tarea</th><th>Resultado Esperado</th></tr></thead>
+    <tbody>
+      <tr><td class="align-center"><span class="badge badge-azul">1</span></td><td>Maquetar KPIs y gráficos <strong>standalone</strong> (HTML + SCSS puro, componente aislado sin routing). Diseñar las 4 KPI cards + 1 gráfico de barras placeholder con datos dummy hardcodeados.</td><td>Componentes visuales listos para conectar a servicios (día 3)</td></tr>
+      <tr><td class="align-center"><span class="badge badge-azul">2</span></td><td>Instalar Chart.js + ng2-charts. Crear componente KpiCardComponent reutilizable. Instalar Leaflet vanilla (sin wrapper). Maquetar mapa con marcadores dummy.</td><td>KpiCard + mapa maquetados</td></tr>
+      <tr><td class="align-center"><span class="badge badge-azul">3</span></td><td>Dashboard Dueño: layout con 4 KPI cards + 2 gráficos placeholder (barras y línea con datos mock).</td><td>Dashboard Dueño maquetado</td></tr>
+      <tr><td class="align-center"><span class="badge badge-azul">4</span></td><td>Dashboard Gerente: layout con mapa placeholder + 2 gráficos (radar y torta con datos mock). Instalar Leaflet + ngx-leaflet.</td><td>Dashboard Gerente maquetado</td></tr>
+      <tr><td class="align-center"><span class="badge badge-azul">5</span></td><td>Servicio DashboardService: getDashboardDueno(), getDashboardGerente(zonaId) → consumen endpoints mock del backend.</td><td>Datos fluyendo backend → frontend (mock)</td></tr>
+      <tr><td class="align-center"><span class="badge badge-azul">6</span></td><td>Conectar Dashboard Dueño a datos reales del backend (KPIs calculados con datos de seeders).</td><td>Dashboard con datos reales de BD</td></tr>
+      <tr><td class="align-center"><span class="badge badge-azul">7</span></td><td>Conectar Dashboard Gerente a datos reales (filtrar por zona del usuario logueado).</td><td>Dashboard Gerente con datos reales</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- LEO -->
+<div class="page pb">
+  <div class="persona-card">
+    <div class="nombre">Leo — Frontend CRUDs + DataTable</div>
+    <div class="rol">Dashboard Empleado · CRUDs (5 módulos) · DataTable · Auditoría</div>
+  </div>
+  <table>
+    <thead><tr><th style="width:55px">Día</th><th>Tarea</th><th>Resultado Esperado</th></tr></thead>
+    <tbody>
+      <tr><td class="align-center"><span class="badge badge-azul">1</span></td><td>Maquetar formularios CRUD <strong>standalone</strong> (HTML + SCSS puro, componentes aislados sin routing). Diseñar listado + formulario de Sucursales con datos dummy hardcodeados.</td><td>Formularios visuales listos para conectar a servicios (día 3)</td></tr>
+      <tr><td class="align-center"><span class="badge badge-azul">2</span></td><td>CRUD Sucursales: SucursalListComponent + SucursalFormComponent (formulario reactivo con validaciones).</td><td>ABM sucursales completo</td></tr>
+      <tr><td class="align-center"><span class="badge badge-azul">3</span></td><td>CRUD Productos: ProductoListComponent + ProductoFormComponent.</td><td>ABM productos completo</td></tr>
+      <tr><td class="align-center"><span class="badge badge-azul">4</span></td><td>CRUD Inventario: vista StockSucursalComponent con indicador visual de stock bajo (⚠ rojo si &lt; stockMinimo).</td><td>Gestión de stock por sucursal</td></tr>
+      <tr><td class="align-center"><span class="badge badge-azul">5</span></td><td>CRUD Transacciones: TransaccionListComponent + TransaccionFormComponent (calcula total automático).</td><td>ABM transacciones funcional</td></tr>
+      <tr><td class="align-center"><span class="badge badge-azul">6</span></td><td>CRUD Gastos: GastoListComponent + GastoFormComponent (con flag visual de anomalía).</td><td>ABM gastos funcional</td></tr>
+      <tr><td class="align-center"><span class="badge badge-azul">7</span></td><td>Dashboard Empleado: vista simplificada con cards de acceso rápido a su módulo (solo ve lo de su sector).</td><td>Dashboard Empleado maquetado</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- ═══════════════════════════════════════════ -->
+<!-- 10. SPRINT 2 (DÍAS 8-14)                    -->
+<!-- ═══════════════════════════════════════════ -->
+<div class="page pb">
+  <div class="sprint-header">
+    <h3>Sprint 2 — Días 8 a 14</h3>
+    <p>Entrega Final: 4 APIs integradas, Agentes IA reales, Gráficos interactivos, Exportaciones, Seguridad, Documentación</p>
+  </div>
+
+  <!-- FRANCO S2 -->
+  <div class="persona-card">
+    <div class="nombre">Franco — APIs Externas + Agentes Reales + Seguridad</div>
+    <div class="rol">MercadoPago · Google OAuth · Dólar API · Gemini · Helmet/CSRF · Auditoría</div>
+  </div>
+  <table>
+    <thead><tr><th style="width:55px">Día</th><th>Tarea</th><th>Resultado Esperado</th></tr></thead>
+    <tbody>
+      <tr><td class="align-center"><span class="badge badge-info">8</span></td><td>(A) Integrar MercadoPago SDK: POST /api/suscripcion/crear + webhook con validación x-signature. <br>(B) <strong>Probar conexión a Gemini API</strong> con 1 llamada simple (sin agente completo). Verificar que la API key responde.</td><td>Checkout MP funcional + Gemini API verificada</td></tr>
+      <tr><td class="align-center"><span class="badge badge-info">9</span></td><td>Integrar API Dólar (dolarSi/BCRA): GET /api/dolar → cache en variable, refresh cada 1 hora.</td><td>Endpoint devuelve compra/venta actualizado</td></tr>
+      <tr><td class="align-center"><span class="badge badge-info">10</span></td><td>Integrar Google OAuth con Passport.js: POST /api/auth/google → valida token, crea/recupera usuario.</td><td>Login con cuenta Google funcional</td></tr>
+      <tr><td class="align-center"><span class="badge badge-info">11</span></td><td>Reemplazar mocks por Gemini API real. Agente Stock (predice quiebre) + Agente Finanzas (detecta anomalías en gastos).</td><td>Agentes devuelven análisis real en NLP</td></tr>
+      <tr><td class="align-center"><span class="badge badge-info">12</span></td><td>Agente Zona (consolida sucursales) + Agente Central (reporte ejecutivo Dueño).</td><td>5 agentes funcionales con IA real</td></tr>
+      <tr><td class="align-center"><span class="badge badge-info">13</span></td><td>Middleware XSS (helmet) + CSRF (tiny-csrf o double-submit cookie) en todas las rutas.</td><td>Cabeceras de seguridad activas en todas las respuestas</td></tr>
+      <tr><td class="align-center"><span class="badge badge-info">14</span></td><td>Comunicación agentes → frontend: POST /api/reportes/generar dispara pipeline completo.</td><td>Reporte completo visible en Dashboard</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- BRIAN S2 -->
+<div class="page pb">
+  <div class="persona-card">
+    <div class="nombre">Brian — Validaciones + Filtros + Seeders + Testing</div>
+    <div class="rol">express-validator · Paginación · Helmet/CSRF · Export endpoints · Postman</div>
+  </div>
+  <table>
+    <thead><tr><th style="width:55px">Día</th><th>Tarea</th><th>Resultado Esperado</th></tr></thead>
+    <tbody>
+      <tr><td class="align-center"><span class="badge badge-info">8</span></td><td>Validaciones con express-validator en todos los endpoints (email único, campos requeridos, rangos).</td><td>Errores 400 con mensajes claros</td></tr>
+      <tr><td class="align-center"><span class="badge badge-info">9</span></td><td>Filtros avanzados en GET: query params ?fechaDesde=&fechaHasta=&sucursalId=&tipo=.</td><td>Filtros combinados funcionales</td></tr>
+      <tr><td class="align-center"><span class="badge badge-info">10</span></td><td>Paginación server-side: ?page=1&limit=10 en todos los GET. Respuesta con total, page, limit, data.</td><td>Paginación en todos los endpoints</td></tr>
+      <tr><td class="align-center"><span class="badge badge-info">11</span></td><td>Middleware helmet (XSS, clickjacking) + csurf (CSRF) en todas las rutas.</td><td>Cabeceras de seguridad en todas las respuestas</td></tr>
+      <tr><td class="align-center"><span class="badge badge-info">12</span></td><td>Endpoints de exportación: GET /api/transacciones/export/excel, GET /api/gastos/export/pdf.</td><td>Descarga de archivos desde backend</td></tr>
+      <tr><td class="align-center"><span class="badge badge-info">13</span></td><td>Seeders completos: 5 sucursales, 20 productos, 50 transacciones, 20 gastos, 3 usuarios por rol. <strong>Middleware auditLog.js (hook automático en todos los endpoints)</strong>.</td><td>npx sequelize db:seed:all exitoso, logs automáticos</td></tr>
+      <tr><td class="align-center"><span class="badge badge-info">14</span></td><td>Testing con Postman + corrección de bugs + exportar Postman collection a /docs.</td><td>Collection Postman documentada</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- PRICILA S2 -->
+<div class="page pb">
+  <div class="persona-card">
+    <div class="nombre">Pricila — Google OAuth Front + Suscripción + UX</div>
+    <div class="rol">Google Login · MercadoPago Checkout · Toast Notifications · Responsive</div>
+  </div>
+  <table>
+    <thead><tr><th style="width:55px">Día</th><th>Tarea</th><th>Resultado Esperado</th></tr></thead>
+    <tbody>
+      <tr><td class="align-center"><span class="badge badge-info">8</span></td><td>Google OAuth: botón "Iniciar sesión con Google" en Login. Callback que recibe token y lo envía al backend.</td><td>Login con Google funcional</td></tr>
+      <tr><td class="align-center"><span class="badge badge-info">9</span></td><td>Pantalla Suscripción conectada a MP: botón "Pagar con MercadoPago" redirige a checkout.</td><td>Flujo de pago completo</td></tr>
+      <tr><td class="align-center"><span class="badge badge-info">10</span></td><td>GET /api/suscripcion/estado → muestra estado real en la vista.</td><td>Estado de suscripción dinámico</td></tr>
+      <tr><td class="align-center"><span class="badge badge-info">11</span></td><td>Redirección post-login según rol: Dueño → dashboard-global, Gerente → dashboard-zona, Empleado → su panel.</td><td>Redirección inteligente por rol</td></tr>
+      <tr><td class="align-center"><span class="badge badge-info">12</span></td><td>Notificaciones toast (ngx-toastr) para éxito/error en todas las acciones.</td><td>Feedback visual en cada operación</td></tr>
+      <tr><td class="align-center"><span class="badge badge-info">13</span></td><td>Manejo global de errores HTTP (interceptor muestra toast en 401, 403, 500).</td><td>Errores manejados sin crashear la app</td></tr>
+      <tr><td class="align-center"><span class="badge badge-info">14</span></td><td>Responsive design final: sidebar → offcanvas en mobile, tablas → scroll horizontal.</td><td>App funcional en celular y desktop</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- FABRI S2 -->
+<div class="page pb">
+  <div class="persona-card">
+    <div class="nombre">Fabri — Gráficos Reales + Mapa + Exportaciones</div>
+    <div class="rol">Chart.js (4 tipos) · Leaflet · Dólar en tiempo real · PDF · Excel</div>
+  </div>
+  <table>
+    <thead><tr><th style="width:55px">Día</th><th>Tarea</th><th>Resultado Esperado</th></tr></thead>
+    <tbody>
+      <tr><td class="align-center"><span class="badge badge-info">8</span></td><td>Mapa Leaflet real: GET /api/sucursales → marcadores con popup (nombre, dirección, stock crítico).</td><td>Mapa interactivo con sucursales</td></tr>
+      <tr><td class="align-center"><span class="badge badge-info">9</span></td><td>Cotización Dólar en Dashboard: componente DolarCard que muestra compra/venta actualizado.</td><td>Indicador dólar visible en tiempo real</td></tr>
+      <tr><td class="align-center"><span class="badge badge-info">10</span></td><td>Gráficos con datos reales: barras (rentabilidad por sucursal), línea (evolución ingresos), torta (gastos por categoría), radar (comparativa KPIs).</td><td>4 tipos de gráficos con datos reales</td></tr>
+      <tr><td class="align-center"><span class="badge badge-info">11</span></td><td>Exportación PDF: servicio ExportPdfService (jsPDF + html2canvas) → descarga reporte financiero con gráficos.</td><td>Botón descarga PDF funcional</td></tr>
+      <tr><td class="align-center"><span class="badge badge-info">12</span></td><td>Exportación Excel: servicio ExportExcelService (SheetJS/xlsx) → descarga datos tabulares.</td><td>Botón descarga Excel funcional</td></tr>
+      <tr><td class="align-center"><span class="badge badge-info">13</span></td><td>Botones de exportación en Dashboards + listados de Transacciones y Gastos.</td><td>Exportación accesible desde todas las vistas</td></tr>
+      <tr><td class="align-center"><span class="badge badge-info">14</span></td><td>Animaciones y transiciones finales en gráficos + ajustes visuales.</td><td>Dashboards visualmente pulidos</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- LEO S2 -->
+<div class="page pb">
+  <div class="persona-card">
+    <div class="nombre">Leo — DataTable Avanzada + Auditoría + Reportes</div>
+    <div class="rol">DataTable server-side · Filtros compuestos · Auditoría · Reportes IA</div>
+  </div>
+  <table>
+    <thead><tr><th style="width:55px">Día</th><th>Tarea</th><th>Resultado Esperado</th></tr></thead>
+    <tbody>
+      <tr><td class="align-center"><span class="badge badge-info">8</span></td><td>DataTable avanzada en todos los listados: búsqueda global, ordenamiento por columna, paginación server-side.</td><td>DataTable completa en 5 módulos</td></tr>
+      <tr><td class="align-center"><span class="badge badge-info">9</span></td><td>Filtros compuestos: fecha desde/hasta, sucursal, categoría, tipo. Query params al backend.</td><td>Filtros funcionales en Transacciones y Gastos</td></tr>
+      <tr><td class="align-center"><span class="badge badge-info">10</span></td><td>CRUD Proveedores: ProveedorListComponent + ProveedorFormComponent.</td><td>ABM proveedores completo</td></tr>
+      <tr><td class="align-center"><span class="badge badge-info">11</span></td><td>Vista Auditoría: AuditoriaListComponent con DataTable y filtros (usuario, acción, entidad, fecha).</td><td>Logs de auditoría visibles y filtrables</td></tr>
+      <tr><td class="align-center"><span class="badge badge-info">12</span></td><td>Vista Reportes Agentes: ReportesListComponent con tarjetas de resumen NLP por agente.</td><td>Reportes de IA visibles en frontend</td></tr>
+      <tr><td class="align-center"><span class="badge badge-info">13</span></td><td>UX: skeleton loaders, mensajes "sin resultados", confirmación antes de eliminar.</td><td>Experiencia de usuario pulida</td></tr>
+      <tr><td class="align-center"><span class="badge badge-info">14</span></td><td>Integración final: verificar CRUDs con datos reales + preparar demo de su parte.</td><td>Módulos completos y funcionales</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- ═══════════════════════════════════════════ -->
+<!-- 11. CRONOGRAMA VISUAL                       -->
+<!-- ═══════════════════════════════════════════ -->
+<div class="page pb">
+  <h2><span class="section-number">11</span> Cronograma Visual</h2>
+
+  <div class="diagram-box">
+                 SPRINT 1 (Días 1-7)          SPRINT 2 (Días 8-14)
+              ───────────────────────────── ─────────────────────────────
+Integrante    D1  D2  D3  D4  D5  D6  D7 │ D8  D9  D10 D11 D12 D13 D14
+───────────── ────────────────────────────┼──────────────────────────────
+Franco        ██  ██  ██  ██  ██  ██  ██ │ ██  ██  ██  ██  ██  ██  ██
+Brian         ░░  ██  ██  ██  ██  ██  ██ │ ██  ██  ██  ██  ██  ██  ██
+Pricila       ██  ██  ██  ██  ██  ██  ██ │ ██  ██  ██  ██  ░░  ░░  ░░
+Fabri         ░░  ██  ██  ██  ██  ██  ██ │ ░░  ██  ██  ██  ██  ██  ██
+Leo           ░░  ██  ██  ██  ██  ██  ██ │ ░░  ██  ██  ██  ██  ██  ██
+───────────── ────────────────────────────┼──────────────────────────────
+              ██ = Desarrollo activo       │  ░░ = Configuración / lectura
+  </div>
+
+  <div class="card">
+    <div class="card-title">Hitos Clave</div>
+    <table>
+      <thead><tr><th>Día</th><th>Hito</th><th>Verificación</th></tr></thead>
+      <tbody>
+        <tr><td class="align-center">3</td><td>Login JWT funcional (back + front)</td><td>Iniciar sesión desde Angular, token almacenado</td></tr>
+        <tr><td class="align-center">5</td><td>Todos los CRUDs base operativos</td><td>Postman: GET/POST/PUT/DELETE en 6 módulos</td></tr>
+        <tr><td class="align-center">7</td><td>MVP 50% — 6 vistas maquetadas con mock data</td><td>Demo navegable: Dueño, Gerente, Empleado, Suscripción, Auditoría, Reportes</td></tr>
+        <tr><td class="align-center">10</td><td>4 APIs externas integradas</td><td>MP, Google, Leaflet, Dólar funcionando</td></tr>
+        <tr><td class="align-center">12</td><td>Agentes IA reales (Gemini) + exportaciones</td><td>Reportes NLP + descarga PDF/Excel</td></tr>
+        <tr><td class="align-center">14</td><td>Entrega Final</td><td>Checklist completo ✓</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>Contrato API — ¿Quién consume qué?</h3>
+  <table>
+    <thead><tr><th>Endpoint</th><th>Backend</th><th>Frontend</th></tr></thead>
+    <tbody>
+      <tr><td><span class="code-inline">POST /api/auth/login</span></td><td>Brian</td><td>Pricila</td></tr>
+      <tr><td><span class="code-inline">POST /api/auth/register</span></td><td>Brian</td><td>Pricila</td></tr>
+      <tr><td><span class="code-inline">POST /api/auth/google</span></td><td>Franco</td><td>Pricila</td></tr>
+      <tr><td><span class="code-inline">GET /api/sucursales</span></td><td>Brian</td><td>Leo + Fabri (mapa)</td></tr>
+      <tr><td><span class="code-inline">GET /api/productos</span></td><td>Brian</td><td>Leo</td></tr>
+      <tr><td><span class="code-inline">GET /api/transacciones</span></td><td>Brian</td><td>Leo</td></tr>
+      <tr><td><span class="code-inline">GET /api/gastos</span></td><td>Brian</td><td>Leo</td></tr>
+      <tr><td><span class="code-inline">GET /api/reportes</span></td><td>Franco</td><td>Fabri + Leo</td></tr>
+      <tr><td><span class="code-inline">GET /api/dolar</span></td><td>Franco</td><td>Fabri</td></tr>
+      <tr><td><span class="code-inline">POST /api/suscripcion/crear</span></td><td>Franco</td><td>Pricila</td></tr>
+      <tr><td><span class="code-inline">GET /api/auditoria</span></td><td>Franco</td><td>Leo</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- ═══════════════════════════════════════════ -->
+<!-- 12. TECNOLOGÍAS POR CAPA                    -->
+<!-- ═══════════════════════════════════════════ -->
+<div class="page pb">
+  <h2><span class="section-number">12</span> Tecnologías por Capa</h2>
+
+  <table>
+    <thead><tr><th>Capa</th><th>Tecnología</th><th>Versión</th><th>Propósito</th></tr></thead>
+    <tbody>
+      <tr><td rowspan="7"><strong>Frontend</strong></td><td>Angular</td><td>19+</td><td>Framework SPA</td></tr>
+      <tr><td>Bootstrap 5</td><td>5.3+</td><td>UI responsive + grid</td></tr>
+      <tr><td>Chart.js + ng2-charts</td><td>4.x + 5.x</td><td>Gráficos interactivos (4 tipos)</td></tr>
+      <tr><td>Leaflet + ngx-leaflet</td><td>1.x + 7.x</td><td>Mapa de sucursales</td></tr>
+      <tr><td>Angular Datatables</td><td>16.x</td><td>Tablas con búsqueda/paginación</td></tr>
+      <tr><td>jsPDF + html2canvas</td><td>2.x + 1.x</td><td>Exportación PDF</td></tr>
+      <tr><td>SheetJS (xlsx)</td><td>0.20.x</td><td>Exportación Excel</td></tr>
+
+      <tr><td rowspan="6"><strong>Backend</strong></td><td>Node.js</td><td>20 LTS</td><td>Runtime</td></tr>
+      <tr><td>Express</td><td>4.x</td><td>Framework HTTP</td></tr>
+      <tr><td>Sequelize + pg</td><td>6.x</td><td>ORM + driver PostgreSQL</td></tr>
+      <tr><td>jsonwebtoken + bcryptjs</td><td>9.x + 2.x</td><td>Autenticación JWT + hash</td></tr>
+      <tr><td>Passport.js + Google</td><td>0.7.x</td><td>OAuth 2.0 (Google)</td></tr>
+      <tr><td>helmet + csurf</td><td>7.x + 1.x</td><td>Seguridad XSS + CSRF</td></tr>
+
+      <tr><td rowspan="3"><strong>Externas</strong></td><td>MercadoPago Node SDK</td><td>2.x</td><td>Checkout Pro (suscripción)</td></tr>
+      <tr><td>Google Generative AI</td><td>0.21.x</td><td>Agentes IA (Gemini)</td></tr>
+      <tr><td>API Dólar (dolarSi/BCRA)</td><td>—</td><td>Cotización en tiempo real</td></tr>
+
+      <tr><td rowspan="2"><strong>Infra</strong></td><td>PostgreSQL</td><td>16</td><td>Base de datos relacional</td></tr>
+      <tr><td>Git + GitHub</td><td>—</td><td>Control de versiones</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- ═══════════════════════════════════════════ -->
+<!-- 13. CHECKLIST PRE-ENTREGA                   -->
+<!-- ═══════════════════════════════════════════ -->
+<div class="page">
+  <h2><span class="section-number">13</span> Checklist Pre-Entrega (Día 14)</h2>
+
+  <div class="grid-2">
+    <div class="card">
+      <div class="card-title">Backend</div>
+      <ul class="checklist">
+        <li>npm run build sin errores</li>
+        <li>npx sequelize db:migrate exitoso</li>
+        <li>npx sequelize db:seed:all exitoso</li>
+        <li>Login con email/password funcional</li>
+        <li>Login con Google funcional</li>
+        <li>JWT + Bcrypt verificados</li>
+        <li>Roles: Dueño, Gerente, Empleado</li>
+        <li>Todos los CRUDs (6 módulos) con filtros</li>
+        <li>Helmet + CSRF activos</li>
+        <li>Auditoría con logs automáticos</li>
+        <li>4 APIs externas integradas</li>
+        <li>5 agentes IA generando reportes NLP</li>
+        <li>Checkout MercadoPago (sandbox)</li>
+        <li>Webhook MercadoPago configurado</li>
+        <li>Cotización Dólar en tiempo real</li>
+      </ul>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Frontend</div>
+      <ul class="checklist">
+        <li>npm run build sin errores</li>
+        <li>Paleta de colores aplicada consistente</li>
+        <li>Responsive (mobile + desktop)</li>
+        <li>Login + Registro funcionales</li>
+        <li>Google OAuth callback funcional</li>
+        <li>Guards: auth + role (3 niveles)</li>
+        <li>JWT Interceptor (token en headers)</li>
+        <li>6 vistas completas</li>
+        <li>4 gráficos Chart.js con datos reales</li>
+        <li>Mapa Leaflet con marcadores</li>
+        <li>DataTable con búsqueda/paginación/filtros (5 módulos)</li>
+        <li>Exportación PDF funcional</li>
+        <li>Exportación Excel funcional</li>
+        <li>Notificaciones toast (éxito/error)</li>
+        <li>Manejo global de errores HTTP</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="grid-2" style="margin-top: 14px;">
+    <div class="card">
+      <div class="card-title">Documentación</div>
+      <ul class="checklist">
+        <li>DER (Diagrama Entidad-Relación)</li>
+        <li>Postman collection exportada</li>
+        <li>Manual de usuario</li>
+        <li>Plan de abordaje (este documento)</li>
+        <li>Guion de defensa individual</li>
+        <li>Video demo (5 min)</li>
+      </ul>
+    </div>
+    <div class="card">
+      <div class="card-title">Pre-Defensa</div>
+      <ul class="checklist">
+        <li>Cada integrante preparó demo de sus 2 módulos</li>
+        <li>Prueba de rol Dueño (ve todo)</li>
+        <li>Prueba de rol Gerente (ve su zona)</li>
+        <li>Prueba de rol Empleado (ve su sector)</li>
+        <li>Reporte NLP generado en vivo</li>
+        <li>Exportación PDF/Excel descargable</li>
+        <li>Pago MercadoPago simulado</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="footer">
+    SmartMargin AI — Trabajo Final Integrador — Programación y Servicios Web — UNJU — Junio 2026
+  </div>
+</div>
+
+</div>
+
+</body>
+</html>

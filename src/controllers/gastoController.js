@@ -5,26 +5,34 @@ const gastoController = {
   // GET /api/gastos
   listar: async (req, res) => {
     try {
-      const { sucursalId, proveedorId, tipo, fecha } = req.query;
+      const { sucursalId, proveedorId, tipo, fecha, page = 1, limit = 20 } = req.query;
       const where = {};
+      const pageNum = Math.max(1, parseInt(page, 10));
+      const limitNum = Math.min(100, Math.max(1, parseInt(limit, 10)));
 
       if (sucursalId) where.sucursalId = parseInt(sucursalId, 10);
       if (proveedorId) where.proveedorId = parseInt(proveedorId, 10);
       if (tipo) where.tipo = tipo;
       if (fecha) where.fecha = new Date(fecha);
 
-      const gastos = await Gasto.findAll({
+      const { count, rows: gastos } = await Gasto.findAndCountAll({
         where,
         include: [
           { association: 'proveedor', attributes: ['id', 'nombre', 'cuit'] },
           { association: 'sucursal', attributes: ['id', 'nombre'] },
         ],
         order: [['fecha', 'DESC']],
+        limit: limitNum,
+        offset: (pageNum - 1) * limitNum,
       });
 
       res.json({
         success: true,
         data: gastos,
+        total: count,
+        page: pageNum,
+        limit: limitNum,
+        totalPages: Math.ceil(count / limitNum),
       });
     } catch (error) {
       res.status(500).json({

@@ -5,8 +5,10 @@ const transaccionController = {
   // GET /api/transacciones
   listar: async (req, res) => {
     try {
-      const { fechaDesde, fechaHasta, sucursalId, tipo } = req.query;
+      const { fechaDesde, fechaHasta, sucursalId, tipo, page = 1, limit = 20 } = req.query;
       const where = {};
+      const pageNum = Math.max(1, parseInt(page, 10));
+      const limitNum = Math.min(100, Math.max(1, parseInt(limit, 10)));
 
       if (fechaDesde || fechaHasta) {
         where.fecha = {};
@@ -16,7 +18,7 @@ const transaccionController = {
       if (sucursalId) where.sucursalId = parseInt(sucursalId, 10);
       if (tipo) where.tipo = tipo;
 
-      const transacciones = await Transaccion.findAll({
+      const { count, rows: transacciones } = await Transaccion.findAndCountAll({
         where,
         include: [
           { association: 'producto', attributes: ['id', 'nombre', 'codigo'] },
@@ -24,11 +26,17 @@ const transaccionController = {
           { association: 'sucursal', attributes: ['id', 'nombre'] },
         ],
         order: [['fecha', 'DESC']],
+        limit: limitNum,
+        offset: (pageNum - 1) * limitNum,
       });
 
       res.json({
         success: true,
         data: transacciones,
+        total: count,
+        page: pageNum,
+        limit: limitNum,
+        totalPages: Math.ceil(count / limitNum),
       });
     } catch (error) {
       res.status(500).json({

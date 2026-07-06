@@ -7,7 +7,7 @@ const authController = {
   // POST /api/auth/register
   register: async (req, res) => {
     try {
-      const { nombre, email, password, rol, sector, codigoInvitacion } =
+      const { nombre, apellido, email, password, rol, sector, codigoInvitacion } =
         req.body;
 
       const existente = await Usuario.findOne({ where: { email } });
@@ -63,6 +63,7 @@ const authController = {
       // Creamos el usuario persistiendo los nuevos campos
       const nuevoUsuario = await Usuario.create({
         nombre,
+        apellido,
         email,
         password: hashedPassword,
         rol,
@@ -80,6 +81,7 @@ const authController = {
         data: {
           id: nuevoUsuario.id,
           nombre: nuevoUsuario.nombre,
+          apellido: nuevoUsuario.apellido,
           email: nuevoUsuario.email,
           rol: nuevoUsuario.rol,
           departamento: nuevoUsuario.departamento,
@@ -198,8 +200,9 @@ const authController = {
         });
       }
 
+      const { codigoInvitacion } = req.body;
       const googleData = await verificarTokenGoogle(token);
-      const usuario = await encontrarOCrearUsuario(googleData);
+      const usuario = await encontrarOCrearUsuario(googleData, codigoInvitacion);
 
       const payloadEmpresaId =
         usuario.rol === "dueno" ? usuario.id : usuario.empresaId;
@@ -220,6 +223,7 @@ const authController = {
         data: {
           id: usuario.id,
           nombre: usuario.nombre,
+          apellido: usuario.apellido,
           email: usuario.email,
           rol: usuario.rol,
           departamento: usuario.departamento,

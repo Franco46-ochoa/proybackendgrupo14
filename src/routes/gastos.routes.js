@@ -4,8 +4,8 @@ const gastoController = require('../controllers/gastoController');
 const authJWT = require('../middlewares/authJWT');
 const verifyRole = require('../middlewares/verifyRole');
 const { verifyDepartamento } = require('../middlewares/verifyDepartamento');
+const validators = require('../validators');
 const auditLog = require('../middlewares/auditLog');
-const { crearGastoValidator, actualizarGastoValidator } = require('../middlewares/validators');
 
 router.get('/', authJWT, verifyRole('dueno', 'gerente', 'empleado'), gastoController.listar);
 router.post(
@@ -13,8 +13,8 @@ router.post(
   authJWT,
   verifyRole('dueno', 'gerente', 'empleado'),
   verifyDepartamento('operativo'),
-  crearGastoValidator,
-  auditLog(),
+  validators.gastoCrear,
+  auditLog('gastos'),
   gastoController.crear,
 );
 router.put(
@@ -22,10 +22,10 @@ router.put(
   authJWT,
   verifyRole('dueno', 'gerente', 'empleado'),
   verifyDepartamento('operativo'),
-  actualizarGastoValidator,
-  auditLog(),
+  validators.gastoActualizar,
+  auditLog('gastos'),
   gastoController.actualizar,
 );
-router.delete('/:id', authJWT, verifyRole('dueno', 'gerente'), auditLog(), gastoController.eliminar);
+router.delete('/:id', authJWT, verifyRole('dueno', 'gerente'), validators.gastoEliminar, auditLog('gastos'), gastoController.eliminar);
 
 module.exports = router;

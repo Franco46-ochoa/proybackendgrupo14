@@ -4,8 +4,8 @@ const transaccionController = require('../controllers/transaccionController');
 const authJWT = require('../middlewares/authJWT');
 const verifyRole = require('../middlewares/verifyRole');
 const { verifyDepartamentoTransaccion } = require('../middlewares/verifyDepartamento');
+const validators = require('../validators');
 const auditLog = require('../middlewares/auditLog');
-const { crearTransaccionValidator, actualizarTransaccionValidator } = require('../middlewares/validators');
 
 router.get('/', authJWT, verifyRole('dueno', 'gerente', 'empleado'), transaccionController.listar);
 router.post(
@@ -13,8 +13,8 @@ router.post(
   authJWT,
   verifyRole('dueno', 'gerente', 'empleado'),
   verifyDepartamentoTransaccion(),
-  crearTransaccionValidator,
-  auditLog(),
+  validators.transaccionCrear,
+  auditLog('transacciones'),
   transaccionController.crear,
 );
 router.put(
@@ -22,10 +22,10 @@ router.put(
   authJWT,
   verifyRole('dueno', 'gerente', 'empleado'),
   verifyDepartamentoTransaccion(),
-  actualizarTransaccionValidator,
-  auditLog(),
+  validators.transaccionActualizar,
+  auditLog('transacciones'),
   transaccionController.actualizar,
 );
-router.delete('/:id', authJWT, verifyRole('dueno', 'gerente'), auditLog(), transaccionController.eliminar);
+router.delete('/:id', authJWT, verifyRole('dueno', 'gerente'), validators.transaccionEliminar, auditLog('transacciones'), transaccionController.eliminar);
 
 module.exports = router;

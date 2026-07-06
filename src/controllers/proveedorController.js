@@ -1,16 +1,39 @@
+const { Op } = require('sequelize');
 const { Proveedor, Gasto } = require('../models');
 
 const proveedorController = {
   // GET /api/proveedores
   listar: async (req, res) => {
     try {
-      const proveedores = await Proveedor.findAll({
+      const { busqueda } = req.query;
+      const where = {};
+
+      if (busqueda) {
+        where[Op.or] = [
+          { nombre: { [Op.iLike]: `%${busqueda}%` } },
+          { cuit: { [Op.iLike]: `%${busqueda}%` } },
+          { contacto: { [Op.iLike]: `%${busqueda}%` } },
+        ];
+      }
+
+      const page = parseInt(req.query.page) || 1;
+      const limit = parseInt(req.query.limit) || 10;
+      const offset = (page - 1) * limit;
+
+      const { count: total, rows: data } = await Proveedor.findAndCountAll({
+        where,
+        offset,
+        limit,
         order: [['nombre', 'ASC']],
       });
 
       res.json({
         success: true,
-        data: proveedores,
+        data,
+        total,
+        page,
+        limit,
+        totalPages: Math.ceil(total / limit),
       });
     } catch (error) {
       res.status(500).json({

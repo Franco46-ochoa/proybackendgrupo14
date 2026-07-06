@@ -10,6 +10,10 @@ module.exports = {
         autoIncrement: true,
         allowNull: false,
       },
+      empresaId: {
+        type: Sequelize.INTEGER,
+        allowNull: true,
+      },
       nombre: {
         type: Sequelize.STRING(100),
         allowNull: false,
@@ -27,11 +31,7 @@ module.exports = {
   },
 
   async down(queryInterface, Sequelize) {
-    /**
-     * Add reverting commands here.
-     *
-     * Example:
-     * await queryInterface.dropTable('users');
-     */
+    await queryInterface.dropTable("zonas");
   },
 };
+

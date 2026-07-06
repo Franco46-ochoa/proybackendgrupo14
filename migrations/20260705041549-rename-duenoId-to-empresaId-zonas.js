@@ -1,11 +1,7 @@
-'use strict';
+"use strict";
 
+// No-op: la columna se creó directamente como empresaId en create-zonas
 module.exports = {
-  async up(queryInterface, Sequelize) {
-    await queryInterface.renameColumn('zonas', 'duenoId', 'empresaId');
-  },
-
-  async down(queryInterface, Sequelize) {
-    await queryInterface.renameColumn('zonas', 'empresaId', 'duenoId');
-  }
+  async up(queryInterface, Sequelize) {},
+  async down(queryInterface, Sequelize) {},
 };

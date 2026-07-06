@@ -1,17 +1,7 @@
 "use strict";
 
+// No-op: empresaId ya está incluido en la migración create-zonas
 module.exports = {
-  async up(queryInterface, Sequelize) {
-    await queryInterface.addColumn("zonas", "duenoId", {
-      type: Sequelize.INTEGER,
-      allowNull: true,
-      references: { model: "usuarios", key: "id" },
-      onUpdate: "CASCADE",
-      onDelete: "SET NULL",
-    });
-  },
-
-  async down(queryInterface, Sequelize) {
-    await queryInterface.removeColumn("zonas", "duenoId");
-  },
+  async up(queryInterface, Sequelize) {},
+  async down(queryInterface, Sequelize) {},
 };

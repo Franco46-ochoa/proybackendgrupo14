@@ -4,7 +4,7 @@ const agenteVentas = require('./agenteVentas');
 const agenteFinanzas = require('./agenteFinanzas');
 const agenteZona = require('./agenteZona');
 const agenteCentral = require('./agenteCentral');
-const { Inventario, Producto, Transaccion, Gasto, Proveedor, Sucursal, Zona } = require('../models');
+const { Inventario, Producto, Transaccion, Gasto, Proveedor, Sucursal, Zona, sequelize } = require('../models');
 
 const orquestador = async ({ tipo, sucursalId, zonaId, usuarioId, empresaId }) => {
   if (!empresaId) {
@@ -82,9 +82,14 @@ const orquestador = async ({ tipo, sucursalId, zonaId, usuarioId, empresaId }) =
           where: { sucursalId: s.id } 
         }) || 0;
         const stockCritico = await Inventario.count({
-          where: { sucursalId: s.id },
-          attributes: ['stockActual', 'stockMinimo'],
-          having: { stockActual: { [Op.lt]: col('stockMinimo') } }
+          where: {
+            sucursalId: s.id,
+            [Op.and]: sequelize.where(
+              sequelize.col('stockActual'),
+              '<',
+              sequelize.col('stockMinimo')
+            )
+          }
         });
         
         return { 
@@ -112,9 +117,14 @@ const orquestador = async ({ tipo, sucursalId, zonaId, usuarioId, empresaId }) =
             where: { sucursalId: s.id } 
           }) || 0;
           stockCritico += await Inventario.count({
-            where: { sucursalId: s.id },
-            attributes: ['stockActual', 'stockMinimo'],
-            having: { stockActual: { [Op.lt]: col('stockMinimo') } }
+            where: {
+              sucursalId: s.id,
+              [Op.and]: sequelize.where(
+                sequelize.col('stockActual'),
+                '<',
+                sequelize.col('stockMinimo')
+              )
+            }
           });
         }
         

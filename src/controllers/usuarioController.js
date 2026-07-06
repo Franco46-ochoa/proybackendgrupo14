@@ -1,3 +1,4 @@
+const { Op } = require('sequelize');
 const bcrypt = require('bcryptjs');
 const { Usuario } = require('../models');
 
@@ -5,18 +6,40 @@ const usuarioController = {
   // GET /api/usuarios
   listar: async (req, res) => {
     try {
-      const usuarios = await Usuario.findAll({
+      const { rol, activo, busqueda } = req.query;
+      const where = {};
+
+      if (rol) where.rol = rol;
+      if (activo !== undefined) where.activo = activo === 'true';
+      if (busqueda) {
+        where[Op.or] = [
+          { nombre: { [Op.iLike]: `%${busqueda}%` } },
+          { email: { [Op.iLike]: `%${busqueda}%` } },
+        ];
+      }
+
+      const page = parseInt(req.query.page) || 1;
+      const limit = parseInt(req.query.limit) || 10;
+      const offset = (page - 1) * limit;
+
+      const { count: total, rows: data } = await Usuario.findAndCountAll({
+        where,
         attributes: { exclude: ['password', 'googleId'] },
         include: [
           { association: 'zona', attributes: ['id', 'nombre'] },
           { association: 'sucursal', attributes: ['id', 'nombre'] },
         ],
+        offset,
+        limit,
       });
 
       res.json({
         success: true,
-        data: usuarios,
-        message: 'Usuarios listados exitosamente',
+        data,
+        total,
+        page,
+        limit,
+        totalPages: Math.ceil(total / limit),
       });
     } catch (error) {
       res.status(500).json({

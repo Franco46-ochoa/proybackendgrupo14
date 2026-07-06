@@ -1,13 +1,7 @@
 "use strict";
 
+// No-op: 'administrador' ya está incluido en el ENUM de create-codigos-invitacion
 module.exports = {
-  async up(queryInterface, Sequelize) {
-    await queryInterface.sequelize.query(
-      "ALTER TYPE \"enum_codigos_invitacion_rol\" ADD VALUE 'administrador';"
-    );
-  },
-
-  async down(queryInterface, Sequelize) {
-    // PostgreSQL no permite quitar valores de un ENUM
-  },
+  async up(queryInterface, Sequelize) {},
+  async down(queryInterface, Sequelize) {},
 };

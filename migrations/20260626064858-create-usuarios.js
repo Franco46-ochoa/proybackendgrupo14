@@ -10,7 +10,32 @@ module.exports = {
         autoIncrement: true,
         allowNull: false,
       },
+      empresaId: {
+        type: Sequelize.INTEGER,
+        allowNull: true,
+        references: { model: "usuarios", key: "id" },
+        onUpdate: "CASCADE",
+        onDelete: "SET NULL",
+      },
+      zonaId: {
+        type: Sequelize.INTEGER,
+        allowNull: true,
+        references: { model: "zonas", key: "id" },
+        onUpdate: "CASCADE",
+        onDelete: "SET NULL",
+      },
+      sucursalId: {
+        type: Sequelize.INTEGER,
+        allowNull: true,
+        references: { model: "sucursales", key: "id" },
+        onUpdate: "CASCADE",
+        onDelete: "SET NULL",
+      },
       nombre: {
+        type: Sequelize.STRING(100),
+        allowNull: false,
+      },
+      apellido: {
         type: Sequelize.STRING(100),
         allowNull: false,
       },
@@ -29,8 +54,12 @@ module.exports = {
         unique: true,
       },
       rol: {
-        type: Sequelize.ENUM("dueno", "gerente", "empleado"),
+        type: Sequelize.ENUM("dueno", "administrador", "gerente", "empleado"),
         defaultValue: "empleado",
+      },
+      departamento: {
+        type: Sequelize.ENUM("comercial", "operativo"),
+        allowNull: true,
       },
       sector: {
         type: Sequelize.ENUM("ventas", "finanzas", "stock"),
@@ -39,20 +68,6 @@ module.exports = {
       activo: {
         type: Sequelize.BOOLEAN,
         defaultValue: true,
-      },
-      zonaId: {
-        type: Sequelize.INTEGER,
-        allowNull: true,
-        references: { model: "zonas", key: "id" },
-        onUpdate: "CASCADE",
-        onDelete: "SET NULL",
-      },
-      sucursalId: {
-        type: Sequelize.INTEGER,
-        allowNull: true,
-        references: { model: "sucursales", key: "id" },
-        onUpdate: "CASCADE",
-        onDelete: "SET NULL",
       },
       createdAt: {
         type: Sequelize.DATE,
@@ -66,11 +81,6 @@ module.exports = {
   },
 
   async down(queryInterface, Sequelize) {
-    /**
-     * Add reverting commands here.
-     *
-     * Example:
-     * await queryInterface.dropTable('users');
-     */
+    await queryInterface.dropTable("usuarios");
   },
 };

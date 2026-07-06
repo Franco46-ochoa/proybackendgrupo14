@@ -6,11 +6,11 @@ const inventarioController = {
   // ?stockCritico=true filtra stockActual < stockMinimo
   listar: async (req, res) => {
     try {
-      const { stockCritico, page = 1, limit = 20 } = req.query;
+      const { stockCritico } = req.query;
+      const page = parseInt(req.query.page) || 1;
+      const limit = Math.min(100, parseInt(req.query.limit) || 20);
+      const offset = (page - 1) * limit;
       const usuario = await Usuario.findByPk(req.usuario.id);
-
-      const pageNum = Math.max(1, parseInt(page, 10));
-      const limitNum = Math.min(100, Math.max(1, parseInt(limit, 10)));
 
       let where = {};
 
@@ -33,24 +33,24 @@ const inventarioController = {
         );
       }
 
-      const { count, rows: inventario } = await Inventario.findAndCountAll({
+      const { count: total, rows: data } = await Inventario.findAndCountAll({
         where,
         include: [
           { association: 'producto', attributes: ['id', 'nombre', 'codigo', 'precioCompra'] },
           { association: 'sucursal', attributes: ['id', 'nombre'] },
         ],
+        offset,
+        limit,
         order: [['id', 'ASC']],
-        limit: limitNum,
-        offset: (pageNum - 1) * limitNum,
       });
 
       res.json({
         success: true,
-        data: inventario,
-        total: count,
-        page: pageNum,
-        limit: limitNum,
-        totalPages: Math.ceil(count / limitNum),
+        data,
+        total,
+        page,
+        limit,
+        totalPages: Math.ceil(total / limit),
       });
     } catch (error) {
       res.status(500).json({

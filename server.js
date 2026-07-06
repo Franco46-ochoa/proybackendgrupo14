@@ -1,9 +1,10 @@
 require("dotenv").config();
 const express = require("express");
+const helmet = require("helmet");
 const cors = require("cors");
+const cookieParser = require("cookie-parser");
 const { connectDB } = require("./src/config/database");
-const securityHeaders = require("./src/middlewares/security");
-const csrfProtection = require("./src/middlewares/csrfProtection");
+const csrfMiddleware = require("./src/middlewares/csrf");
 
 // Sentry - Monitoreo de errores en producción
 const Sentry = require("@sentry/node");
@@ -29,16 +30,22 @@ try {
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-app.use(securityHeaders());
+app.use(helmet());
 app.use(cors());
+app.use(cookieParser());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(csrfProtection());
+
+app.use('/api', csrfMiddleware);
 
 // Sentry request handler (debe ir después de express.json y antes de las rutas)
 if (process.env.SENTRY_DSN) {
   app.use(Sentry.Handlers.requestHandler());
 }
+
+app.get('/api/csrf-token', (req, res) => {
+  res.json({ csrfToken: req.csrfToken || req.cookies?.['XSRF-TOKEN'] || null });
+});
 
 // Configuracion de ruta para visualizacion de Swagger UI
 if (swaggerFile) {

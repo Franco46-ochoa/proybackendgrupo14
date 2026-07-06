@@ -1,12 +1,7 @@
-'use strict';
+"use strict";
 
+// No-op: la columna se creó directamente como empresaId en create-codigos-invitacion
 module.exports = {
-  async up(queryInterface, Sequelize) {
-    // Confirmado nombre con guion bajo según pgAdmin
-    await queryInterface.renameColumn('codigos_invitacion', 'duenoId', 'empresaId');
-  },
-
-  async down(queryInterface, Sequelize) {
-    await queryInterface.renameColumn('codigos_invitacion', 'empresaId', 'duenoId');
-  }
+  async up(queryInterface, Sequelize) {},
+  async down(queryInterface, Sequelize) {},
 };

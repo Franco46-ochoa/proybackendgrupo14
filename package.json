@@ -5,7 +5,7 @@
   "main": "src/agents/reportero.js",
   "scripts": {
     "dev": "nodemon server.js",
-    "start": "npm run migrate && node server.js",
+    "start": "npx sequelize-cli db:migrate && node server.js",
     "lint": "echo 'no lint'",
     "test": "echo 'no tests'",
     "migrate": "npx sequelize-cli db:migrate",

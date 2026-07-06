@@ -20,6 +20,10 @@ module.exports = (sequelize) => {
         unique: true,
         allowNull: true,
       },
+      fechaPago: {
+        type: DataTypes.DATE,
+        allowNull: true,
+      },
     },
     {
       tableName: "suscripciones",

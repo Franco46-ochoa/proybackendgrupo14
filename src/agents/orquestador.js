@@ -1,3 +1,4 @@
+const { Op, col } = require('sequelize');
 const agenteStock = require('./agenteStock');
 const agenteVentas = require('./agenteVentas');
 const agenteFinanzas = require('./agenteFinanzas');
@@ -67,7 +68,7 @@ const orquestador = async ({ tipo, sucursalId, zonaId, usuarioId }) => {
         const stockCritico = await Inventario.count({
           where: { sucursalId: s.id },
           attributes: ['stockActual', 'stockMinimo'],
-          having: { stockActual: { $lt: { $col: 'stockMinimo' } } }
+          having: { stockActual: { [Op.lt]: col('stockMinimo') } }
         });
         
         return { 
@@ -98,7 +99,7 @@ const orquestador = async ({ tipo, sucursalId, zonaId, usuarioId }) => {
           stockCritico += await Inventario.count({
             where: { sucursalId: s.id },
             attributes: ['stockActual', 'stockMinimo'],
-            having: { stockActual: { $lt: { $col: 'stockMinimo' } } }
+            having: { stockActual: { [Op.lt]: col('stockMinimo') } }
           });
         }
         

@@ -21,10 +21,6 @@ module.exports = (sequelize) => {
         type: DataTypes.INTEGER,
         allowNull: true,
       },
-      zonaId: {
-        type: DataTypes.INTEGER,
-        allowNull: true,
-      },
       departamento: {
         type: DataTypes.ENUM("comercial", "operativo"),
         allowNull: true,

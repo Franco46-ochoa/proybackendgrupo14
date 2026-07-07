@@ -38,6 +38,10 @@ module.exports = (sequelize) => {
         type: DataTypes.ENUM("ventas", "finanzas", "stock"),
         allowNull: true,
       },
+      firstLogin: {
+        type: DataTypes.BOOLEAN,
+        defaultValue: true,
+      },
       activo: {
         type: DataTypes.BOOLEAN,
         defaultValue: true,

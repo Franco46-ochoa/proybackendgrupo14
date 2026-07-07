@@ -209,6 +209,13 @@ const gastoEliminar = [
   handleValidationErrors,
 ];
 
+// ─── Suscripcion ───────────────────────────────────────────
+const suscripcionCrear = [
+  body('plan').isIn(['basico', 'pro', 'enterprise']).withMessage('El plan debe ser basico, pro o enterprise'),
+  body('monto').isFloat({ min: 0.01 }).withMessage('El monto debe ser un numero positivo'),
+  handleValidationErrors,
+];
+
 // ─── Proveedor ─────────────────────────────────────────────
 const proveedorCrear = [
   body('nombre').trim().notEmpty().withMessage('El nombre del proveedor es obligatorio'),
@@ -258,4 +265,5 @@ module.exports = {
   proveedorCrear,
   proveedorActualizar,
   proveedorEliminar,
+  suscripcionCrear,
 };

@@ -71,6 +71,8 @@ const codigosRoutes = require("./src/routes/codigos.routes");
 const pagoRoutes = require("./src/routes/pago.routes");
 const dolarRoutes = require("./src/routes/dolar.routes");
 const auditoriaRoutes = require("./src/routes/auditoria.routes");
+const suscripcionesRoutes = require("./src/routes/suscripciones.routes");
+const mpRoutes = require("./src/routes/mp.routes");
 
 app.use("/api/auth", authRoutes);
 app.use("/api/usuarios", usuariosRoutes);
@@ -86,6 +88,8 @@ app.use("/api/codigos", codigosRoutes);
 app.use("/api/pagos", pagoRoutes);
 app.use("/api/dolar", dolarRoutes);
 app.use("/api/auditoria", auditoriaRoutes);
+app.use("/api/suscripciones", suscripcionesRoutes);
+app.use("/api/mp", mpRoutes);
 
 app.get("/", (req, res) => {
   res.json({ success: true, message: "SmartMargin API v1.0" });

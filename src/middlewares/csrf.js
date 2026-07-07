@@ -1,6 +1,6 @@
 const crypto = require('crypto');
 
-const CSRF_EXEMPT = ['/api/auth/register', '/api/auth/login'];
+const CSRF_EXEMPT = ['/api/auth/register', '/api/auth/login', '/api/suscripciones', '/api/mp'];
 
 const csrfMiddleware = (req, res, next) => {
   const fullPath = req.originalUrl || req.url;

@@ -122,12 +122,17 @@ const authController = {
       const payloadEmpresaId =
         usuario.rol === "dueno" ? usuario.id : usuario.empresaId;
 
+      const firstLogin = usuario.firstLogin;
+      if (firstLogin) {
+        await usuario.update({ firstLogin: false });
+      }
+
       const token = jwt.sign(
         {
           id: usuario.id,
           rol: usuario.rol,
-          empresaId: payloadEmpresaId, // Requerido por el orquestador y controladores
-          departamento: usuario.departamento, // Requerido por verifyDepartamento
+          empresaId: payloadEmpresaId,
+          departamento: usuario.departamento,
         },
         process.env.JWT_SECRET,
         { expiresIn: "24h" },
@@ -142,6 +147,7 @@ const authController = {
           rol: usuario.rol,
           departamento: usuario.departamento,
           empresaId: payloadEmpresaId,
+          firstLogin,
         },
         token,
         message: "Login exitoso",

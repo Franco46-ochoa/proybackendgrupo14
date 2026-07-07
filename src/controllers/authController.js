@@ -74,7 +74,11 @@ const authController = {
         departamento, // ◄ Persistencia en PostgreSQL (ENUM 'comercial' o 'operativo')
       });
 
-      // Si el código era de un solo uso o alcanzó su límite, podrías decrementar usos aquí (opcional)
+      codigo.usosRealizados += 1;
+      if (codigo.usosRealizados >= codigo.usosMaximos) {
+        codigo.activo = false;
+      }
+      await codigo.save();
 
       res.status(201).json({
         success: true,

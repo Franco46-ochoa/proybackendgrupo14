@@ -62,6 +62,12 @@ const encontrarOCrearUsuario = async (googleData, codigoInvitacion) => {
       usuario.sucursalId = usuario.sucursalId || codigo.sucursalId;
       usuario.zonaId = usuario.zonaId || codigo.zonaId || null;
       usuario.departamento = usuario.departamento || codigo.departamento || null;
+
+      codigo.usosRealizados += 1;
+      if (codigo.usosRealizados >= codigo.usosMaximos) {
+        codigo.activo = false;
+      }
+      await codigo.save();
     }
 
     await usuario.save();
@@ -93,6 +99,12 @@ const encontrarOCrearUsuario = async (googleData, codigoInvitacion) => {
     departamento: codigo.departamento || null,
     activo: true,
   });
+
+  codigo.usosRealizados += 1;
+  if (codigo.usosRealizados >= codigo.usosMaximos) {
+    codigo.activo = false;
+  }
+  await codigo.save();
 
   return nuevoUsuario;
 };

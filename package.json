@@ -4,9 +4,50 @@
   "description": "Agente Reportero Telegram para SmartMargin AI",
   "main": "src/agents/reportero.js",
   "scripts": {
-    "reporte": "node src/agents/reportero.js"
+    "dev": "nodemon server.js",
+    "start": "npx sequelize-cli db:migrate && node server.js",
+    "lint": "echo 'no lint'",
+    "test": "node --test tests/*.test.js",
+    "migrate": "npx sequelize-cli db:migrate",
+    "seed": "npx sequelize-cli db:seed:all",
+    "swagger": "node swagger.js"
   },
   "dependencies": {
-    "dotenv": "^16.4.0"
+    "@sentry/node": "^10.63.0",
+    "axios": "^1.18.1",
+    "bcryptjs": "^3.0.3",
+    "cors": "^2.8.6",
+    "docx": "^9.7.1",
+    "cookie-parser": "^1.4.7",
+    "dotenv": "^16.6.1",
+    "express": "^5.2.1",
+    "express-validator": "^7.3.2",
+    "google-auth-library": "^10.9.0",
+    "helmet": "^8.2.0",
+    "jsonwebtoken": "^9.0.3",
+    "mercadopago": "^3.2.0",
+    "pdf-parse": "^1.1.1",
+    "pdfkit": "^0.19.1",
+    "pg": "^8.22.0",
+    "sequelize": "^6.37.8",
+    "swagger-autogen": "^2.23.7",
+    "swagger-ui-express": "^5.0.1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Franco46-ochoa/proybackendgrupo14.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/Franco46-ochoa/proybackendgrupo14/issues"
+  },
+  "homepage": "https://github.com/Franco46-ochoa/proybackendgrupo14#readme",
+  "devDependencies": {
+    "@faker-js/faker": "^10.5.0",
+    "nodemon": "^3.1.14",
+    "sequelize-cli": "^6.6.5"
   }
 }

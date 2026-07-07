@@ -1,0 +1,31 @@
+const express = require('express');
+const router = express.Router();
+const gastoController = require('../controllers/gastoController');
+const authJWT = require('../middlewares/authJWT');
+const verifyRole = require('../middlewares/verifyRole');
+const { verifyDepartamento } = require('../middlewares/verifyDepartamento');
+const validators = require('../validators');
+const auditLog = require('../middlewares/auditLog');
+
+router.get('/', authJWT, verifyRole('dueno', 'gerente', 'empleado'), gastoController.listar);
+router.post(
+  '/',
+  authJWT,
+  verifyRole('dueno', 'gerente', 'empleado'),
+  verifyDepartamento('operativo'),
+  validators.gastoCrear,
+  auditLog('gastos'),
+  gastoController.crear,
+);
+router.put(
+  '/:id',
+  authJWT,
+  verifyRole('dueno', 'gerente', 'empleado'),
+  verifyDepartamento('operativo'),
+  validators.gastoActualizar,
+  auditLog('gastos'),
+  gastoController.actualizar,
+);
+router.delete('/:id', authJWT, verifyRole('dueno', 'gerente'), validators.gastoEliminar, auditLog('gastos'), gastoController.eliminar);
+
+module.exports = router;

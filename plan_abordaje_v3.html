@@ -1,0 +1,895 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Plan de Abordaje V3 — SmartMargin AI</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+  :root{--primary:#1A3A5C;--info:#0D9488;--success:#10B981;--warning:#F59E0B;--danger:#EF4444;--dark:#1E293B;--text:#1E293B;--white:#FFF;--border:#E2E8F0}
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{font-family:'Inter',sans-serif;font-size:9.5pt;line-height:1.6;color:var(--text);background:#FFF}
+  .portada{height:297mm;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;background:linear-gradient(160deg,#0F2B47,#1A3A5C 40%,#153250);color:#FFF;padding:60px;position:relative;overflow:hidden}
+  .portada::before{content:'';position:absolute;top:-80px;right:-80px;width:400px;height:400px;border:2px solid rgba(255,255,255,.08);border-radius:9999px}
+  .portada::after{content:'';position:absolute;bottom:-60px;left:-60px;width:300px;height:300px;border:2px solid rgba(255,255,255,.06);border-radius:9999px}
+  .portada .logo-icon{width:72px;height:72px;background:var(--info);border-radius:18px;display:inline-flex;align-items:center;justify-content:center;font-size:32px;font-weight:800;margin-bottom:16px}
+  .portada h1{font-size:26pt;font-weight:800;letter-spacing:-.5px;z-index:1}
+  .portada h1 span{color:var(--info)}
+  .portada .subtitle{font-size:13pt;color:rgba(255,255,255,.7);margin-top:12px;z-index:1}
+  .portada .meta{margin-top:50px;font-size:10pt;color:rgba(255,255,255,.55);line-height:2;z-index:1}
+  .portada .meta strong{color:rgba(255,255,255,.85)}
+  .page{padding:20px 28px}
+  h2{font-size:13pt;font-weight:700;color:var(--primary);border-bottom:3px solid var(--info);padding-bottom:5px;margin:14px 0 7px}
+  h3{font-size:11pt;font-weight:600;color:var(--primary);margin:10px 0 4px}
+  h4{font-size:9.5pt;font-weight:600;color:var(--dark);margin:7px 0 3px}
+  p{margin-bottom:4px}
+  table{width:100%;border-collapse:separate;border-spacing:0;margin:5px 0;font-size:7.5pt;border:1px solid var(--border);border-radius:7px;overflow:hidden}
+  table thead th{background:#F1F5F9;color:var(--dark);font-weight:600;text-align:left;padding:4px 7px;border-bottom:2px solid var(--border);font-size:7pt;text-transform:uppercase}
+  table tbody td{padding:3px 7px;border-bottom:1px solid #F1F5F9}
+  table tbody tr:last-child td{border-bottom:none}
+  table tbody tr:nth-child(even){background:#FAFBFC}
+  .align-center{text-align:center}
+  .badge{display:inline-block;padding:1px 6px;border-radius:20px;font-size:6.5pt;font-weight:600}
+  .badge-verde{background:#D1FAE5;color:#065F46}
+  .badge-rojo{background:#FEE2E2;color:#991B1B}
+  .badge-azul{background:#DBEAFE;color:#1E40AF}
+  .badge-ambar{background:#FEF3C7;color:#92400E}
+  .badge-info{background:#CCFBF1;color:#0F766E}
+  .badge-gris{background:#F1F5F9;color:#475569}
+  .badge-violeta{background:#EDE9FE;color:#5B21B6}
+  .code-inline{background:#F1F5F9;padding:1px 3px;border-radius:3px;font-family:'Consolas',monospace;font-size:7pt}
+  .card{background:var(--white);border:1px solid var(--border);border-radius:8px;padding:8px 12px;margin:5px 0;box-shadow:0 1px 3px rgba(0,0,0,.06)}
+  .card-title{font-size:9pt;font-weight:600;color:var(--primary);margin-bottom:3px}
+  .why-box{background:#F0FDF4;border-left:4px solid var(--success);border-radius:5px;padding:6px 10px;margin:5px 0;font-size:7.5pt}
+  .why-box .why-title{font-weight:700;color:#065F46;margin-bottom:2px}
+  .warn-box{background:#FEF9C3;border-left:4px solid var(--warning);border-radius:5px;padding:6px 10px;margin:5px 0;font-size:7.5pt}
+  .warn-box .warn-title{font-weight:700;color:#A16207;margin-bottom:2px}
+  .new-box{background:#EFF6FF;border:1.5px solid #3B82F6;border-radius:6px;padding:6px 10px;margin:4px 0;font-size:7pt}
+  .new-box .new-title{font-weight:700;color:#1E40AF;margin-bottom:2px}
+  .bug-box{background:#FEF2F2;border:1.5px solid var(--danger);border-radius:6px;padding:6px 10px;margin:4px 0;font-size:7pt}
+  .bug-box .bug-title{font-weight:700;color:#991B1B;margin-bottom:2px}
+  ul,ol{margin:2px 0 4px 16px}
+  li{margin-bottom:1px}
+  .footer{margin-top:14px;padding-top:6px;border-top:1px solid var(--border);font-size:6.5pt;color:#64748B;text-align:center}
+  .hierarchy{background:#1E293B;color:#E2E8F0;border-radius:6px;padding:8px 12px;margin:4px 0;font-family:'Consolas',monospace;font-size:7pt;line-height:1.5;white-space:pre-wrap;overflow-x:auto}
+  .section-number{display:inline-block;background:var(--info);color:#FFF;width:24px;height:24px;border-radius:5px;text-align:center;line-height:24px;font-size:10pt;font-weight:700;margin-right:5px;vertical-align:middle}
+  .v2-tag{display:inline-block;background:#3B82F6;color:#FFF;padding:2px 8px;border-radius:4px;font-size:8pt;font-weight:700;margin-left:4px;vertical-align:middle}
+  .v3-tag{display:inline-block;background:#8B5CF6;color:#FFF;padding:2px 8px;border-radius:4px;font-size:8pt;font-weight:700;margin-left:4px;vertical-align:middle}
+  .sprint-header{background:var(--primary);color:#FFF;padding:10px 16px;border-radius:8px;margin:12px 0 8px 0}
+  .sprint-header h3{color:#FFF;margin:0;font-size:13pt}
+  .sprint-header p{color:rgba(255,255,255,.8);margin:3px 0 0 0;font-size:8pt}
+  .persona-card{background:var(--white);border-left:4px solid var(--info);border-radius:6px;padding:10px 14px;margin:8px 0;box-shadow:0 1px 3px rgba(0,0,0,.06)}
+  .persona-card .nombre{font-weight:700;font-size:11pt;color:var(--primary)}
+  .persona-card .rol{font-size:8pt;color:#64748B;margin-top:2px}
+  .stat-grid{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:6px;margin:5px 0}
+  .stat-card{background:var(--white);border:1px solid var(--border);border-radius:6px;padding:8px;text-align:center}
+  .big-stat{font-size:14pt;font-weight:800;color:var(--info)}
+  .stat-label{font-size:6.5pt;color:#64748B;text-transform:uppercase}
+  .api-card{background:var(--white);border:1.5px solid var(--info);border-radius:7px;padding:8px 10px;margin:4px 0}
+  .api-card .api-name{font-weight:700;color:var(--info);font-size:10pt}
+  .api-card .api-time{color:#64748B;font-size:7pt}
+  .evolution-arrow{display:flex;align-items:center;gap:8px;margin:8px 0;flex-wrap:wrap}
+  .evolution-step{background:var(--white);border:1.5px solid var(--border);border-radius:8px;padding:8px 14px;text-align:center;flex:1;min-width:140px}
+  .evolution-step.active{border-color:var(--info);background:#F0FDFA}
+  .evolution-step .step-version{font-size:12pt;font-weight:800;color:var(--primary)}
+  .evolution-step .step-date{font-size:7pt;color:#64748B}
+  .evolution-connector{font-size:16pt;color:var(--info);font-weight:700}
+  @media print{body{font-size:8pt}.page{padding:15px 22px}.portada{height:297mm}}
+</style>
+</head>
+<body>
+
+<div class="portada">
+  <div class="logo-icon">SM</div>
+  <h1><span>SmartMargin</span> AI</h1>
+  <p class="subtitle">Plan de Abordaje V3<br>Plataforma SaaS de Auditoría Inteligente Multi-sucursal</p>
+  <div class="meta">
+    <strong>Trabajo Final Integrador</strong><br>
+    Programación y Servicios Web — UNJU — Grupo 14<br>
+    <strong>Sprint 1 Finalizado · Sprint 2 En Curso · V3</strong><br>
+    Julio 2026
+  </div>
+</div>
+
+<!-- ====== SECCION 1: EVOLUCION V1 V2 V3 ====== -->
+<div class="page">
+  <h2><span class="section-number">1</span> Evolución del Plan: V1 → V2 → V3 <span class="v3-tag">V3</span></h2>
+
+  <div class="evolution-arrow">
+    <div class="evolution-step">
+      <div class="step-version">V1</div>
+      <div class="step-date">Junio 2026 — Plan Original</div>
+      <p style="font-size:7pt;margin-top:4px">3 roles · 4 APIs · MVP básico</p>
+    </div>
+    <div class="evolution-connector">→</div>
+    <div class="evolution-step">
+      <div class="step-version">V2</div>
+      <div class="step-date">30 Junio — Feedback Profesor</div>
+      <p style="font-size:7pt;margin-top:4px">4 roles · Jerarquía códigos · 5 APIs · Sentry</p>
+    </div>
+    <div class="evolution-connector">→</div>
+    <div class="evolution-step active">
+      <div class="step-version">V3</div>
+      <div class="step-date">4 Julio — Sprint 2 Profundización</div>
+      <p style="font-size:7pt;margin-top:4px">Departamentos · empresaId · Seeder Faker · ETL</p>
+    </div>
+  </div>
+
+  <h3>1.1. Tabla comparativa de las 3 versiones</h3>
+  <table>
+    <thead><tr><th>Aspecto</th><th>V1 (Original)</th><th>V2 (30 Jun)</th><th>V3 (4 Jul) <span class="v3-tag">ACTUAL</span></th></tr></thead>
+    <tbody>
+      <tr><td><strong>Roles del sistema</strong></td><td>3 (dueno, gerente, empleado)</td><td>4 (+administrador)</td><td>4 (sin cambio estructural)</td></tr>
+      <tr><td><strong>Jerarquía de códigos</strong></td><td>Dueño genera todos</td><td>Dueño→Admin→resto</td><td>Igual V2 + <strong>departamento en códigos EMP</strong></td></tr>
+      <tr><td><strong>Campos de Usuario</strong></td><td>sector, zonaId, sucursalId</td><td>+duenoId</td><td>+<strong>departamento</strong>, duenoId→<strong>empresaId</strong></td></tr>
+      <tr><td><strong>Filtro de rutas</strong></td><td>Solo por rol</td><td>Solo por rol</td><td>Por rol <strong>+ departamento</strong> (comercial/operativo)</td></tr>
+      <tr><td><strong>Sub-departamentos empleado</strong></td><td>No existía</td><td>No existía</td><td><strong>Comercial</strong> (ventas) / <strong>Operativo</strong> (inventario+gastos)</td></tr>
+      <tr><td><strong>Datos semilla</strong></td><td>4 usuarios, 5 sucursales</td><td>Igual V1</td><td>+<strong>Empresa fantasma</strong> (miles de registros con Faker)</td></tr>
+      <tr><td><strong>APIs externas</strong></td><td>4 (MP, Google, Dólar, Gemini)</td><td>5 (+Sentry)</td><td>Igual V2</td></tr>
+      <tr><td><strong>Datos legado</strong></td><td>No contemplado</td><td>No contemplado</td><td><strong>Estrategia ETL documentada</strong> (Roadmap)</td></tr>
+      <tr><td><strong>Bugs documentados</strong></td><td>Ninguno</td><td>Ninguno</td><td><strong>Shadowing duenoId</strong> detectado y corregido</td></tr>
+      <tr><td><strong>JWT payload</strong></td><td>{id, rol}</td><td>{id, rol}</td><td>{id, rol, <strong>departamento, empresaId</strong>}</td></tr>
+      <tr><td><strong>Middleware nuevo</strong></td><td>authJWT + verifyRole</td><td>Igual</td><td>+<strong>verifyDepartamento</strong></td></tr>
+    </tbody>
+  </table>
+
+  <h3>1.2. Cambios específicos de V3</h3>
+  <table>
+    <thead><tr><th>#</th><th>Cambio</th><th>Impacto</th><th>Responsable</th></tr></thead>
+    <tbody>
+      <tr><td>1</td><td>Nuevo campo <strong>departamento</strong> ENUM('comercial','operativo') en Usuario</td><td>Empleados se dividen en 2 sub-roles con permisos diferenciados</td><td><span class="badge badge-azul">Franco</span></td></tr>
+      <tr><td>2</td><td>Middleware <strong>verifyDepartamento</strong> filtra rutas de Gastos e Inventario</td><td>Comercial no toca gastos/máquinas. Operativo no carga ventas</td><td><span class="badge badge-azul">Franco</span></td></tr>
+      <tr><td>3</td><td>Renombrar <strong>duenoId → empresaId</strong> en 3 tablas</td><td>Concepto más claro: el Dueño ES la empresa. Fixea bug de shadowing</td><td><span class="badge badge-azul">Franco</span></td></tr>
+      <tr><td>4</td><td>Campo <strong>departamento</strong> en CodigoInvitacion</td><td>Al generar código EMP, se especifica si es comercial u operativo</td><td><span class="badge badge-azul">Franco</span></td></tr>
+      <tr><td>5</td><td><strong>Seeder empresa fantasma</strong> con @faker-js/faker</td><td>Cientos de productos, miles de transacciones, 2-3 años de historial</td><td><span class="badge badge-ambar">Brian</span></td></tr>
+      <tr><td>6</td><td><strong>Documentación ETL</strong> para migración de datos legado</td><td>Roadmap de importación desde sistemas existentes (CSV/Excel → BD)</td><td><span class="badge badge-azul">Franco</span></td></tr>
+      <tr><td>7</td><td>JWT incluye <strong>departamento y empresaId</strong></td><td>Menos queries a BD en cada request. Trade-off: cambio requiere re-login</td><td><span class="badge badge-azul">Franco</span></td></tr>
+      <tr><td>8</td><td>Frontend: formulario registro pide <strong>departamento</strong> para EMP</td><td>Pricila adapta el formulario de registro</td><td><span class="badge badge-ambar">Pricila</span></td></tr>
+      <tr><td>9</td><td>Frontend: ocultar botones según <strong>departamento</strong></td><td>Leo adapta CRUDs de gastos/inventario/transacciones</td><td><span class="badge badge-ambar">Leo</span></td></tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- ====== SECCION 2: EQUIPO ====== -->
+<div class="page">
+  <h2><span class="section-number">2</span> Equipo y nuevos roles del sistema</h2>
+
+  <h3>2.1. Integrantes</h3>
+  <table>
+    <thead><tr><th>Integrante</th><th>Stack</th><th>Responsabilidad</th></tr></thead>
+    <tbody>
+      <tr><td><strong>Franco</strong></td><td><span class="badge badge-azul">Backend</span> <span class="badge badge-info">Agentes IA</span></td><td>Modelos Sequelize, Auth JWT/Bcrypt, APIs Externas (5), Agentes IA (Gemini), Códigos de invitación, <strong>empresaId</strong>, <strong>departamento</strong>, <strong>verifyDepartamento</strong>, <strong>ETL docs</strong>, Infraestructura</td></tr>
+      <tr><td><strong>Brian</strong></td><td><span class="badge badge-azul">Backend</span></td><td>CRUDs completos (6 módulos), Middlewares de seguridad, <strong>Seeder empresa fantasma (Faker)</strong>, Validaciones, Filtros avanzados</td></tr>
+      <tr><td><strong>Pricila</strong></td><td><span class="badge badge-ambar">Frontend</span></td><td>Core (shell, routing, guards, interceptors), Auth (login/registro), Landing page, Suscripción, Google OAuth callback, <strong>campo departamento en registro</strong></td></tr>
+      <tr><td><strong>Fabri</strong></td><td><span class="badge badge-ambar">Frontend</span></td><td>Dashboard Dueño + Gerente, Mapa Leaflet, Gráficos Chart.js, Exportación PDF/Excel</td></tr>
+      <tr><td><strong>Leo</strong></td><td><span class="badge badge-ambar">Frontend</span></td><td>CRUDs frontend (sucursales, productos, inventario, transacciones, gastos), DataTable, Filtros, <strong>ocultar botones por departamento</strong></td></tr>
+    </tbody>
+  </table>
+
+  <h3>2.2. Roles del sistema <span class="v2-tag">V2</span></h3>
+
+  <div class="hierarchy">┌──────────────────────────────────────────────────────────────┐
+│               JERARQUÍA DE ROLES V3                          │
+│                                                              │
+│  ┌──────────┐                                                │
+│  │  DUEÑO   │  Ve estadísticas. Genera 1 código Admin.      │
+│  │          │  No hace CRUD. Paga suscripción.               │
+│  └────┬─────┘                                                │
+│       │ 1 código                                             │
+│       ▼                                                      │
+│  ┌──────────────┐                                            │
+│  │ ADMINISTRADOR│  CRUD completo. Genera códigos GER y EMP.  │
+│  │              │  Aprueba informes de gerentes.              │
+│  └──┬───────────┘                                            │
+│     │ códigos GER y EMP (con departamento)                   │
+│     ├──────────────┬──────────────┐                          │
+│     ▼              ▼              ▼                          │
+│  ┌──────┐    ┌──────┐      ┌──────────────────────┐         │
+│  │GERENT│    │GERENT│ ...  │ EMPLEADO              │         │
+│  │Zona A│    │Zona B│      │                       │         │
+│  │      │    │      │      │ ┌─────────┐ ┌──────┐ │         │
+│  │Carga │    │Carga │      │ │COMERCIAL│ │OPERAT│ │         │
+│  │COMPRAS   │COMPRAS      │ │(Ventas) │ │(Gast │ │         │
+│  │      │    │      │      │ │         │ │+Inv.)│ │         │
+│  └──────┘    └──────┘      │ └─────────┘ └──────┘ │         │
+│                             └──────────────────────┘         │
+└──────────────────────────────────────────────────────────────┘</div>
+
+  <table>
+    <thead><tr><th>Rol</th><th>¿Quién le da acceso?</th><th>¿Genera códigos?</th><th>¿Qué hace?</th></tr></thead>
+    <tbody>
+      <tr><td><strong>Dueño</strong></td><td>Se registra solo</td><td>Solo 1 código Admin</td><td>Ver dashboard, estadísticas, KPIs. No crea/edita/elimina nada.</td></tr>
+      <tr><td><strong>Administrador</strong> <span class="badge badge-azul">V2</span></td><td>Dueño (código único)</td><td>Sí, GER y EMP</td><td>CRUD completo. Aprueba/rechaza informes de gerentes. Gestiona códigos.</td></tr>
+      <tr><td><strong>Gerente</strong></td><td>Admin (GER-XXXX)</td><td>No</td><td>Carga COMPRAS. Supervisa empleados de su zona. Ve dashboard de su zona.</td></tr>
+      <tr><td><strong>Empleado Comercial</strong> <span class="badge badge-violeta">V3</span></td><td>Admin (EMP-XXXX, dept=comercial)</td><td>No</td><td>Carga VENTAS. Ve inventario de su sucursal. Sin acceso a gastos.</td></tr>
+      <tr><td><strong>Empleado Operativo</strong> <span class="badge badge-violeta">V3</span></td><td>Admin (EMP-XXXX, dept=operativo)</td><td>No</td><td>Control de INVENTARIO y GASTOS de mantenimiento. Sin acceso a ventas.</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- ====== SECCION 3: MATRIZ DE ACCESO ====== -->
+<div class="page">
+  <h2><span class="section-number">3</span> Matriz de acceso por rol <span class="v3-tag">V3</span></h2>
+
+  <table>
+    <thead><tr><th>Página / Acción</th><th style="width:35px">Dueño</th><th style="width:35px">Admin</th><th style="width:35px">Gerente</th><th style="width:35px">Emp. Comercial</th><th style="width:35px">Emp. Operativo</th></tr></thead>
+    <tbody>
+      <tr><td><strong>Dashboard</strong></td><td><span class="badge badge-verde">KPIs</span></td><td><span class="badge badge-verde">✓</span></td><td><span class="badge badge-verde">✓</span></td><td><span class="badge badge-rojo">✗</span></td><td><span class="badge badge-rojo">✗</span></td></tr>
+      <tr><td><strong>Sucursales</strong></td><td><span class="badge badge-verde">Ver</span></td><td><span class="badge badge-verde">CRUD</span></td><td><span class="badge badge-rojo">✗</span></td><td><span class="badge badge-rojo">✗</span></td><td><span class="badge badge-rojo">✗</span></td></tr>
+      <tr><td><strong>Productos</strong></td><td><span class="badge badge-verde">Ver</span></td><td><span class="badge badge-verde">CRUD</span></td><td><span class="badge badge-verde">Ver</span></td><td><span class="badge badge-verde">Ver</span></td><td><span class="badge badge-verde">Ver</span></td></tr>
+      <tr><td><strong>Inventario</strong></td><td><span class="badge badge-verde">Ver</span></td><td><span class="badge badge-verde">CRUD</span></td><td><span class="badge badge-verde">Editar</span></td><td><span class="badge badge-verde">Ver</span></td><td><span class="badge badge-verde">CRUD</span></td></tr>
+      <tr><td><strong>Transacciones (Ventas)</strong></td><td><span class="badge badge-verde">Ver</span></td><td><span class="badge badge-verde">Ver</span></td><td><span class="badge badge-rojo">✗</span></td><td><span class="badge badge-verde">Cargar</span></td><td><span class="badge badge-rojo">✗</span></td></tr>
+      <tr><td><strong>Transacciones (Compras)</strong></td><td><span class="badge badge-verde">Ver</span></td><td><span class="badge badge-verde">Ver</span></td><td><span class="badge badge-verde">Cargar</span></td><td><span class="badge badge-rojo">✗</span></td><td><span class="badge badge-rojo">✗</span></td></tr>
+      <tr><td><strong>Gastos</strong></td><td><span class="badge badge-verde">Ver</span></td><td><span class="badge badge-verde">CRUD</span></td><td><span class="badge badge-verde">CRUD</span></td><td><span class="badge badge-rojo">✗</span></td><td><span class="badge badge-verde">Cargar</span></td></tr>
+      <tr><td><strong>Códigos</strong></td><td><span class="badge badge-ambar">1 Admin</span></td><td><span class="badge badge-verde">CRUD</span></td><td><span class="badge badge-rojo">✗</span></td><td><span class="badge badge-rojo">✗</span></td><td><span class="badge badge-rojo">✗</span></td></tr>
+      <tr><td><strong>Suscripción</strong></td><td><span class="badge badge-verde">✓</span></td><td><span class="badge badge-rojo">✗</span></td><td><span class="badge badge-rojo">✗</span></td><td><span class="badge badge-rojo">✗</span></td><td><span class="badge badge-rojo">✗</span></td></tr>
+    </tbody>
+  </table>
+
+  <h3>Filtro por departamento en rutas <span class="v3-tag">V3</span></h3>
+  <div class="new-box"><div class="new-title">Middleware verifyDepartamento</div>
+  <p>Nuevo middleware que se ejecuta <strong>después</strong> de <span class="code-inline">verifyRole('empleado')</span>. Si el usuario no es empleado, pasa directo. Si es empleado, verifica que su departamento coincida con el requerido por la ruta.</p></div>
+
+  <table>
+    <thead><tr><th>Ruta</th><th>Método</th><th>Middleware</th><th>Quién pasa</th></tr></thead>
+    <tbody>
+      <tr><td><span class="code-inline">/api/gastos</span></td><td>POST / PUT</td><td><span class="code-inline">verifyRole('dueno','gerente','empleado')</span> + <span class="code-inline">verifyDepartamento('operativo')</span></td><td>Dueño, Gerente, Empleado <strong>Operativo</strong></td></tr>
+      <tr><td><span class="code-inline">/api/inventario</span></td><td>POST / PUT</td><td><span class="code-inline">verifyRole('dueno','gerente','empleado')</span> + <span class="code-inline">verifyDepartamento('operativo')</span></td><td>Dueño, Gerente, Empleado <strong>Operativo</strong></td></tr>
+      <tr><td><span class="code-inline">/api/transacciones</span></td><td>POST (venta)</td><td><span class="code-inline">verifyRole('dueno','gerente','empleado')</span> + <span class="code-inline">verifyDepartamento('comercial')</span></td><td>Dueño, Gerente, Empleado <strong>Comercial</strong></td></tr>
+      <tr><td><span class="code-inline">/api/transacciones</span></td><td>POST (compra)</td><td><span class="code-inline">verifyRole('dueno','gerente','empleado')</span> + <span class="code-inline">verifyDepartamento('operativo')</span></td><td>Dueño, Gerente, Empleado <strong>Operativo</strong></td></tr>
+      <tr><td>Todas las rutas GET</td><td>GET</td><td><span class="code-inline">verifyRole</span> solamente</td><td>Según rol, sin filtro de departamento</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- ====== SECCION 4: CODIGOS DE INVITACION V3 ====== -->
+<div class="page">
+  <h2><span class="section-number">4</span> Sistema de Códigos de Invitación <span class="v3-tag">V3</span></h2>
+
+  <h3>4.1. Flujo actualizado</h3>
+  <div class="hierarchy">┌──────────────────────────────────────────────────────────────┐
+│  DUEÑO paga suscripción → genera 1 código ADMIN              │
+│       │                                                      │
+│       │  Comparte "ADM-XXXX" con el Administrador            │
+│       ▼                                                      │
+│  ADMINISTRADOR se registra con ADM-XXXX                       │
+│       │                                                      │
+│       │  Desde /codigos, genera:                              │
+│       ├── GER-XXXX para Gerentes (por zona/sucursal)         │
+│       └── EMP-XXXX para Empleados                            │
+│           ├── departamento: "comercial" → carga VENTAS       │
+│           └── departamento: "operativo" → controla INVENTARIO│
+│       │                                                      │
+│       ▼                                                      │
+│  GERENTES y EMPLEADOS se registran con sus códigos           │
+│  empresaId y sucursalId se copian del código automáticamente  │
+└──────────────────────────────────────────────────────────────┘</div>
+
+  <h3>4.2. Tabla codigos_invitacion <span class="v3-tag">V3</span></h3>
+  <table>
+    <thead><tr><th>Campo</th><th>Tipo</th><th>Descripción</th></tr></thead>
+    <tbody>
+      <tr><td>codigo</td><td>STRING(20) UNIQUE</td><td>Ej: ADM-A3F2K9B1, GER-7B1D4X2C, EMP-9DE7F019</td></tr>
+      <tr><td>rol</td><td>ENUM('administrador','gerente','empleado')</td><td><span class="v2-tag">V2</span></td></tr>
+      <tr><td><strong>departamento</strong></td><td>ENUM('comercial','operativo')</td><td><span class="v3-tag">V3</span> Solo para rol empleado. Null en GER/ADM.</td></tr>
+      <tr><td>usosMaximos</td><td>INTEGER</td><td>Cuántos pueden registrarse con este código</td></tr>
+      <tr><td>usosRealizados</td><td>INTEGER</td><td>Cuántos ya lo usaron (nunca baja)</td></tr>
+      <tr><td>activo</td><td>BOOLEAN</td><td>El generador puede revocarlo</td></tr>
+      <tr><td><strong>empresaId</strong></td><td>FK → usuarios</td><td><span class="v3-tag">V3</span> Antes duenoId. A qué empresa pertenece</td></tr>
+      <tr><td>sucursalId</td><td>FK → sucursales</td><td>Sucursal donde se asigna el usuario</td></tr>
+    </tbody>
+  </table>
+
+  <h3>4.3. Generación de códigos EMP con departamento</h3>
+  <table>
+    <thead><tr><th>Campo del body</th><th>Requerido</th><th>Validación</th></tr></thead>
+    <tbody>
+      <tr><td><span class="code-inline">rol</span></td><td>Sí</td><td>Debe ser 'empleado'</td></tr>
+      <tr><td><span class="code-inline">departamento</span></td><td>Sí (para EMP)</td><td>'comercial' u 'operativo'</td></tr>
+      <tr><td><span class="code-inline">usosMaximos</span></td><td>Sí</td><td>Mayor a 0, no exceder límite del plan</td></tr>
+      <tr><td><span class="code-inline">sucursalId</span></td><td>Sí</td><td>FK válida a sucursal de la empresa</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- ====== SECCION 5: MODELO DE DATOS V3 ====== -->
+<div class="page">
+  <h2><span class="section-number">5</span> Modelo de Datos V3 <span class="v3-tag">V3</span></h2>
+
+  <h3>5.1. Tabla usuarios — Campos actualizados</h3>
+  <table>
+    <thead><tr><th>Campo</th><th>Tipo</th><th>Descripción</th><th>Versión</th></tr></thead>
+    <tbody>
+      <tr><td>id</td><td>SERIAL PK</td><td>Auto-incremental</td><td>V1</td></tr>
+      <tr><td>nombre</td><td>STRING(100) NOT NULL</td><td>Nombre completo</td><td>V1</td></tr>
+      <tr><td>email</td><td>STRING(150) UNIQUE NOT NULL</td><td>Email con validación isEmail</td><td>V1</td></tr>
+      <tr><td>password</td><td>STRING(255) NOT NULL</td><td>Bcrypt hash, salt 10</td><td>V1</td></tr>
+      <tr><td>googleId</td><td>STRING UNIQUE NULLABLE</td><td>Google OAuth 2.0</td><td>V1</td></tr>
+      <tr><td>rol</td><td>ENUM('dueno','administrador','gerente','empleado')</td><td>'administrador' agregado en V2</td><td>V1/V2</td></tr>
+      <tr><td>sector</td><td>ENUM('ventas','finanzas','stock') NULLABLE</td><td>Se mantiene, coexiste con departamento</td><td>V1</td></tr>
+      <tr><td><strong>departamento</strong></td><td>ENUM('comercial','operativo') NULLABLE</td><td>Solo para rol empleado. Null en otros roles</td><td><span class="v3-tag">V3</span></td></tr>
+      <tr><td><strong>empresaId</strong></td><td>INTEGER FK → usuarios NULLABLE</td><td>Antes duenoId. Referencia al Dueño/Empresa</td><td><span class="v3-tag">V3</span></td></tr>
+      <tr><td>zonaId</td><td>INTEGER FK → zonas NULLABLE</td><td>Zona asignada (obligatorio para Gerente)</td><td>V1</td></tr>
+      <tr><td>sucursalId</td><td>INTEGER FK → sucursales NULLABLE</td><td>Sucursal asignada (obligatorio para Gerente/Empleado)</td><td>V1</td></tr>
+      <tr><td>activo</td><td>BOOLEAN DEFAULT true</td><td>Baja lógica</td><td>V1</td></tr>
+    </tbody>
+  </table>
+
+  <h3>5.2. Relaciones clave actualizadas</h3>
+  <table>
+    <thead><tr><th>Relación</th><th>Card.</th><th>Cambio V3</th></tr></thead>
+    <tbody>
+      <tr><td>Usuario → Usuario (empresa)</td><td>N:1</td><td>Antes duenoId, ahora <strong>empresaId</strong>. El Dueño es la empresa.</td></tr>
+      <tr><td>Usuario → Sucursal</td><td>N:1</td><td>sucursalId se copia del código de invitación automáticamente</td></tr>
+      <tr><td>Usuario → Zona</td><td>N:1</td><td>zonaId se deriva de la sucursal (para gerentes)</td></tr>
+      <tr><td>Zona → Usuario (dueño)</td><td>N:1</td><td>Antes duenoId, ahora <strong>empresaId</strong></td></tr>
+      <tr><td>CodigoInvitacion → Usuario (empresa)</td><td>N:1</td><td>Antes duenoId, ahora <strong>empresaId</strong></td></tr>
+    </tbody>
+  </table>
+
+  <h3>5.3. JWT Payload actualizado <span class="v3-tag">V3</span></h3>
+  <div class="hierarchy">// ANTES (V1/V2):
+{ id: 3, rol: 'empleado' }
+
+// AHORA (V3):
+{ id: 3, rol: 'empleado', departamento: 'comercial', empresaId: 1 }
+
+// Limitación conocida:
+// Un cambio de departamento no se refleja hasta el próximo login
+// (mismo trade-off que ya existe con rol, expiración 24h)</div>
+</div>
+
+<!-- ====== SECCION 6: AGENTES IA ====== -->
+<div class="page">
+  <h2><span class="section-number">6</span> Sistema de Agentes IA</h2>
+
+  <div class="hierarchy">┌──────────────────────────────────────────────────────────────┐
+│                 ARQUITECTURA DE AGENTES                      │
+│                                                              │
+│  POST /api/reportes/generar { tipo, sucursalId, zonaId }    │
+│       │                                                      │
+│       ▼                                                      │
+│  ┌──────────────┐                                            │
+│  │ ORQUESTADOR   │  Switch(tipo):                            │
+│  │              │  sector → ejecuta 3 agentes (stock,        │
+│  │              │           ventas, finanzas)                 │
+│  │              │  zona   → consolida sucursales             │
+│  │              │  central→ visión ejecutiva                 │
+│  └──┬──┬──┬──┬──┘                                            │
+│     │  │  │  │                                               │
+│     ▼  ▼  ▼  ▼  ▼                                            │
+│  ┌────┐┌────┐┌────┐┌────┐┌────────┐                         │
+│  │Stock│Ventas│Finan│Zona │Central │                         │
+│  │    ││    ││zas ││    ││       │                         │
+│  │Inven│Trans │Gast │Conso│Visión │                         │
+│  │tario│accio │os + │lida │ejecu  │                         │
+│  │     │nes  │Prove│sucur│tiva   │                         │
+│  │     │     │edor │sales│       │                         │
+│  └──┬──┘└──┬──┘└──┬──┘└──┬──┘└───┬───┘                         │
+│     │      │      │      │       │                           │
+│     └──────┴──────┴──────┴───────┘                           │
+│                    │                                         │
+│                    ▼                                         │
+│        { contenidoJSON, resumenNLP }                         │
+│                                                              │
+│  contenidoJSON → gráficos Chart.js (Fabri, frontend)        │
+│  resumenNLP   → texto en español generado por IA             │
+└──────────────────────────────────────────────────────────────┘</div>
+
+  <h3>6.1. Cada agente — qué hace y cómo</h3>
+  <table>
+    <thead><tr><th>Agente</th><th>Analiza</th><th>Lógica mock (Sprint 1)</th><th>Gemini (Sprint 2)</th></tr></thead>
+    <tbody>
+      <tr><td><strong>Stock</strong></td><td>Inventario + Productos</td><td><span class="code-inline">filter(stockActual < stockMinimo)</span>, demanda diaria estimada</td><td>Prompt con datos → predice quiebres y recomienda compras</td></tr>
+      <tr><td><strong>Ventas</strong></td><td>Transacciones tipo 'venta'</td><td><span class="code-inline">reduce()</span> totalizar, top productos, ticket promedio</td><td>Detecta tendencias, sugiere precios dinámicos</td></tr>
+      <tr><td><strong>Finanzas</strong></td><td>Gastos + Proveedores</td><td>Agrupar por categoría, detectar duplicados, anomalías</td><td>Detecta anomalías complejas y sugiere ahorro</td></tr>
+      <tr><td><strong>Zona</strong></td><td>Consolida sucursales de una zona</td><td>Ranking por margen, margen zonal</td><td>Compara sucursales, detecta la de peor rendimiento</td></tr>
+      <tr><td><strong>Central</strong></td><td>Consolida todas las zonas</td><td>Ingresos/gastos/stock global, umbral rentabilidad</td><td>Recomendación estratégica de alto nivel</td></tr>
+    </tbody>
+  </table>
+
+  <h3>6.2. Plan de contingencia</h3>
+  <div class="warn-box"><div class="warn-title">¿Qué pasa si Gemini falla?</div>
+  <p>Cada agente tiene un fallback a los cálculos mock del Sprint 1. Si Gemini no responde (timeout, cuota excedida, error de red), el agente genera igual el reporte con datos numéricos precisos. <strong>Los números siempre son correctos porque vienen de la BD.</strong></p></div>
+</div>
+
+<!-- ====== SECCION 7: SPRINT 1 ====== -->
+<div class="page">
+  <h2><span class="section-number">7</span> Sprint 1 — Lo que ya está hecho</h2>
+
+  <div class="stat-grid">
+    <div class="stat-card"><div class="big-stat">13</div><div class="stat-label">Tablas PostgreSQL</div></div>
+    <div class="stat-card"><div class="big-stat">47</div><div class="stat-label">Endpoints REST</div></div>
+    <div class="stat-card"><div class="big-stat">6</div><div class="stat-label">Agentes IA</div></div>
+    <div class="stat-card"><div class="big-stat">12</div><div class="stat-label">Rutas Frontend</div></div>
+  </div>
+
+  <table>
+    <thead><tr><th>Día</th><th>Franco (Backend + IA)</th><th>Brian (Backend)</th></tr></thead>
+    <tbody>
+      <tr><td>1</td><td><span class="badge badge-verde">OK</span> Express + Sequelize + estructura</td><td><span class="badge badge-verde">OK</span> Entorno local + seeders</td></tr>
+      <tr><td>2</td><td><span class="badge badge-verde">OK</span> 3 modelos (Usuario, Zona, Sucursal)</td><td><span class="badge badge-verde">OK</span> 3 modelos + auth JWT/bcrypt</td></tr>
+      <tr><td>3</td><td><span class="badge badge-verde">OK</span> 3 modelos más + asociaciones</td><td><span class="badge badge-verde">OK</span> Middlewares authJWT + verifyRole</td></tr>
+      <tr><td>4</td><td><span class="badge badge-verde">OK</span> Migraciones + seeders</td><td><span class="badge badge-verde">OK</span> CRUD Usuarios</td></tr>
+      <tr><td>5</td><td><span class="badge badge-verde">OK</span> 6 agentes IA mock + orquestador</td><td><span class="badge badge-verde">OK</span> CRUD Zonas + Sucursales</td></tr>
+      <tr><td>6</td><td><span class="badge badge-verde">OK</span> Controlador + rutas reportes</td><td><span class="badge badge-verde">OK</span> CRUD Productos + Inventario</td></tr>
+      <tr><td>7</td><td><span class="badge badge-verde">OK</span> Servicios esqueleto</td><td><span class="badge badge-verde">OK</span> CRUD Transacc + Gastos + Proveedores</td></tr>
+      <tr><td>Extra</td><td><span class="badge badge-verde">OK</span> Códigos invitación + empresaId + CORS</td><td><span class="badge badge-gris">—</span></td></tr>
+    </tbody>
+  </table>
+
+  <h3>Frontend — Sprint 1 completado</h3>
+  <table>
+    <thead><tr><th>Feature</th><th>Quién</th><th>Estado</th></tr></thead>
+    <tbody>
+      <tr><td>Landing page pública</td><td>Pricila + Franco</td><td><span class="badge badge-verde">OK</span></td></tr>
+      <tr><td>Login + Registro (con código invitación)</td><td>Pricila + Franco</td><td><span class="badge badge-verde">OK</span></td></tr>
+      <tr><td>Navbar + Sidebar + Layout</td><td>Pricila</td><td><span class="badge badge-verde">OK</span></td></tr>
+      <tr><td>Guards + JWT Interceptor</td><td>Pricila</td><td><span class="badge badge-verde">OK</span></td></tr>
+      <tr><td>Dashboard Dueño (KPIs + gráficos)</td><td>Fabri</td><td><span class="badge badge-verde">OK</span></td></tr>
+      <tr><td>Dashboard Gerente (mapa Leaflet)</td><td>Fabri</td><td><span class="badge badge-verde">OK</span></td></tr>
+      <tr><td>Suscripción (3 planes)</td><td>Pricila</td><td><span class="badge badge-verde">OK</span></td></tr>
+      <tr><td>DataTable genérico</td><td>Pricila</td><td><span class="badge badge-verde">OK</span></td></tr>
+      <tr><td>5 CRUDs (sucursales, productos, inventario, transacciones, gastos)</td><td>Leo</td><td><span class="badge badge-verde">OK</span></td></tr>
+      <tr><td>Página de Códigos (tabla + generar + revocar)</td><td>Franco</td><td><span class="badge badge-verde">OK</span></td></tr>
+      <tr><td>Sidebar por rol</td><td>Franco</td><td><span class="badge badge-verde">OK</span></td></tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- ====== SECCION 8: SPRINT 2 ACTUALIZADO ====== -->
+<div class="page">
+  <div class="sprint-header">
+    <h3>Sprint 2 — Días 8 a 14 <span class="v3-tag">V3 Actualizado</span></h3>
+    <p>Entrega Final: APIs integradas, Agentes IA reales, 4 roles + departamentos, Seguridad, Seeder Faker, ETL</p>
+  </div>
+
+  <!-- FRANCO -->
+  <div class="persona-card">
+    <div class="nombre">Franco — APIs Externas + Agentes IA + Roles + Seguridad + V3</div>
+    <div class="rol">MercadoPago · Google OAuth · Dólar API · Gemini · Sentry · empresaId · departamento · verifyDepartamento · ETL docs</div>
+  </div>
+  <table>
+    <thead><tr><th style="width:50px">Día</th><th>Tarea</th><th>Resultado Esperado</th></tr></thead>
+    <tbody>
+      <tr><td class="align-center"><span class="badge badge-info">8</span></td><td>Rol Administrador: modelo, migración, middleware, controller de códigos.</td><td>4 roles funcionales</td></tr>
+      <tr><td class="align-center"><span class="badge badge-info">9</span></td><td>Jerarquía de códigos: Dueño→Admin→resto. Validar límites.</td><td>Cadena funcional</td></tr>
+      <tr><td class="align-center"><span class="badge badge-info">10</span></td><td>MercadoPago SDK + Dólar API + Gemini API test.</td><td>3 APIs verificadas</td></tr>
+      <tr><td class="align-center"><span class="badge badge-info">11</span></td><td>Sentry + 5 agentes IA con Gemini real.</td><td>Agentes generando NLP real</td></tr>
+      <tr><td class="align-center"><span class="badge badge-info">12</span></td><td>Google OAuth + Helmet + CSRF.</td><td>Seguridad completa</td></tr>
+      <tr><td class="align-center"><span class="badge badge-violeta">V3</span></td><td><strong>T2: Renombrar duenoId → empresaId</strong> en 3 tablas (migraciones + modelos + controllers + asociaciones). <strong>Fixear bug shadowing</strong> en authController.</td><td>empresaId funcional en todo el sistema</td></tr>
+      <tr><td class="align-center"><span class="badge badge-violeta">V3</span></td><td><strong>T1: Agregar departamento</strong> a Usuario y CodigoInvitacion. Crear middleware verifyDepartamento. Actualizar rutas de Gastos, Inventario, Transacciones. Incluir departamento en JWT.</td><td>Filtro por departamento activo</td></tr>
+      <tr><td class="align-center"><span class="badge badge-violeta">V3</span></td><td><strong>T3: Documentar estrategia ETL</strong> para migración de datos legado (Roadmap/Extensibilidad).</td><td>docs/ETL_LEGACY_STRATEGY.md</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- BRIAN -->
+<div class="page">
+  <div class="persona-card">
+    <div class="nombre">Brian — Validaciones + Filtros + Seeders + Faker <span class="v3-tag">V3</span></div>
+    <div class="rol">express-validator · Paginación · Helmet/CSRF · Export endpoints · <strong>Seeder empresa fantasma con @faker-js/faker</strong></div>
+  </div>
+  <table>
+    <thead><tr><th style="width:50px">Día</th><th>Tarea</th><th>Resultado Esperado</th></tr></thead>
+    <tbody>
+      <tr><td class="align-center"><span class="badge badge-info">8</span></td><td>Validaciones con express-validator en todos los endpoints.</td><td>Errores 400 claros</td></tr>
+      <tr><td class="align-center"><span class="badge badge-info">9</span></td><td>Filtros avanzados en GET: query params.</td><td>Filtros combinados</td></tr>
+      <tr><td class="align-center"><span class="badge badge-info">10</span></td><td>Paginación server-side en todos los GET.</td><td>Paginación funcional</td></tr>
+      <tr><td class="align-center"><span class="badge badge-info">11</span></td><td>Middleware helmet + csurf en todas las rutas.</td><td>Seguridad HTTP activa</td></tr>
+      <tr><td class="align-center"><span class="badge badge-info">12</span></td><td>Endpoints de exportación PDF/Excel.</td><td>Descarga desde backend</td></tr>
+      <tr><td class="align-center"><span class="badge badge-info">13</span></td><td>Seeders ampliados + middleware auditLog.</td><td>Logs automáticos</td></tr>
+      <tr><td class="align-center"><span class="badge badge-info">14</span></td><td>Testing Postman + corrección de bugs.</td><td>Collection documentada</td></tr>
+      <tr><td class="align-center"><span class="badge badge-violeta">V3</span></td><td><strong>T4: Seeder empresa fantasma</strong> con @faker-js/faker. 1 empresa, 5-10 sucursales, cientos de productos, miles de transacciones (2-3 años), usuarios en 4 roles con departamento. bulkInsert para performance.</td><td><span class="code-inline">npx sequelize db:seed:all</span> genera datos realistas</td></tr>
+    </tbody>
+  </table>
+
+  <h3>Detalle del Seeder Empresa Fantasma <span class="v3-tag">V3</span></h3>
+  <table>
+    <thead><tr><th>Entidad</th><th>Cantidad</th><th>Detalle</th></tr></thead>
+    <tbody>
+      <tr><td>Dueño</td><td>1</td><td>Con suscripción activa (plan Pro)</td></tr>
+      <tr><td>Administrador</td><td>1</td><td>Asignado a la empresa</td></tr>
+      <tr><td>Zonas</td><td>3</td><td>Norte, Sur, Centro (reutiliza existentes)</td></tr>
+      <tr><td>Sucursales</td><td>5-8</td><td>Distribuidas en zonas, con dirección y coordenadas</td></tr>
+      <tr><td>Gerentes</td><td>5-8</td><td>Uno por sucursal, empresaId y sucursalId asignados</td></tr>
+      <tr><td>Empleados</td><td>20-30</td><td>Mitad comercial, mitad operativo, por sucursal</td></tr>
+      <tr><td>Proveedores</td><td>20-30</td><td>Con CUIT generado por faker</td></tr>
+      <tr><td>Productos</td><td>200-400</td><td>Nombre, código, categoría, precio (faker)</td></tr>
+      <tr><td>Inventario</td><td>~2.000</td><td>producto × sucursal, stock realista</td></tr>
+      <tr><td>Transacciones</td><td>3.000-5.000</td><td>Compras y ventas, fechas distribuidas en 2-3 años</td></tr>
+      <tr><td>Gastos</td><td>1.000-2.000</td><td>Con proveedores, categorías, fechas reales</td></tr>
+      <tr><td>Códigos invitación</td><td>5-10</td><td>De ejemplo, por rol y departamento</td></tr>
+    </tbody>
+  </table>
+
+  <div class="why-box"><div class="why-title">¿Por qué bulkInsert en vez de create() en loop?</div>
+  <p>Cada <span class="code-inline">Model.create()</span> genera un INSERT individual a la BD. Con 5.000 registros = 5.000 queries. <span class="code-inline">queryInterface.bulkInsert()</span> genera un solo INSERT con múltiples filas, reduciendo la carga de red y el tiempo de ejecución de minutos a segundos.</p></div>
+</div>
+
+<!-- PRICILA -->
+<div class="page">
+  <div class="persona-card">
+    <div class="nombre">Pricila — Google OAuth Front + Suscripción + UX + V3</div>
+    <div class="rol">Google Login · MercadoPago Checkout · Redirección Roles · Toast Notifications · <strong>campo departamento en registro</strong></div>
+  </div>
+  <table>
+    <thead><tr><th style="width:50px">Día</th><th>Tarea</th><th>Resultado Esperado</th></tr></thead>
+    <tbody>
+      <tr><td class="align-center"><span class="badge badge-info">8</span></td><td>Agregar 'administrador' al select de rol en registro.</td><td>Registro con 4 roles</td></tr>
+      <tr><td class="align-center"><span class="badge badge-info">9</span></td><td>Google OAuth: botón "Iniciar sesión con Google".</td><td>Login con Google funcional</td></tr>
+      <tr><td class="align-center"><span class="badge badge-info">10</span></td><td>Redirección post-login según rol. Primer login Dueño → /suscripcion.</td><td>Redirección inteligente</td></tr>
+      <tr><td class="align-center"><span class="badge badge-info">11</span></td><td>Pantalla Suscripción conectada a MP.</td><td>Flujo de pago completo</td></tr>
+      <tr><td class="align-center"><span class="badge badge-info">12</span></td><td>Notificaciones toast para éxito/error.</td><td>Feedback visual</td></tr>
+      <tr><td class="align-center"><span class="badge badge-info">13</span></td><td>Manejo global de errores HTTP.</td><td>Errores sin crash</td></tr>
+      <tr><td class="align-center"><span class="badge badge-info">14</span></td><td>Responsive design final.</td><td>App funcional en mobile</td></tr>
+      <tr><td class="align-center"><span class="badge badge-violeta">V3</span></td><td><strong>Formulario de registro:</strong> cuando se selecciona rol "empleado" y se usa código EMP, mostrar select de departamento (comercial/operativo). El backend valida que coincida con el código.</td><td>Registro con departamento</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- FABRI -->
+<div class="page">
+  <div class="persona-card">
+    <div class="nombre">Fabri — Gráficos Reales + Mapa + Exportaciones</div>
+    <div class="rol">Chart.js (4 tipos) · Leaflet · Dólar en tiempo real · PDF · Excel · Dashboard Dueño KPIs</div>
+  </div>
+  <table>
+    <thead><tr><th style="width:50px">Día</th><th>Tarea</th><th>Resultado Esperado</th></tr></thead>
+    <tbody>
+      <tr><td class="align-center"><span class="badge badge-info">8</span></td><td>Dashboard Dueño: solo KPIs + gráficos (sin acciones CRUD).</td><td>Dueño solo ve estadísticas</td></tr>
+      <tr><td class="align-center"><span class="badge badge-info">9</span></td><td>Mapa Leaflet real con marcadores de sucursales.</td><td>Mapa interactivo</td></tr>
+      <tr><td class="align-center"><span class="badge badge-info">10</span></td><td>Cotización Dólar en Dashboard.</td><td>Dólar en tiempo real</td></tr>
+      <tr><td class="align-center"><span class="badge badge-info">11</span></td><td>Gráficos con datos reales (barras, línea, torta, radar).</td><td>4 tipos de gráficos</td></tr>
+      <tr><td class="align-center"><span class="badge badge-info">12</span></td><td>Exportación PDF (jsPDF + html2canvas).</td><td>Descarga PDF funcional</td></tr>
+      <tr><td class="align-center"><span class="badge badge-info">13</span></td><td>Exportación Excel (SheetJS/xlsx).</td><td>Descarga Excel funcional</td></tr>
+      <tr><td class="align-center"><span class="badge badge-info">14</span></td><td>Botones de exportación + animaciones finales.</td><td>Dashboards pulidos</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- LEO -->
+<div class="page">
+  <div class="persona-card">
+    <div class="nombre">Leo — Acciones por Rol + DataTable + Auditoría + V3</div>
+    <div class="rol">Ocultar botones Dueño · Gerente compras / Empleado ventas · DataTable · <strong>botones por departamento</strong></div>
+  </div>
+  <table>
+    <thead><tr><th style="width:50px">Día</th><th>Tarea</th><th>Resultado Esperado</th></tr></thead>
+    <tbody>
+      <tr><td class="align-center"><span class="badge badge-info">8</span></td><td>Ocultar botones Crear/Editar/Eliminar para Dueño.</td><td>Dueño solo ve</td></tr>
+      <tr><td class="align-center"><span class="badge badge-info">9</span></td><td>Gerente: solo "Nueva Compra". Empleado: solo "Nueva Venta".</td><td>Acciones por rol</td></tr>
+      <tr><td class="align-center"><span class="badge badge-info">10</span></td><td>Columna "Registrado por" visible para Dueño y Admin.</td><td>Trazabilidad</td></tr>
+      <tr><td class="align-center"><span class="badge badge-info">11</span></td><td>CRUD Proveedores + Vista Auditoría con DataTable.</td><td>ABM proveedores + logs</td></tr>
+      <tr><td class="align-center"><span class="badge badge-info">12</span></td><td>Vista Reportes Agentes: tarjetas NLP por agente.</td><td>Reportes IA visibles</td></tr>
+      <tr><td class="align-center"><span class="badge badge-info">13</span></td><td>Sucursales: info completa (fecha, zona, coordenadas).</td><td>Detalle completo</td></tr>
+      <tr><td class="align-center"><span class="badge badge-info">14</span></td><td>UX: skeleton loaders, confirmaciones, integración final.</td><td>UX pulida</td></tr>
+      <tr><td class="align-center"><span class="badge badge-violeta">V3</span></td><td><strong>Ocultar botones por departamento:</strong> Empleado Comercial no ve botones de Gastos/Inventario. Empleado Operativo no ve botón de Nueva Venta. Leer <span class="code-inline">departamento</span> del JWT decodificado.</td><td>UI adaptada por departamento</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- ====== SECCION 9: BUG DETECTADO ====== -->
+<div class="page">
+  <h2><span class="section-number">9</span> Bug detectado y corregido <span class="v3-tag">V3</span></h2>
+
+  <div class="bug-box"><div class="bug-title">Bug: Shadowing de variable duenoId en authController.js</div>
+  <p>Detectado durante la revisión de código del Sprint 2. Este bug estuvo presente desde Sprint 1 y afectaba silenciosamente la asignación de dueño en cada registro.</p></div>
+
+  <h3>9.1. Descripción del problema</h3>
+  <p>En <span class="code-inline">authController.js</span>, la función <span class="code-inline">register</span> declaraba <span class="code-inline">let duenoId = null</span> en la línea 22 (scope de la función). Dentro del bloque <span class="code-inline">if (rol !== 'dueno')</span>, en la línea 61, se declaraba <span class="code-inline">const duenoId = codigo.duenoId || null</span>, creando una <strong>nueva variable local</strong> que "sombreeaba" (shadowing) a la variable del scope superior.</p>
+
+  <h3>9.2. Impacto</h3>
+  <table>
+    <thead><tr><th>Síntoma</th><th>Causa</th></tr></thead>
+    <tbody>
+      <tr><td>Todos los usuarios registrados con código de invitación tenían <span class="code-inline">duenoId: null</span></td><td>La línea 81 usaba la variable del scope superior (siempre null), no la del bloque if</td></tr>
+      <tr><td>Los usuarios quedaban "huérfanos" — sin vinculación al dueño/empresa</td><td>El <span class="code-inline">const</span> dentro del bloque creaba un scope separado</td></tr>
+      <tr><td>No se manifestaba como error — el registro "funcionaba"</td><td>Bug silencioso: solo se notaba al intentar filtrar datos por empresa</td></tr>
+    </tbody>
+  </table>
+
+  <h3>9.3. Código antes y después</h3>
+  <div class="hierarchy">// ─── ANTES (BUG) ───
+let duenoId = null;                          // línea 22 - scope función
+
+if (rol && rol !== 'dueno') {
+  // ...validación de código...
+  const duenoId = codigo.duenoId || null;    // línea 61 - SHADOW! crea scope local
+}
+
+const usuario = await Usuario.create({
+  duenoId: duenoId || null,                  // línea 81 - usa el de línea 22 (SIEMPRE null)
+});
+
+// ─── DESPUÉS (CORREGIDO + RENOMBRADO V3) ───
+let empresaId = null;                        // scope función
+
+if (rol && rol !== 'dueno') {
+  // ...validación de código...
+  empresaId = codigo.empresaId || null;      // sin const - asigna al scope superior
+}
+
+const usuario = await Usuario.create({
+  empresaId: empresaId || null,              // usa el valor correcto del código
+});</div>
+
+  <div class="why-box"><div class="why-title">Valor para la defensa del TFI</div>
+  <p>Este bug es un excelente ejemplo para mostrar en la defensa: demuestra proceso de QA real, comprensión de scopes en JavaScript, y capacidad de detectar bugs silenciosos que no generan errores visibles pero rompen la lógica de negocio. Se detectó al renombrar duenoId → empresaId (Tarea V3-T2).</p></div>
+</div>
+
+<!-- ====== SECCION 10: ESTRATEGIA ETL ====== -->
+<div class="page">
+  <h2><span class="section-number">10</span> Estrategia de Migración de Datos Legado <span class="v3-tag">V3 Roadmap</span></h2>
+
+  <div class="new-box"><div class="new-title">Sección de Roadmap / Extensibilidad</div>
+  <p>Esta sección documenta la estrategia para importar datos desde sistemas legados de empresas con años de historia. No se implementa en el Sprint 2, pero deja el camino listo para una extensión futura.</p></div>
+
+  <h3>10.1. Flujo de importación</h3>
+  <div class="hierarchy">┌──────────────────────────────────────────────────────────────┐
+│  FLUJO ETL: Sistema Legado → SmartMargin AI                  │
+│                                                              │
+│  1. EXPORTACIÓN                                               │
+│     Sistema legado → CSV/Excel (productos, ventas, stock)     │
+│                                                              │
+│  2. SCRIPT ETL (Node.js + csv-parser)                        │
+│     ├── Leer CSV fila por fila                               │
+│     ├── Mapear columnas del legado al esquema SmartMargin    │
+│     │   ej: "COD_ARTICULO" → "codigo"                        │
+│     │   ej: "STOCK_ACT" → "stockActual"                      │
+│     │   ej: "PRECIO_VTA" → "precioVenta"                     │
+│     └── Transformar tipos (string → number, fecha → Date)    │
+│                                                              │
+│  3. VALIDACIÓN Y DEDUPLICACIÓN                                │
+│     ├── Validar campos obligatorios (nombre, codigo)         │
+│     ├── Detectar duplicados por CUIT (proveedores)           │
+│     ├── Detectar duplicados por codigo (productos)           │
+│     ├── Log de filas rechazadas con motivo                   │
+│     └── Reporte: X válidas, Y duplicadas, Z inválidas        │
+│                                                              │
+│  4. CARGA MASIVA                                              │
+│     ├── Opción A: Sequelize bulkCreate({ validate: false })  │
+│     │   → hasta ~50.000 registros en segundos                │
+│     ├── Opción B: PostgreSQL COPY (para +100K registros)     │
+│     │   → copia directa a nivel BD, sin pasar por ORM        │
+│     └── Transacciones atómicas: todo o nada                  │
+│                                                              │
+│  5. REGISTRO EN AUDITORÍA                                     │
+│     Tabla auditoria:                                          │
+│     ├── accion: 'IMPORT'                                      │
+│     ├── entidad: 'Productos' / 'Transacciones' / etc.        │
+│     ├── datosNuevos: { cantidad: 5420, errores: 12 }         │
+│     └── usuarioId: quien ejecutó la importación              │
+└──────────────────────────────────────────────────────────────┘</div>
+
+  <h3>10.2. Ejemplo de script ETL</h3>
+  <div class="hierarchy">// scripts/importar-productos.js
+const csv = require('csv-parser');
+const fs = require('fs');
+const { Producto, Inventario, sequelize } = require('../src/models');
+
+const MAPEO_COLUMNAS = {
+  'COD_ARTICULO': 'codigo',
+  'DESCRIPCION': 'nombre',
+  'RUBRO': 'categoria',
+  'P_COSTO': 'precioCompra',
+  'UNIDAD': 'unidadMedida',
+};
+
+async function importar(rutaCSV, sucursalId) {
+  const productos = [];
+  const errores = [];
+
+  // 1. Leer y mapear
+  fs.createReadStream(rutaCSV)
+    .pipe(csv())
+    .on('data', (row) => {
+      const mapped = {};
+      for (const [legacy, nuevo] of Object.entries(MAPEO_COLUMNAS)) {
+        mapped[nuevo] = row[legacy] || null;
+      }
+      // 2. Validar
+      if (!mapped.codigo || !mapped.nombre) {
+        errores.push({ fila: row, motivo: 'codigo o nombre vacío' });
+        return;
+      }
+      mapped.activo = true;
+      productos.push(mapped);
+    })
+    .on('end', async () => {
+      // 3. Deduplicar
+      const codigos = productos.map(p => p.codigo);
+      const existentes = await Producto.findAll({ where: { codigo: codigos } });
+      const codigosExistentes = new Set(existentes.map(p => p.codigo));
+      const nuevos = productos.filter(p => !codigosExistentes.has(p.codigo));
+
+      // 4. Carga masiva
+      await sequelize.transaction(async (t) => {
+        await Producto.bulkCreate(nuevos, { validate: false, transaction: t });
+      });
+
+      // 5. Auditoría
+      console.log(`Importados: ${nuevos.length}, Errores: ${errores.length}`);
+    });
+}</div>
+
+  <h3>10.3. Consideraciones para grandes volúmenes</h3>
+  <table>
+    <thead><tr><th>Volumen</th><th>Estrategia</th><th>Tiempo estimado</th></tr></thead>
+    <tbody>
+      <tr><td>1 - 10.000 registros</td><td><span class="code-inline">bulkCreate()</span> de Sequelize</td><td>Segundos</td></tr>
+      <tr><td>10.000 - 50.000</td><td><span class="code-inline">bulkCreate({ validate: false })</span> en lotes de 1.000</td><td>1-5 minutos</td></tr>
+      <tr><td>50.000 - 500.000</td><td>PostgreSQL <span class="code-inline">COPY FROM</span> (carga directa a nivel BD)</td><td>Segundos a 1 minuto</td></tr>
+      <tr><td>+500.000</td><td>COPY + índices deshabilitados durante carga + recrear post-carga</td><td>Variable</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- ====== SECCION 11: SEGURIDAD V3 ====== -->
+<div class="page">
+  <h2><span class="section-number">11</span> Seguridad — Defensa en capas <span class="v3-tag">V3</span></h2>
+
+  <div class="why-box"><div class="why-title">Defensa en profundidad: 11 capas de seguridad</div>
+  <p>Si un atacante logra pasar una capa, se choca con la siguiente. No hay un único punto de fallo. En V3 se agrega la capa 11: filtro por departamento.</p></div>
+
+  <table>
+    <thead><tr><th>#</th><th>Capa</th><th>Medida</th><th>Estado</th></tr></thead>
+    <tbody>
+      <tr><td>1</td><td><strong>Autenticación</strong></td><td>JWT con expiración 24h + bcrypt salt 10</td><td><span class="badge badge-verde">Hecho</span></td></tr>
+      <tr><td>2</td><td><strong>Autorización por rol</strong></td><td>verifyRole en cada endpoint</td><td><span class="badge badge-verde">Hecho</span></td></tr>
+      <tr><td>3</td><td><strong>Validación de inputs</strong></td><td>express-validator en todos los endpoints</td><td><span class="badge badge-ambar">Sprint 2</span></td></tr>
+      <tr><td>4</td><td><strong>HTTP Headers</strong></td><td>Helmet: XSS, CSP, HSTS, X-Frame-Options</td><td><span class="badge badge-ambar">Sprint 2</span></td></tr>
+      <tr><td>5</td><td><strong>CSRF</strong></td><td>csurf: doble submit cookie</td><td><span class="badge badge-ambar">Sprint 2</span></td></tr>
+      <tr><td>6</td><td><strong>Inyección SQL</strong></td><td>Sequelize parametriza todas las queries</td><td><span class="badge badge-verde">Hecho</span></td></tr>
+      <tr><td>7</td><td><strong>CORS</strong></td><td>Solo orígenes autorizados</td><td><span class="badge badge-verde">Hecho</span></td></tr>
+      <tr><td>8</td><td><strong>Datos sensibles</strong></td><td>Bcrypt irreversible, .env fuera de Git, baja lógica</td><td><span class="badge badge-verde">Hecho</span></td></tr>
+      <tr><td>9</td><td><strong>Monitoreo</strong></td><td>Sentry captura errores en tiempo real</td><td><span class="badge badge-ambar">Sprint 2</span></td></tr>
+      <tr><td>10</td><td><strong>Auditoría</strong></td><td>Tabla auditoria con JSONB (datos antes/después)</td><td><span class="badge badge-verde">Hecho</span></td></tr>
+      <tr><td>11</td><td><strong>Filtro por departamento</strong> <span class="v3-tag">V3</span></td><td>verifyDepartamento: empleado comercial no accede a gastos, operativo no accede a ventas</td><td><span class="badge badge-violeta">V3</span></td></tr>
+    </tbody>
+  </table>
+
+  <h3>11.1. Ataques comunes — ¿Funcionan contra SmartMargin?</h3>
+  <table>
+    <thead><tr><th>Ataque</th><th>¿Funciona?</th><th>¿Por qué no?</th></tr></thead>
+    <tbody>
+      <tr><td><strong>Inyección SQL</strong></td><td class="align-center"><span class="badge badge-rojo">NO</span></td><td>Sequelize parametriza todas las queries. Imposible inyectar.</td></tr>
+      <tr><td><strong>Robo de token JWT</strong></td><td class="align-center"><span class="badge badge-ambar">Limitado</span></td><td>Expira en 24h. No contiene contraseña.</td></tr>
+      <tr><td><strong>XSS</strong></td><td class="align-center"><span class="badge badge-rojo">NO</span></td><td>Helmet CSP + Angular sanitiza templates.</td></tr>
+      <tr><td><strong>CSRF</strong></td><td class="align-center"><span class="badge badge-rojo">NO</span></td><td>csurf valida token único en cada mutación.</td></tr>
+      <tr><td><strong>Escalación de privilegios</strong></td><td class="align-center"><span class="badge badge-rojo">NO</span></td><td>verifyRole + verifyDepartamento verifican rol y departamento en cada endpoint.</td></tr>
+      <tr><td><strong>Empleado comercial cargando gastos</strong></td><td class="align-center"><span class="badge badge-rojo">NO</span></td><td><span class="v3-tag">V3</span> verifyDepartamento('operativo') bloquea en la ruta de gastos.</td></tr>
+      <tr><td><strong>Empleado operativo cargando ventas</strong></td><td class="align-center"><span class="badge badge-rojo">NO</span></td><td><span class="v3-tag">V3</span> verifyDepartamento('comercial') bloquea en la ruta de transacciones tipo venta.</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- ====== SECCION 12: TECNOLOGIAS ====== -->
+<div class="page">
+  <h2><span class="section-number">12</span> Tecnologías por capa <span class="v3-tag">V3</span></h2>
+
+  <table>
+    <thead><tr><th>Capa</th><th>Tecnología</th><th>Propósito</th></tr></thead>
+    <tbody>
+      <tr><td rowspan="7"><strong>Frontend</strong></td><td>Angular 19+</td><td>Framework SPA</td></tr>
+      <tr><td>Bootstrap 5</td><td>UI responsive</td></tr>
+      <tr><td>Chart.js + ng2-charts</td><td>Gráficos interactivos</td></tr>
+      <tr><td>Leaflet</td><td>Mapa de sucursales</td></tr>
+      <tr><td>Angular Datatables</td><td>Tablas con búsqueda/paginación</td></tr>
+      <tr><td>jsPDF + html2canvas</td><td>Exportación PDF</td></tr>
+      <tr><td>SheetJS (xlsx)</td><td>Exportación Excel</td></tr>
+
+      <tr><td rowspan="7"><strong>Backend</strong></td><td>Node.js + Express 5</td><td>Runtime + framework HTTP</td></tr>
+      <tr><td>Sequelize 6 + pg</td><td>ORM + driver PostgreSQL</td></tr>
+      <tr><td>jsonwebtoken + bcryptjs</td><td>Autenticación JWT</td></tr>
+      <tr><td>Passport.js + Google</td><td>OAuth 2.0 (Google)</td></tr>
+      <tr><td>helmet + csurf</td><td>Seguridad XSS + CSRF</td></tr>
+      <tr><td>express-validator</td><td>Validaciones</td></tr>
+      <tr><td><strong>@faker-js/faker</strong> <span class="v3-tag">V3</span></td><td>Generación de datos realistas para seeders</td></tr>
+
+      <tr><td rowspan="5"><strong>APIs Externas</strong></td><td>MercadoPago SDK</td><td>Checkout Pro (suscripción)</td></tr>
+      <tr><td>Gemini API (Google AI)</td><td>Agentes IA en lenguaje natural</td></tr>
+      <tr><td>API Dólar (dolarapi.com)</td><td>Cotización tiempo real</td></tr>
+      <tr><td>Google OAuth 2.0</td><td>Login con Google</td></tr>
+      <tr><td>Sentry</td><td>Monitoreo de errores</td></tr>
+
+      <tr><td rowspan="2"><strong>Infra</strong></td><td>PostgreSQL 16/18</td><td>Base de datos relacional</td></tr>
+      <tr><td>Git + GitHub</td><td>Control de versiones</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- ====== SECCION 13: CRONOGRAMA ====== -->
+<div class="page">
+  <h2><span class="section-number">13</span> Cronograma Sprint 2 Actualizado <span class="v3-tag">V3</span></h2>
+
+  <table>
+    <thead><tr><th>Día</th><th>Franco</th><th>Brian</th><th>Frontend</th></tr></thead>
+    <tbody>
+      <tr><td><strong>8</strong></td><td>Rol administrador (modelo + migración + middleware + codigos)</td><td>express-validator en todos los endpoints</td><td>Pricila: campo Admin en registro</td></tr>
+      <tr><td><strong>9</strong></td><td>Jerarquía de códigos (Dueño→Admin→resto)</td><td>Filtros avanzados en GETs</td><td>Leo: columna "Registrado por"</td></tr>
+      <tr><td><strong>10</strong></td><td>MercadoPago SDK + Dólar API</td><td>Paginación server-side</td><td>Pricila: primer login → suscripción. Fabri: Dashboard KPIs</td></tr>
+      <tr><td><strong>11</strong></td><td>Gemini API real (5 agentes) + Sentry</td><td>Middleware helmet + csurf</td><td>Pricila: Google OAuth callback</td></tr>
+      <tr><td><strong>12</strong></td><td>Google OAuth + Helmet + CSRF</td><td>Endpoints exportación PDF/Excel</td><td>Leo: filtros + info sucursales</td></tr>
+      <tr><td><strong>13</strong></td><td>Pruebas finales + bugs</td><td>Seeders + testing Postman</td><td>Fabri + Leo: exportaciones + pulido</td></tr>
+      <tr><td><strong>14</strong></td><td>Entrega final: checklist completo</td><td>Postman collection a /docs</td><td>Todos: demo + defensa</td></tr>
+      <tr style="background:#F5F3FF"><td><strong>V3</strong></td><td><strong>T2:</strong> Renombrar duenoId→empresaId + fix bug shadowing</td><td><strong>T4:</strong> Seeder empresa fantasma con @faker-js/faker</td><td>Pricila: campo departamento en registro</td></tr>
+      <tr style="background:#F5F3FF"><td><strong>V3</strong></td><td><strong>T1:</strong> Agregar departamento + verifyDepartamento + JWT actualizado</td><td>—</td><td>Leo: ocultar botones por departamento</td></tr>
+      <tr style="background:#F5F3FF"><td><strong>V3</strong></td><td><strong>T3:</strong> Documentar estrategia ETL</td><td>—</td><td>—</td></tr>
+    </tbody>
+  </table>
+
+  <h3>Hitos clave del Sprint 2 + V3</h3>
+  <table>
+    <thead><tr><th>Día</th><th>Hito</th><th>Verificación</th></tr></thead>
+    <tbody>
+      <tr><td>8</td><td>4 roles funcionando con jerarquía de códigos</td><td>Registrar cadena completa Dueño→Admin→Gerente→Empleado</td></tr>
+      <tr><td>10</td><td>3 APIs integradas (MP, Dólar, Google)</td><td>Checkout MP funcional, dólar en dashboard</td></tr>
+      <tr><td>11</td><td>Gemini real generando reportes NLP</td><td>POST /api/reportes/generar devuelve análisis real</td></tr>
+      <tr><td>12</td><td>5 APIs completas + Seguridad</td><td>Sentry + helmet + CSRF activos</td></tr>
+      <tr><td><span class="v3-tag">V3</span></td><td>empresaId funcional + departamento activo</td><td>Registrar empleado con código EMP → empresaId y departamento copiados automáticamente</td></tr>
+      <tr><td><span class="v3-tag">V3</span></td><td>Seeder empresa fantasma genera datos realistas</td><td><span class="code-inline">npx sequelize db:seed:all</span> → miles de registros con historial de 2-3 años</td></tr>
+      <tr><td>14</td><td>Entrega Final</td><td>Checklist completo ✓</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- ====== SECCION 14: MIGRACIONES V3 ====== -->
+<div class="page">
+  <h2><span class="section-number">14</span> Migraciones y archivos nuevos V3 <span class="v3-tag">V3</span></h2>
+
+  <h3>14.1. Migraciones nuevas</h3>
+  <table>
+    <thead><tr><th>#</th><th>Archivo</th><th>Acción</th><th>Tarea</th></tr></thead>
+    <tbody>
+      <tr><td>1</td><td><span class="code-inline">20260704000001-rename-duenoId-to-empresaId-usuarios.js</span></td><td>renameColumn en tabla usuarios</td><td>T2</td></tr>
+      <tr><td>2</td><td><span class="code-inline">20260704000002-rename-duenoId-to-empresaId-codigos.js</span></td><td>renameColumn en tabla codigos_invitacion</td><td>T2</td></tr>
+      <tr><td>3</td><td><span class="code-inline">20260704000003-rename-duenoId-to-empresaId-zonas.js</span></td><td>renameColumn en tabla zonas</td><td>T2</td></tr>
+      <tr><td>4</td><td><span class="code-inline">20260704000004-add-departamento-to-usuarios.js</span></td><td>addColumn ENUM('comercial','operativo')</td><td>T1</td></tr>
+      <tr><td>5</td><td><span class="code-inline">20260704000005-add-departamento-to-codigos.js</span></td><td>addColumn ENUM('comercial','operativo')</td><td>T1</td></tr>
+    </tbody>
+  </table>
+
+  <h3>14.2. Archivos modificados</h3>
+  <table>
+    <thead><tr><th>Archivo</th><th>Cambio</th><th>Tarea</th></tr></thead>
+    <tbody>
+      <tr><td><span class="code-inline">src/models/Usuario.js</span></td><td>Renombrar duenoId→empresaId + agregar departamento</td><td>T1+T2</td></tr>
+      <tr><td><span class="code-inline">src/models/CodigoInvitacion.js</span></td><td>Renombrar duenoId→empresaId + agregar departamento</td><td>T1+T2</td></tr>
+      <tr><td><span class="code-inline">src/models/Zona.js</span></td><td>Renombrar duenoId→empresaId</td><td>T2</td></tr>
+      <tr><td><span class="code-inline">src/models/index.js</span></td><td>Actualizar todas las asociaciones con empresaId</td><td>T2</td></tr>
+      <tr><td><span class="code-inline">src/middlewares/verifyRole.js</span></td><td>Agregar export verifyDepartamento</td><td>T1</td></tr>
+      <tr><td><span class="code-inline">src/controllers/authController.js</span></td><td>Fix bug shadowing + empresaId + departamento en JWT</td><td>T1+T2</td></tr>
+      <tr><td><span class="code-inline">src/controllers/codigoController.js</span></td><td>obtenerDuenoId→obtenerEmpresaId + aceptar departamento</td><td>T1+T2</td></tr>
+      <tr><td><span class="code-inline">src/controllers/usuarioController.js</span></td><td>Actualizar referencias duenoId→empresaId</td><td>T2</td></tr>
+      <tr><td><span class="code-inline">src/routes/gastos.routes.js</span></td><td>Agregar verifyDepartamento('operativo') en POST/PUT</td><td>T1</td></tr>
+      <tr><td><span class="code-inline">src/routes/inventario.routes.js</span></td><td>Agregar verifyDepartamento('operativo') en POST/PUT</td><td>T1</td></tr>
+      <tr><td><span class="code-inline">src/routes/transacciones.routes.js</span></td><td>Agregar verifyDepartamento en POST</td><td>T1</td></tr>
+      <tr><td><span class="code-inline">seeders/20260627070410-usuarios.js</span></td><td>Renombrar columna duenoId→empresaId</td><td>T2</td></tr>
+    </tbody>
+  </table>
+
+  <h3>14.3. Archivos nuevos</h3>
+  <table>
+    <thead><tr><th>Archivo</th><th>Descripción</th><th>Tarea</th></tr></thead>
+    <tbody>
+      <tr><td><span class="code-inline">seeders/20260704000006-empresa-fantasma.js</span></td><td>Seeder completo con @faker-js/faker (miles de registros)</td><td>T4</td></tr>
+      <tr><td><span class="code-inline">docs/ETL_LEGACY_STRATEGY.md</span></td><td>Documentación de estrategia de importación de datos legado</td><td>T3</td></tr>
+    </tbody>
+  </table>
+
+  <h3>14.4. Dependencia nueva</h3>
+  <table>
+    <thead><tr><th>Paquete</th><th>Tipo</th><th>Uso</th></tr></thead>
+    <tbody>
+      <tr><td><span class="code-inline">@faker-js/faker</span></td><td>devDependency</td><td>Generar datos realistas en el seeder empresa fantasma</td></tr>
+    </tbody>
+  </table>
+
+  <div class="footer">
+    SmartMargin AI — Plan de Abordaje V3 — Grupo 14 — Programación y Servicios Web — UNJU — Julio 2026<br>
+    Backend: github.com/Franco46-ochoa/proybackendgrupo14 · Frontend: github.com/Franco46-ochoa/proyfrontendgrupo14
+  </div>
+</div>
+
+</body>
+</html>
